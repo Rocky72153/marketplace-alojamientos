@@ -6,7 +6,7 @@ Marketplace web para conectar anfitriones con huéspedes y permitir publicación
 
 ## Entrega 1 — Análisis de requerimientos y diseño
 
-La documentación versionada de la entrega 1 se encuentra en [docs/entrega-1/README.md](docs/entrega-1/README.md). Incluye visión/alcance, actores/interesados, procesos de negocio y fuente BPMN 2.0, catálogo de requerimientos/reglas, backlog de historias con criterios de aceptación, casos de uso, modelos de dominio y datos, arquitectura orientada a servicios, contrato OpenAPI, prototipo, cronograma/WBS/riesgos, secuencias y checklist contra la guía del curso.
+La documentación versionada de la entrega 1 se encuentra en [docs/entrega-1/README.md](docs/entrega-1/README.md). Incluye visión/alcance, actores/interesados, procesos BPMN, requerimientos, backlog, casos de uso, modelos, arquitectura, OpenAPI, prototipo, planificación y riesgos, secuencias, checklist y la metodología operativa [Scrum + Lean](docs/entrega-1/19-metodologia-scrum-lean.md).
 
 **Estado de los artefactos:** son una propuesta inicial basada en el enunciado del curso. Deben ser revisados y aprobados por el equipo; Jira, Confluence, reglas administrativas y SonarCloud requieren configuración/evidencia real antes de marcarlos como completos.
 
@@ -44,6 +44,8 @@ Frontend: cd frontend && npm ci && npm run lint && npm test && npm run build
 Base de datos local: docker compose up -d db
 
 ## Flujo de trabajo
+
+La planificación combina Scrum (objetivos semanales, revisión y retrospectiva) con Lean (WIP limitado, eliminación de esperas y mejora continua). Los ocho sprints están registrados en Jira; los puntos son iniciales y la capacidad deberá calibrarse con trabajo realmente terminado. Consulta [19. Metodología Scrum + Lean](docs/entrega-1/19-metodologia-scrum-lean.md).
 
 1. Asegura que la historia exista en Jira e incluya criterios Dado que / Cuando / Entonces.
 2. Crea la rama de funcionalidad/corrección/documentación desde develop.
