@@ -21,7 +21,7 @@ La guía del curso exige elegir y aplicar una metodología ágil, pero no asigna
 |---|---|---|
 | Product Owner (PO) | Maximizar el valor del Marketplace; ordenar el backlog; aclarar objetivos, criterios de aceptación y decisiones de negocio; validar el incremento en la Review. | Por confirmar por el equipo; no se presume que el cliente esté disponible. |
 | Scrum Master / facilitador | Facilitar ceremonias, detectar impedimentos, ayudar a que Scrum se aplique y fomentar mejora continua sin actuar como jefe del equipo. | Por confirmar por el equipo. |
-| Developers / equipo de desarrollo | Diseñar, implementar, probar, revisar código, actualizar documentación y trazabilidad; estimar el trabajo y entregar un incremento “Done”. | Integrantes reales del grupo, por asignar a cada historia/subtarea en Jira. |
+| Developers / equipo de desarrollo | Diseñar, implementar, probar, revisar código, actualizar documentación y trazabilidad; estimar el trabajo y entregar un incremento “Done”. | Juan Sebastián Morales Forero y Julián David Aguilera Párraga; asignación detallada por historia/subtarea en `18-plan-subtareas-jira.md`. |
 | Interesados / representante del negocio | Aportar contexto, revisar prototipos e incrementos y dar feedback verificable sobre necesidades. | Representante de Inversiones LR simulado para el curso; validar quién da feedback académico. |
 
 **Nota:** una persona puede asumir más de una responsabilidad en un equipo pequeño si el curso lo permite, pero el acuerdo debe quedar explícito. No se asignan nombres ni se registra feedback del cliente sin confirmación real.
