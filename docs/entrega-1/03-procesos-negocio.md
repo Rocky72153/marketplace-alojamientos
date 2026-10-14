@@ -1,6 +1,6 @@
 # 3. Procesos de negocio
 
-Los modelos de esta sección se derivan de los procesos sugeridos en la guía. Los diagramas Mermaid son vistas legibles del flujo; los archivos fuente BPMN 2.0 asociados se versionarán en `docs/entrega-1/bpmn/` y deben abrirse en una herramienta compatible para validación visual antes de la sustentación.
+Los modelos se derivan de los procesos sugeridos en la guía. Los diagramas Mermaid son vistas legibles del flujo; los archivos fuente BPMN 2.0 asociados se versionarán en `docs/entrega-1/bpmn/` y deben abrirse en una herramienta compatible para validación visual antes de la sustentación.
 
 ## PB-01 — Incorporación y publicación de alojamiento
 
@@ -89,14 +89,15 @@ flowchart TD
 - Acciones relevantes de seguridad/cambios de estado generan eventos trazables con actor, entidad, fecha y resultado.
 - La exportación PDF/Excel debe corresponder a datos visibles/almacenados y registrar quién la pidió y cuándo.
 - El dashboard calcula usuarios, publicaciones activas, reservas por estado, ingresos estimados y ciudades con mayor demanda.
+- Moderación de reseñas se coordina con la elegibilidad de la reserva completada.
 
 ## Relación proceso–requerimiento
 
 | Proceso | Requerimientos principales | Historias iniciales |
 |---|---|---|
-| PB-01 Publicación | RF-006 a RF-009; RN-01 a RN-05 | HU-05, HU-06, HU-07 |
-| PB-02 Búsqueda/reserva | RF-010 a RF-014; RN-06 a RN-10 | HU-08 a HU-12 |
-| PB-03 Cancelación | RF-015; RN-11 | HU-13 |
-| PB-04 Moderación/reportes | RF-016 a RF-020; RN-12 a RN-15 | HU-14 a HU-17 |
+| PB-01 Publicación | RF-004 a RF-006; RN-001 a RN-006 | HU-04, HU-05 |
+| PB-02 Búsqueda/reserva | RF-007 a RF-012; RN-007 a RN-010, RN-013, RN-016 | HU-06 a HU-11 |
+| PB-03 Cancelación/notificación | RF-013 a RF-014; RN-011 a RN-012 | HU-12, HU-13 |
+| PB-04 Reputación, administración y reportes | RF-015 a RF-020; RN-014, RN-017 a RN-019 | HU-14 a HU-19 |
 
 Los identificadores se detallan en el catálogo y backlog. Estos diagramas son propuestas; el equipo debe validar condiciones, estados y excepciones antes de aprobarlos.
