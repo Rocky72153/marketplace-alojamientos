@@ -13,6 +13,10 @@ permissions:
 
 jobs:
   sonarcloud-analysis:
+    # Agrega las variables SONAR_ORGANIZATION y SONAR_PROJECT_KEY al repositorio
+    # cuando el proyecto esté creado en SonarQube Cloud. El secreto SONAR_TOKEN
+    # también es necesario para ejecutar el escaneo.
+    if: vars.SONAR_ORGANIZATION != '' && vars.SONAR_PROJECT_KEY != ''
     name: SonarCloud Quality Gate
     runs-on: ubuntu-latest
     steps:
@@ -43,5 +47,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >-
+            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+            -Dsonar.projectName=Marketplace de Alojamientos
             -Dsonar.qualitygate.wait=true
             -Dsonar.qualitygate.timeout=600
