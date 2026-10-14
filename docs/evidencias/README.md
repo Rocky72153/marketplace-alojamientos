@@ -19,7 +19,7 @@ La guía del curso exige un documento con capturas del uso de IA donde sean visi
 
 ## Evidencias académicas
 
-- Enlace/captura de épicas e historias reales de Jira con AC, prioridad, estimación, responsable y sprint/iteración.
+- Captura real de épicas e historias en Jira con AC y prioridades; estimaciones acordadas, responsables y sprint/iteración siguen pendientes.
 - Enlace/captura a páginas Confluence con visión, actores, BPMN, requerimientos, historias, casos de uso, modelos, arquitectura, API y manual de despliegue.
 - Registro de feedback real del prototipo: fecha, rol participante, tarea, hallazgo, decisión y cambio asociado.
 - Validación del catálogo y de preguntas abiertas por el equipo; acuerdos/observaciones y responsable.
@@ -30,10 +30,10 @@ La guía del curso exige un documento con capturas del uso de IA donde sean visi
 | ID | Evidencia | Enlace/ruta real | Fecha | Responsable | Estado |
 |---|---|---|---|---|---|
 | EV-01 | Uso de IA con prompts completos, entrada/salida y fecha/hora visibles | Pendiente de recopilar | Pendiente | Por asignar | Pendiente |
-| EV-02 | Backlog en Jira | Pendiente de crear/enlazar | Pendiente | Por asignar | Pendiente |
+| EV-02 | Backlog en Jira | https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog | Pendiente | Por asignar | Issues creados; captura pendiente y faltan estimaciones/responsables/sprints acordados |
 | EV-03 | Documentación publicada en Confluence | Pendiente de publicar/enlazar | Pendiente | Por asignar | Pendiente |
-| EV-04 | PR de entrega 1 con revisión real | Pendiente de PR/revisión | Pendiente | Por asignar | Pendiente |
-| EV-05 | CI verde en PR | GitHub Actions; enlazar ejecución final | Pendiente | Por asignar | Parcial; ejecuciones de ramas previas se revisaron |
+| EV-04 | PR de entrega 1 con revisión real | https://github.com/Rocky72153/marketplace-alojamientos/pull/4 | Pendiente | Por asignar | PR abierto; revisión de otro integrante pendiente |
+| EV-05 | CI verde en PR | https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38503698908 | Pendiente | Por asignar | CI verde en PR #4; guardar captura/enlace de evidencia |
 | EV-06 | SonarCloud Quality Gate | Pendiente de importar/configurar | Pendiente | Por asignar | Pendiente |
 | EV-07 | Protección de ramas | Pendiente de configurar/verificar | Pendiente | Por asignar | Pendiente |
 | EV-08 | Revisión real de prototipo | Pendiente de realizar | Pendiente | Por asignar | Pendiente |
