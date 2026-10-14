@@ -2,11 +2,29 @@
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_Publicacion" targetNamespace="https://unbosque.edu.co/marketplace/bpmn">
   <bpmn:process id="Proceso_Publicacion_Alojamiento" name="Publicar y moderar alojamiento" isExecutable="false">
     <bpmn:laneSet id="LaneSet_Publicacion">
-      <bpmn:lane id="Lane_Anfitrion" name="Anfitrión"><bpmn:flowNodeRef>Start_Crear</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Diligenciar</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_ValidarCampos</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_DatosValidos</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Corregir</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_GuardarPendiente</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_RequiereRevision</bpmn:flowNodeRef><bpmn:flowNodeRef>End_Publicada</bpmn:flowNodeRef></bpmn:lane>
-      <bpmn:lane id="Lane_Plataforma" name="Marketplace"><bpmn:flowNodeRef>Task_Auditar</bpmn:flowNodeRef></bpmn:lane>
-      <bpmn:lane id="Lane_Administrador" name="Administrador"><bpmn:flowNodeRef>Task_Revisar</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_Aprobada</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Activar</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_DevolverCorreccion</bpmn:flowNodeRef><bpmn:flowNodeRef>End_Pendiente</bpmn:flowNodeRef></bpmn:lane>
+      <bpmn:lane id="Lane_Anfitrion" name="Anfitrión">
+        <bpmn:flowNodeRef>Start_Crear</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Diligenciar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ValidarCampos</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_DatosValidos</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Corregir</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_GuardarPendiente</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_RequiereRevision</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Plataforma" name="Marketplace">
+        <bpmn:flowNodeRef>Task_AuditarActivacion</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_AuditarPendiente</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Activar</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Administrador" name="Administrador">
+        <bpmn:flowNodeRef>Task_Revisar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Aprobada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DevolverCorreccion</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Publicada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Pendiente</bpmn:flowNodeRef>
+      </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:startEvent id="Start_Crear" name="Anfitrión autenticado crea anuncio"/>
+    <bpmn:startEvent id="Start_Crear" name="Anfitrión autenticado inicia publicación"/>
     <bpmn:task id="Task_Diligenciar" name="Diligenciar datos del alojamiento"/>
     <bpmn:task id="Task_ValidarCampos" name="Validar datos mínimos, capacidad y precio"/>
     <bpmn:exclusiveGateway id="Gateway_DatosValidos" name="¿Datos válidos?"/>
@@ -17,7 +35,8 @@
     <bpmn:exclusiveGateway id="Gateway_Aprobada" name="¿Aprobada?"/>
     <bpmn:task id="Task_Activar" name="Activar publicación"/>
     <bpmn:task id="Task_DevolverCorreccion" name="Devolver para corrección"/>
-    <bpmn:task id="Task_Auditar" name="Registrar actor, fecha, estado y resultado"/>
+    <bpmn:task id="Task_AuditarActivacion" name="Registrar activación y hacer visible en búsqueda"/>
+    <bpmn:task id="Task_AuditarPendiente" name="Registrar estado pendiente y decisión de revisión"/>
     <bpmn:endEvent id="End_Publicada" name="Publicación activa y visible en búsqueda"/>
     <bpmn:endEvent id="End_Pendiente" name="Publicación pendiente o devuelta"/>
     <bpmn:sequenceFlow id="Flow_01" sourceRef="Start_Crear" targetRef="Task_Diligenciar"/>
@@ -32,10 +51,10 @@
     <bpmn:sequenceFlow id="Flow_10" sourceRef="Task_Revisar" targetRef="Gateway_Aprobada"/>
     <bpmn:sequenceFlow id="Flow_11" name="Sí" sourceRef="Gateway_Aprobada" targetRef="Task_Activar"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">aprobada</bpmn:conditionExpression></bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_12" name="No" sourceRef="Gateway_Aprobada" targetRef="Task_DevolverCorreccion"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">noAprobada</bpmn:conditionExpression></bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_13" sourceRef="Task_DevolverCorreccion" targetRef="Task_Auditar"/>
-    <bpmn:sequenceFlow id="Flow_14" sourceRef="Task_Activar" targetRef="Task_Auditar"/>
-    <bpmn:sequenceFlow id="Flow_15" sourceRef="Task_Auditar" targetRef="End_Publicada"/>
-    <bpmn:sequenceFlow id="Flow_16" sourceRef="Task_Auditar" targetRef="End_Pendiente"/>
+    <bpmn:sequenceFlow id="Flow_13" sourceRef="Task_DevolverCorreccion" targetRef="Task_AuditarPendiente"/>
+    <bpmn:sequenceFlow id="Flow_14" sourceRef="Task_Activar" targetRef="Task_AuditarActivacion"/>
+    <bpmn:sequenceFlow id="Flow_15" sourceRef="Task_AuditarActivacion" targetRef="End_Publicada"/>
+    <bpmn:sequenceFlow id="Flow_16" sourceRef="Task_AuditarPendiente" targetRef="End_Pendiente"/>
     <bpmn:textAnnotation id="Annotation_Validaciones"><bpmn:text>Capacidad mayor que cero; precio por noche positivo; información mínima completa. Solo publicaciones activas se encuentran y reservan.</bpmn:text></bpmn:textAnnotation>
     <bpmn:association id="Association_Validaciones" sourceRef="Task_ValidarCampos" targetRef="Annotation_Validaciones"/>
   </bpmn:process>
