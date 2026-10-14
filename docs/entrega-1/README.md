@@ -44,10 +44,10 @@ Los identificadores se mantienen consistentes: ACT, INT, RBN, RN, RF, RNF, EP, H
 ## Validación y evidencia pendiente
 
 - Aprobación/revisión de los artefactos por integrantes y docente.
-- Jira contiene 10 épicas, 19 historias, 38 subtareas de implementación/prueba, estimaciones iniciales y distribución propuesta en cuatro sprints; el equipo debe validar los puntos, asignar responsables reales y acordar fechas/capacidad antes de comprometer cada sprint.
+- Jira contiene 10 épicas, 19 historias, 38 subtareas de implementación/prueba, Story Points iniciales, responsables asignados y distribución propuesta en cuatro sprints; el equipo debe ratificar estimaciones y acordar fechas/capacidad antes de comprometer cada sprint.
 - Publicar o enlazar los modelos aprobados en Confluence, como pide el enunciado.
 - Abrir los BPMN en un modelador compatible, validar reglas y exportar capturas/diagramas legibles para Confluence si se requiere.
-- PR #4 ya está fusionado en `main`; no registra aprobación independiente de otro integrante. Configurar protección de ramas, exigir revisión real en futuros PR, verificar checks CI y configurar SonarCloud.
+- PR #4 ya está fusionado en `main` sin aprobación independiente registrada. PR #5 está abierto hacia `main`; requiere revisión independiente antes del merge. Configurar protección de ramas, exigir revisión real, verificar CI en el último commit y configurar SonarCloud.
 - Capturar evidencia auténtica de feedback del prototipo y del uso de IA con fecha/hora y prompts/respuestas completos, conforme a la guía; la plantilla está en `docs/evidencias/README.md`.
 
 No se incluyen capturas ficticias ni se declara una validación que todavía no ha ocurrido.
