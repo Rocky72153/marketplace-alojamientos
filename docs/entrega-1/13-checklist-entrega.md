@@ -8,7 +8,7 @@ Esta lista se cruza con los productos esperados y las exigencias de la guía del
 | Actores/interesados con descripción, relación, necesidades, preocupaciones, responsabilidades y afectación | `02-actores-interesados.md` | Preparado; validar y completar nombres/responsables |
 | Procesos relevantes con límites, participantes, entradas/salidas, reglas, eventos/resultados y relación a requerimientos | `03-procesos-negocio.md` + `bpmn/*.bpmn` | Borrador; validar visualmente BPMN y acordar excepciones |
 | Catálogo de requerimientos identificados y priorización MVP | `04-catalogo-requerimientos.md` | Preparado; revisión de cobertura y aprobación pendiente |
-| Historias con ID, épica, enunciado, AC Dado/Cuando/Entonces, prioridad, estimación, responsable, estado, sprint y dependencias | `05-backlog-historias.md` | Cargado en Jira MARKET con claves reales; faltan estimaciones acordadas, responsables y sprint/iteración |
+| Historias con ID, épica, enunciado, AC Dado/Cuando/Entonces, prioridad, estimación, responsable, estado, sprint y dependencias | `05-backlog-historias.md` y Jira MARKET | 19 historias cargadas; Story Points iniciales, responsables y sprints asignados; ratificación del equipo y fechas/capacidad pendientes |
 | Casos de uso con flujos principales y alternos | `06-casos-de-uso.md` | Preparado; walkthrough pendiente |
 | Modelo de dominio | `07-modelo-dominio.md` | Preparado; revisar y versionar la versión aprobada en Confluence |
 | Modelo lógico de datos y reglas de integridad | `08-modelo-datos.md` | Preparado; validar restricciones físicas y propiedad de datos |
