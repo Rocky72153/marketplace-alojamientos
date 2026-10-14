@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_Cancelacion" targetNamespace="https://unbosque.edu.co/marketplace/bpmn">
+  <bpmn:process id="Proceso_Cancelacion_Reserva" name="Cancelar reserva según política asociada" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Cancelacion">
+      <bpmn:lane id="Lane_Huesped" name="Huésped"><bpmn:flowNodeRef>Start_Cancelacion</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Solicitud</bpmn:flowNodeRef><bpmn:flowNodeRef>End_Rechazo</bpmn:flowNodeRef><bpmn:flowNodeRef>End_Cancelada</bpmn:flowNodeRef></bpmn:lane>
+      <bpmn:lane id="Lane_Plataforma" name="Marketplace"><bpmn:flowNodeRef>Task_Validar</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_Permitida</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_ConsultarPolitica</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_GuardarCancelacion</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_Liberar</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_LiberarPeriodo</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_ConservarPeriodo</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_AuditarNotificar</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_AuditarRechazo</bpmn:flowNodeRef></bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Cancelacion" name="Huésped solicita cancelación"/>
+    <bpmn:task id="Task_Solicitud" name="Enviar motivo de cancelación"/>
+    <bpmn:task id="Task_Validar" name="Validar titularidad, estado y permisos"/>
+    <bpmn:exclusiveGateway id="Gateway_Permitida" name="¿Cancelación permitida?"/>
+    <bpmn:task id="Task_ConsultarPolitica" name="Consultar política asociada al alojamiento y calcular devolución simulada"/>
+    <bpmn:task id="Task_GuardarCancelacion" name="Persistir usuario, fecha, motivo, devolución y estado final"/>
+    <bpmn:exclusiveGateway id="Gateway_Liberar" name="¿La regla autoriza liberar fechas?"/>
+    <bpmn:task id="Task_LiberarPeriodo" name="Liberar periodo de forma consistente"/>
+    <bpmn:task id="Task_ConservarPeriodo" name="Conservar bloqueo conforme a la política"/>
+    <bpmn:task id="Task_AuditarNotificar" name="Registrar auditoría y notificar participantes"/>
+    <bpmn:task id="Task_AuditarRechazo" name="Registrar rechazo relevante sin modificar reserva"/>
+    <bpmn:endEvent id="End_Rechazo" name="Cancelación rechazada; reserva sin cambios"/>
+    <bpmn:endEvent id="End_Cancelada" name="Cancelación registrada"/>
+    <bpmn:sequenceFlow id="C01" sourceRef="Start_Cancelacion" targetRef="Task_Solicitud"/>
+    <bpmn:sequenceFlow id="C02" sourceRef="Task_Solicitud" targetRef="Task_Validar"/>
+    <bpmn:sequenceFlow id="C03" sourceRef="Task_Validar" targetRef="Gateway_Permitida"/>
+    <bpmn:sequenceFlow id="C04" name="No" sourceRef="Gateway_Permitida" targetRef="Task_AuditarRechazo"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">noPermitida</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="C05" sourceRef="Task_AuditarRechazo" targetRef="End_Rechazo"/>
+    <bpmn:sequenceFlow id="C06" name="Sí" sourceRef="Gateway_Permitida" targetRef="Task_ConsultarPolitica"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">permitida</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="C07" sourceRef="Task_ConsultarPolitica" targetRef="Task_GuardarCancelacion"/>
+    <bpmn:sequenceFlow id="C08" sourceRef="Task_GuardarCancelacion" targetRef="Gateway_Liberar"/>
+    <bpmn:sequenceFlow id="C09" name="Sí" sourceRef="Gateway_Liberar" targetRef="Task_LiberarPeriodo"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">liberar</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="C10" name="No" sourceRef="Gateway_Liberar" targetRef="Task_ConservarPeriodo"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">conservar</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="C11" sourceRef="Task_LiberarPeriodo" targetRef="Task_AuditarNotificar"/>
+    <bpmn:sequenceFlow id="C12" sourceRef="Task_ConservarPeriodo" targetRef="Task_AuditarNotificar"/>
+    <bpmn:sequenceFlow id="C13" sourceRef="Task_AuditarNotificar" targetRef="End_Cancelada"/>
+    <bpmn:textAnnotation id="Annotation_Politica"><bpmn:text>La guía exige guardar usuario, fecha, motivo, devolución aplicable y estado final. La devolución es simulada y no implica transacción monetaria real.</bpmn:text></bpmn:textAnnotation>
+    <bpmn:association id="Association_Politica" sourceRef="Task_ConsultarPolitica" targetRef="Annotation_Politica"/>
+  </bpmn:process>
+</bpmn:definitions>
