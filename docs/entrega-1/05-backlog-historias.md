@@ -19,7 +19,7 @@ Estas 10 épicas y 19 historias están registradas en el proyecto [Jira Marketpl
 
 ## 5.2 Historias de usuario sincronizadas con Jira
 
-En todas las historias: **responsable: por asignar; estado inicial: To Do / backlog; sprint: MARKET Sprint 1–4 según la propuesta documentada en `18-plan-subtareas-jira.md`**. Los puntos son una estimación inicial relativa, no una estimación acordada.
+Responsables asignados en Jira: Juan Sebastián Morales Forero lleva HU-01, HU-02, HU-04, HU-06, HU-07, HU-09, HU-11, HU-14, HU-16 y HU-19; Julián David Aguilera Párraga lleva HU-03, HU-05, HU-08, HU-10, HU-12, HU-13, HU-15, HU-17 y HU-18. La subtarea de implementación corresponde al responsable de la historia y la de pruebas/validación al otro integrante. Estado inicial: To Do; sprints según la propuesta documentada en `18-plan-subtareas-jira.md`. Los puntos son estimaciones iniciales para revisión del equipo.
 
 ### HU-01 — Registro e inicio de sesión · [MARKET-5](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-5)
 
