@@ -47,7 +47,7 @@ Estas duraciones son una propuesta de trabajo para el equipo, no evidencia de re
 
 ## 12.1.4 Propuesta de organización del backlog por sprint
 
-La asignación es una **propuesta inicial para discusión**, no un compromiso de capacidad ni fechas. Sprint 1 ya existe en Jira como sprint futuro; los demás deben crearse en el tablero MARKET si el equipo aprueba esta distribución.
+La distribución de las 19 historias ya está cargada en Jira en cuatro sprints futuros del tablero MARKET. La asignación sigue siendo una **propuesta inicial para discusión**, no un compromiso de capacidad ni fechas; el equipo debe acordar fechas de inicio/fin y capacidad antes de comprometer el contenido de cada sprint.
 
 | Sprint propuesto | Objetivo | Historias sugeridas | Dependencias / salida |
 |---|---|---|---|
