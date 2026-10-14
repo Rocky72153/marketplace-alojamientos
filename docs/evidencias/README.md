@@ -19,7 +19,7 @@ La guía del curso exige un documento con capturas del uso de IA donde sean visi
 
 ## Evidencias académicas
 
-- Captura real de épicas e historias en Jira con AC y prioridades; estimaciones acordadas, responsables y sprint/iteración siguen pendientes.
+- Captura real de épicas, 19 historias y sus criterios en Jira. Se añadieron estimaciones iniciales y cuatro sprints con distribución propuesta; el equipo debe validar los puntos, asignar responsables y acordar fechas/capacidad.
 - Enlace/captura a páginas Confluence con visión, actores, BPMN, requerimientos, historias, casos de uso, modelos, arquitectura, API y manual de despliegue.
 - Registro de feedback real del prototipo: fecha, rol participante, tarea, hallazgo, decisión y cambio asociado.
 - Validación del catálogo y de preguntas abiertas por el equipo; acuerdos/observaciones y responsable.
@@ -30,10 +30,10 @@ La guía del curso exige un documento con capturas del uso de IA donde sean visi
 | ID | Evidencia | Enlace/ruta real | Fecha | Responsable | Estado |
 |---|---|---|---|---|---|
 | EV-01 | Uso de IA con prompts completos, entrada/salida y fecha/hora visibles | Pendiente de recopilar | Pendiente | Por asignar | Pendiente |
-| EV-02 | Backlog en Jira | https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog | Pendiente | Por asignar | Issues creados; captura pendiente y faltan estimaciones/responsables/sprints acordados |
+| EV-02 | Backlog en Jira | https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog | 2026-10-14 | Por asignar | 10 épicas, 19 historias, 38 subtareas; puntos iniciales y cuatro sprints aplicados; responsables/fechas por acordar y captura pendiente |
 | EV-03 | Documentación publicada en Confluence | Pendiente de publicar/enlazar | Pendiente | Por asignar | Pendiente |
-| EV-04 | PR de entrega 1 con revisión real | https://github.com/Rocky72153/marketplace-alojamientos/pull/4 | Pendiente | Por asignar | PR abierto; revisión de otro integrante pendiente |
-| EV-05 | CI verde en PR | https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38508120405 | Pendiente | Por asignar | Backend, frontend y Documentation CI pasaron en el commit sincronizado; guardar captura final |
+| EV-04 | PR de entrega 1 con revisión real | https://github.com/Rocky72153/marketplace-alojamientos/pull/4 | 2026-10-14 | Por asignar | PR #4 fusionado en main; no tiene aprobación independiente registrada. No simular ni reconstruir una aprobación; solicitar criterio al docente y aplicar revisión a futuros PR |
+| EV-05 | CI verde en PR | https://github.com/Rocky72153/marketplace-alojamientos/actions | 2026-10-14 | Por asignar | CI pasó en el commit fusionado; guardar captura de la ejecución real que corresponda al commit de entrega |
 | EV-06 | SonarCloud Quality Gate | Pendiente de importar/configurar | Pendiente | Por asignar | Pendiente |
 | EV-07 | Protección de ramas | Pendiente de configurar/verificar | Pendiente | Por asignar | Pendiente |
 | EV-08 | Revisión real de prototipo | Pendiente de realizar | Pendiente | Por asignar | Pendiente |
