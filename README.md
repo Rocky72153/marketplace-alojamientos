@@ -58,7 +58,7 @@ Base de datos local: docker compose up -d db
 - Verificar visibilidad del repositorio y agregar colaboradores reales.
 - Proteger main y develop mediante Rulesets/Branch protection con revisión y checks reales.
 - Crear el proyecto SonarCloud, configurar las variables SONAR_ORGANIZATION y SONAR_PROJECT_KEY y guardar SONAR_TOKEN como secreto de Actions.
-- Cargar las épicas e historias en Jira y publicar/enlazar la documentación en Confluence.
+- Completar en Jira estimaciones acordadas, responsables y sprints de las historias cargadas; publicar/enlazar la documentación en Confluence.
 - Sustituir cronograma relativo por fechas de la asignatura; asignar responsables y sprints reales.
 - Capturar evidencia auténtica de validación, revisiones, PR y uso de IA conforme a la guía.
 
