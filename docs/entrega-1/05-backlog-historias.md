@@ -1,27 +1,27 @@
 # 5. Épicas e historias de usuario
 
-Estas historias concretan el MVP obligatorio definido en la guía. Son backlog inicial propuesto para transcribir y gestionar en Jira; crear el archivo no crea automáticamente issues en Jira. Estimaciones en puntos son relativas y deben estimarse/concordarse por el equipo. Responsable, sprint y estado real se deben actualizar en Jira, no inventarse para la entrega.
+Estas 10 épicas y 19 historias están registradas en el proyecto [Jira Marketplace de Alojamientos (MARKET)](https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog). Este archivo conserva el detalle funcional y enlaza cada ID HU con su issue Jira. Las estimaciones en puntos son iniciales y requieren acuerdo del equipo; responsable, sprint e iteración se completan cuando el equipo los defina.
 
 ## 5.1 Épicas
 
-| ID | Épica | Objetivo | Resultado de negocio |
+| ID | Épica | Objetivo | Resultado de negocio | Jira |
 |---|---|---|---|
-| EP-01 | Identidad y perfil | Administrar identidad, sesión, roles y perfil. | Usuarios legítimos operan según sus permisos. |
-| EP-02 | Publicaciones | Permitir a anfitriones mantener anuncios completos y estados controlados. | Oferta de alojamientos administrada. |
-| EP-03 | Disponibilidad | Administrar periodos y evitar solapamientos. | Fuente central de disponibilidad. |
-| EP-04 | Descubrimiento | Buscar, filtrar y comparar alojamientos. | Huésped identifica una opción pertinente. |
-| EP-05 | Cotización y reserva | Mostrar costes y confirmar reserva idempotente con pago de prueba. | Flujo end-to-end verificable. |
-| EP-06 | Cancelaciones | Aplicar política y gestionar estado, devolución simulada y fechas. | Cancelaciones trazables y consistentes. |
-| EP-07 | Notificaciones | Informar eventos relevantes dentro de la plataforma. | Usuarios conocen los cambios. |
-| EP-08 | Reseñas y reputación | Habilitar evaluación posterior y moderación. | Historial de experiencia asociado a estancia real. |
-| EP-09 | Administración y reportes | Moderar, auditar, medir y exportar datos. | Operación observable y gestionable. |
-| EP-10 | Observabilidad y calidad | Registrar eventos técnicos/de negocio y asegurar flujo de cambios. | Evidencia verificable y soporte a diagnóstico. |
+| EP-01 | Identidad y perfil | Administrar identidad, sesión, roles y perfil. | Usuarios legítimos operan según sus permisos.  [MARKET-1](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-1) |
+| EP-02 | Publicaciones | Permitir a anfitriones mantener anuncios completos y estados controlados. | Oferta de alojamientos administrada.  [MARKET-2](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-2) |
+| EP-03 | Disponibilidad | Administrar periodos y evitar solapamientos. | Fuente central de disponibilidad.  [MARKET-3](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-3) |
+| EP-04 | Descubrimiento | Buscar, filtrar y comparar alojamientos. | Huésped identifica una opción pertinente.  [MARKET-4](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-4) |
+| EP-05 | Cotización y reserva | Mostrar costes y confirmar reserva idempotente con pago de prueba. | Flujo end-to-end verificable.  [MARKET-24](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-24) |
+| EP-06 | Cancelaciones | Aplicar política y gestionar estado, devolución simulada y fechas. | Cancelaciones trazables y consistentes.  [MARKET-25](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-25) |
+| EP-07 | Notificaciones | Informar eventos relevantes dentro de la plataforma. | Usuarios conocen los cambios.  [MARKET-26](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-26) |
+| EP-08 | Reseñas y reputación | Habilitar evaluación posterior y moderación. | Historial de experiencia asociado a estancia real.  [MARKET-27](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-27) |
+| EP-09 | Administración y reportes | Moderar, auditar, medir y exportar datos. | Operación observable y gestionable.  [MARKET-28](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-28) |
+| EP-10 | Observabilidad y calidad | Registrar eventos técnicos/de negocio y asegurar flujo de cambios. | Evidencia verificable y soporte a diagnóstico.  [MARKET-29](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-29) |
 
-## 5.2 Historias de usuario propuestas
+## 5.2 Historias de usuario sincronizadas con Jira
 
 En todas las historias: **responsable: por asignar; estado inicial: propuesta/backlog; sprint: por planificar**. Los puntos son una estimación inicial relativa, no una estimación acordada.
 
-### HU-01 — Registro e inicio de sesión
+### HU-01 — Registro e inicio de sesión · [MARKET-5](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-5)
 
 - **Épica:** EP-01 · **Requisito:** RF-001 · **Prioridad:** Must · **Estimación inicial:** 5 puntos.
 - **Como** usuario, **quiero** registrarme e iniciar sesión con mi rol, **para** acceder a capacidades autorizadas.
@@ -30,7 +30,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC3:** Dado que las credenciales son incorrectas o la cuenta está desactivada, cuando intento iniciar sesión, entonces el acceso se rechaza con mensaje que no revele datos sensibles.
 - **Dependencias:** modelo de usuario y definición de sesión/seguridad.
 
-### HU-02 — Recuperación simulada de contraseña
+### HU-02 — Recuperación simulada de contraseña · [MARKET-6](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-6)
 
 - **Épica:** EP-01 · **Requisito:** RF-002 · **Prioridad:** Must · **Estimación:** 3 puntos.
 - **Como** usuario, **quiero** solicitar recuperación simulada, **para** conocer el flujo de recuperación sin integrar correo real.
@@ -38,7 +38,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC2:** Dado que la función es simulada, cuando termina la operación, entonces no afirma que envió un correo real ni cambia una contraseña sin verificación.
 - **Dependencias:** HU-01; mecanismo simulado por definir.
 
-### HU-03 — Perfil y estado de cuenta
+### HU-03 — Perfil y estado de cuenta · [MARKET-7](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-7)
 
 - **Épica:** EP-01 · **Requisito:** RF-003 · **Prioridad:** Must · **Estimación:** 3 puntos.
 - **Como** usuario, **quiero** consultar y actualizar mis datos básicos y desactivar mi cuenta, **para** mantener mi información al día y controlar mi participación.
@@ -47,7 +47,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC3:** Dado que intento modificar el perfil de otra persona sin permiso, cuando envío la solicitud, entonces el sistema la rechaza.
 - **Dependencias:** HU-01 y matriz de permisos.
 
-### HU-04 — Crear y mantener publicación
+### HU-04 — Crear y mantener publicación · [MARKET-8](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-8)
 
 - **Épica:** EP-02 · **Requisitos:** RF-004, RF-006 · **Prioridad:** Must · **Estimación:** 8 puntos.
 - **Como** anfitrión, **quiero** crear y editar publicaciones de mis alojamientos, **para** ofrecerlos a los huéspedes.
@@ -57,7 +57,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC4:** Dado que falta un campo obligatorio o capacidad/precio no son positivos, cuando intento activar el anuncio, entonces no se activa y se indican los errores.
 - **Dependencias:** HU-01, modelo de alojamiento y catálogo de servicios/reglas.
 
-### HU-05 — Gestionar estados y moderación de publicaciones
+### HU-05 — Gestionar estados y moderación de publicaciones · [MARKET-9](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-9)
 
 - **Épica:** EP-02/EP-09 · **Requisitos:** RF-005, RF-017 · **Prioridad:** Must · **Estimación:** 5 puntos.
 - **Como** anfitrión, **quiero** activar o pausar mis publicaciones y conocer su estado, **para** controlar cuándo están disponibles al público.
@@ -66,7 +66,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC3:** Dado que soy administrador autorizado y hay información engañosa, cuando bloqueo la publicación, entonces el estado queda BLOQUEADA, se registra actor/motivo/fecha y las reservas futuras se conservan para revisión manual.
 - **Dependencias:** HU-04, permisos y auditoría.
 
-### HU-06 — Administrar disponibilidad
+### HU-06 — Administrar disponibilidad · [MARKET-10](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-10)
 
 - **Épica:** EP-03 · **Requisito:** RF-007 · **Prioridad:** Must · **Estimación:** 8 puntos.
 - **Como** anfitrión, **quiero** definir periodos disponibles de mis alojamientos, **para** que las búsquedas reflejen fechas reales.
@@ -75,7 +75,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC3:** Dado que una reserva se confirma, cuando se actualiza su estado, entonces el periodo queda bloqueado para nuevas reservas de forma consistente.
 - **Dependencias:** HU-04; reglas de intervalo de fecha.
 
-### HU-07 — Buscar y filtrar alojamientos
+### HU-07 — Buscar y filtrar alojamientos · [MARKET-11](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-11)
 
 - **Épica:** EP-04 · **Requisito:** RF-008 · **Prioridad:** Must · **Estimación:** 5 puntos.
 - **Como** huésped, **quiero** filtrar alojamientos por ciudad, fechas, capacidad, tipo, precio y servicios, **para** encontrar opciones que satisfagan mis necesidades.
@@ -84,7 +84,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC3:** Dado que no hay resultados, cuando termina la búsqueda, entonces se informa de manera clara y puedo ajustar filtros.
 - **Dependencias:** HU-04, HU-06, datos de catálogo y definición de filtros.
 
-### HU-08 — Consultar detalle de alojamiento
+### HU-08 — Consultar detalle de alojamiento · [MARKET-12](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-12)
 
 - **Épica:** EP-04 · **Requisito:** RF-009 · **Prioridad:** Must · **Estimación:** 3 puntos.
 - **Como** huésped, **quiero** consultar el detalle de un alojamiento, **para** comparar sus características antes de cotizar.
@@ -92,7 +92,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC2:** Dado que el anuncio no está activo, cuando intento acceder por URL directa sin permiso administrativo, entonces el sistema no lo muestra como oferta pública reservable.
 - **Dependencias:** HU-04 y catálogo de servicios/reglas.
 
-### HU-09 — Cotización desglosada
+### HU-09 — Cotización desglosada · [MARKET-13](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-13)
 
 - **Épica:** EP-05 · **Requisito:** RF-010 · **Prioridad:** Must · **Estimación:** 5 puntos.
 - **Como** huésped, **quiero** ver el desglose del coste para mis fechas, **para** decidir con información transparente.
@@ -101,7 +101,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC3:** Dado que una publicación no está disponible, cuando cotizo para el periodo no disponible, entonces el sistema informa el problema y no presenta la cotización como reserva confirmable.
 - **Dependencias:** HU-06, HU-07/08 y fórmulas aprobadas.
 
-### HU-10 — Crear reserva inmediata e idempotente
+### HU-10 — Crear reserva inmediata e idempotente · [MARKET-14](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-14)
 
 - **Épica:** EP-05 · **Requisitos:** RF-011, RF-012; reglas RN-008, RN-013, RN-016 · **Prioridad:** Must · **Estimación:** 13 puntos.
 - **Como** huésped, **quiero** confirmar una reserva para la cotización elegida, **para** asegurar el alojamiento para mis fechas.
@@ -112,7 +112,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC5:** Dado que la reserva se confirma válidamente, cuando finaliza la operación, entonces se conserva el desglose aceptado, se bloquea el periodo y se emiten los eventos/notificaciones correspondientes.
 - **Dependencias:** HU-06, HU-09, configuración de pago test y control transaccional.
 
-### HU-11 — Consultar estado e historial de reservas
+### HU-11 — Consultar estado e historial de reservas · [MARKET-15](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-15)
 
 - **Épica:** EP-05 · **Requisito:** RF-011 · **Prioridad:** Must · **Estimación:** 3 puntos.
 - **Como** huésped, **quiero** consultar estado e historial de mis reservas, **para** hacer seguimiento de mis estancias.
@@ -120,7 +120,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC2:** Dado que una reserva pertenece a otro usuario, cuando intento consultar su detalle sin permiso, entonces se deniega el acceso.
 - **Dependencias:** HU-10 y modelo de estados de reserva.
 
-### HU-12 — Cancelar reserva
+### HU-12 — Cancelar reserva · [MARKET-16](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-16)
 
 - **Épica:** EP-06 · **Requisito:** RF-013 · **Prioridad:** Must · **Estimación:** 8 puntos.
 - **Como** huésped, **quiero** cancelar una reserva según la política aplicable, **para** conocer el resultado y la devolución simulada.
@@ -130,7 +130,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC4:** Dado que la reserva no es cancelable o no soy su titular, cuando solicito cancelar, entonces se rechaza la operación y no se modifica el periodo.
 - **Dependencias:** HU-10/11; política aprobada.
 
-### HU-13 — Consultar notificaciones internas
+### HU-13 — Consultar notificaciones internas · [MARKET-17](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-17)
 
 - **Épica:** EP-07 · **Requisito:** RF-014 · **Prioridad:** Must · **Estimación:** 3 puntos.
 - **Como** usuario, **quiero** consultar notificaciones internas sobre eventos relevantes, **para** conocer cambios en mis publicaciones o reservas.
@@ -138,7 +138,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC2:** Dado que inicio sesión, cuando consulto mis notificaciones, entonces solo veo las destinadas a mi cuenta.
 - **Dependencias:** eventos de publicación, reserva y cancelación.
 
-### HU-14 — Reseñar estancia completada
+### HU-14 — Reseñar estancia completada · [MARKET-18](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-18)
 
 - **Épica:** EP-08 · **Requisito:** RF-015 · **Prioridad:** Must · **Estimación:** 5 puntos.
 - **Como** huésped, **quiero** calificar y reseñar el alojamiento después de la estancia, **para** compartir mi experiencia con futuros huéspedes.
@@ -147,7 +147,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC3:** Dado que ya se registró una reseña para la reserva, cuando intento crear otra si la regla de unicidad es una por reserva, entonces se evita el duplicado.
 - **Dependencias:** HU-10/11 y definición de estado completado.
 
-### HU-15 — Moderar reseñas
+### HU-15 — Moderar reseñas · [MARKET-19](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-19)
 
 - **Épica:** EP-08/EP-09 · **Requisito:** RF-016 · **Prioridad:** Must · **Estimación:** 3 puntos.
 - **Como** administrador, **quiero** ocultar reseñas que incumplen las políticas, **para** mantener la calidad del contenido publicado.
@@ -155,7 +155,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC2:** Dado que un usuario sin permiso solicita moderar una reseña, cuando ejecuta la petición, entonces es rechazada.
 - **Dependencias:** HU-14, permisos y auditoría.
 
-### HU-16 — Moderar usuarios/publicaciones y consultar auditoría
+### HU-16 — Moderar usuarios/publicaciones y consultar auditoría · [MARKET-20](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-20)
 
 - **Épica:** EP-09 · **Requisito:** RF-017 · **Prioridad:** Must · **Estimación:** 8 puntos.
 - **Como** administrador, **quiero** restringir usuarios, bloquear publicaciones y consultar el historial de acciones, **para** responder a incumplimientos de la plataforma.
@@ -164,7 +164,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC3:** Dado que un usuario no es administrador, cuando intenta una acción administrativa, entonces la operación se rechaza en el backend.
 - **Dependencias:** identidad, estados de publicación/reserva y auditoría.
 
-### HU-17 — Consultar dashboard
+### HU-17 — Consultar dashboard · [MARKET-21](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-21)
 
 - **Épica:** EP-09 · **Requisito:** RF-018 · **Prioridad:** Must · **Estimación:** 5 puntos.
 - **Como** administrador/dirección autorizada, **quiero** ver indicadores básicos, **para** entender el estado de la operación y la demanda.
@@ -173,7 +173,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC3:** Dado que no tengo permiso, cuando solicito el dashboard administrativo, entonces el sistema deniega el acceso.
 - **Dependencias:** reservas, publicaciones, usuarios y reglas de cómputo de ingresos estimados.
 
-### HU-18 — Exportar reportes
+### HU-18 — Exportar reportes · [MARKET-22](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-22)
 
 - **Épica:** EP-09 · **Requisito:** RF-019 · **Prioridad:** Must · **Estimación:** 8 puntos.
 - **Como** administrador, **quiero** exportar reportes PDF o Excel, **para** analizar usuarios, publicaciones, reservas, ingresos estimados y demanda.
@@ -182,7 +182,7 @@ En todas las historias: **responsable: por asignar; estado inicial: propuesta/ba
 - **AC3:** Dado que la exportación falla, cuando se reporta el error, entonces no se registra como exportación exitosa y se deja evidencia técnica sin filtrar datos sensibles.
 - **Dependencias:** dashboard, consultas de datos y librería/formato de exportación por seleccionar.
 
-### HU-19 — Trazas y logs estructurados
+### HU-19 — Trazas y logs estructurados · [MARKET-23](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-23)
 
 - **Épica:** EP-10 · **Requisito:** RF-020 · **Prioridad:** Must · **Estimación:** 5 puntos.
 - **Como** responsable de soporte/administración, **quiero** consultar eventos estructurados relevantes, **para** investigar operaciones e incidentes.
@@ -204,6 +204,6 @@ Una historia está lista para sprint solo cuando tiene ID Jira, actor/valor clar
 - [ ] Seguridad, estados y registros de auditoría verificados donde aplique.
 - [ ] Historia aceptada por el rol responsable y asociada a release cuando se entregue.
 
-## 5.5 Carga posterior en Jira
+## 5.5 Sincronización con Jira
 
-Crear en Jira cada épica y HU con el identificador indicado en el resumen o en el campo clave personalizada. Guardar luego su URL/clave real en la matriz de trazabilidad. La guía exige Jira; este archivo es la fuente preparatoria y no sustituye las evidencias de Jira.
+Las 10 épicas y 19 historias ya están creadas en Jira MARKET. Los enlaces anteriores y la matriz de trazabilidad apuntan a las claves reales. Jira contiene las descripciones y criterios de aceptación de este documento; las estimaciones se conservan como propuestas en la descripción hasta que el equipo las acuerde. Responsables, estados de trabajo e iteraciones deben actualizarse en Jira cuando se planifique el equipo.
