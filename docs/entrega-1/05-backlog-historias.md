@@ -5,17 +5,17 @@ Estas 10 épicas y 19 historias están registradas en el proyecto [Jira Marketpl
 ## 5.1 Épicas
 
 | ID | Épica | Objetivo | Resultado de negocio | Jira |
-|---|---|---|---|
-| EP-01 | Identidad y perfil | Administrar identidad, sesión, roles y perfil. | Usuarios legítimos operan según sus permisos.  [MARKET-1](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-1) |
-| EP-02 | Publicaciones | Permitir a anfitriones mantener anuncios completos y estados controlados. | Oferta de alojamientos administrada.  [MARKET-2](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-2) |
-| EP-03 | Disponibilidad | Administrar periodos y evitar solapamientos. | Fuente central de disponibilidad.  [MARKET-3](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-3) |
-| EP-04 | Descubrimiento | Buscar, filtrar y comparar alojamientos. | Huésped identifica una opción pertinente.  [MARKET-4](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-4) |
-| EP-05 | Cotización y reserva | Mostrar costes y confirmar reserva idempotente con pago de prueba. | Flujo end-to-end verificable.  [MARKET-24](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-24) |
-| EP-06 | Cancelaciones | Aplicar política y gestionar estado, devolución simulada y fechas. | Cancelaciones trazables y consistentes.  [MARKET-25](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-25) |
-| EP-07 | Notificaciones | Informar eventos relevantes dentro de la plataforma. | Usuarios conocen los cambios.  [MARKET-26](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-26) |
-| EP-08 | Reseñas y reputación | Habilitar evaluación posterior y moderación. | Historial de experiencia asociado a estancia real.  [MARKET-27](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-27) |
-| EP-09 | Administración y reportes | Moderar, auditar, medir y exportar datos. | Operación observable y gestionable.  [MARKET-28](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-28) |
-| EP-10 | Observabilidad y calidad | Registrar eventos técnicos/de negocio y asegurar flujo de cambios. | Evidencia verificable y soporte a diagnóstico.  [MARKET-29](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-29) |
+|---|---|---|---|---|
+| EP-01 | Identidad y perfil | Administrar identidad, sesión, roles y perfil. | Usuarios legítimos operan según sus permisos. | [MARKET-1](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-1) |
+| EP-02 | Publicaciones | Permitir a anfitriones mantener anuncios completos y estados controlados. | Oferta de alojamientos administrada. | [MARKET-2](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-2) |
+| EP-03 | Disponibilidad | Administrar periodos y evitar solapamientos. | Fuente central de disponibilidad. | [MARKET-3](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-3) |
+| EP-04 | Descubrimiento | Buscar, filtrar y comparar alojamientos. | Huésped identifica una opción pertinente. | [MARKET-4](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-4) |
+| EP-05 | Cotización y reserva | Mostrar costes y confirmar reserva idempotente con pago de prueba. | Flujo end-to-end verificable. | [MARKET-24](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-24) |
+| EP-06 | Cancelaciones | Aplicar política y gestionar estado, devolución simulada y fechas. | Cancelaciones trazables y consistentes. | [MARKET-25](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-25) |
+| EP-07 | Notificaciones | Informar eventos relevantes dentro de la plataforma. | Usuarios conocen los cambios. | [MARKET-26](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-26) |
+| EP-08 | Reseñas y reputación | Habilitar evaluación posterior y moderación. | Historial de experiencia asociado a estancia real. | [MARKET-27](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-27) |
+| EP-09 | Administración y reportes | Moderar, auditar, medir y exportar datos. | Operación observable y gestionable. | [MARKET-28](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-28) |
+| EP-10 | Observabilidad y calidad | Registrar eventos técnicos/de negocio y asegurar flujo de cambios. | Evidencia verificable y soporte a diagnóstico. | [MARKET-29](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-29) |
 
 ## 5.2 Historias de usuario sincronizadas con Jira
 
