@@ -4,6 +4,8 @@ Esta carpeta/guía enumera evidencias que deben recopilarse desde las herramient
 
 ## Uso de IA (requisito expreso de la guía)
 
+Plantilla para registrar cada intercambio y enlazar capturas originales: [`registro-uso-IA.md`](registro-uso-IA.md).
+
 La guía del curso exige un documento con capturas del uso de IA donde sean visibles la fecha y hora, los prompts completos de entrada y salida. El equipo debe capturar la interfaz real correspondiente a cada intercambio que utilice como soporte y guardar las capturas originales con su fecha. En el documento índice, relacionar cada captura con la sección/artefacto afectado y explicar qué se aceptó, modificó o descartó.
 
 **No incluir** credenciales, tokens, datos personales innecesarios o información privada de otros integrantes. No reconstruir una captura retrospectiva como si fuera original.
