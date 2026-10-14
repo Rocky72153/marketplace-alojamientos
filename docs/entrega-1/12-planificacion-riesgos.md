@@ -12,6 +12,52 @@ Propuesta inicial: flujo Scrum ligero con iteraciones cortas, revisión de incre
 - Retrospectiva: documentar acciones de mejora con responsable y fecha.
 - Refinamiento: resolver preguntas abiertas, estimar historias y mantener prioridades.
 
+
+## 12.1.1 Roles Scrum y responsabilidades
+
+La guía del curso exige elegir y aplicar una metodología ágil, pero no asigna nombres concretos a los integrantes. Por ello, los roles se definen funcionalmente; los nombres reales deben ser confirmados por el equipo antes de asignarlos en Jira.
+
+| Rol | Responsabilidades en este proyecto | Persona |
+|---|---|---|
+| Product Owner (PO) | Maximizar el valor del Marketplace; ordenar el backlog; aclarar objetivos, criterios de aceptación y decisiones de negocio; validar el incremento en la Review. | Por confirmar por el equipo; no se presume que el cliente esté disponible. |
+| Scrum Master / facilitador | Facilitar ceremonias, detectar impedimentos, ayudar a que Scrum se aplique y fomentar mejora continua sin actuar como jefe del equipo. | Por confirmar por el equipo. |
+| Developers / equipo de desarrollo | Diseñar, implementar, probar, revisar código, actualizar documentación y trazabilidad; estimar el trabajo y entregar un incremento “Done”. | Integrantes reales del grupo, por asignar a cada historia/subtarea en Jira. |
+| Interesados / representante del negocio | Aportar contexto, revisar prototipos e incrementos y dar feedback verificable sobre necesidades. | Representante de Inversiones LR simulado para el curso; validar quién da feedback académico. |
+
+**Nota:** una persona puede asumir más de una responsabilidad en un equipo pequeño si el curso lo permite, pero el acuerdo debe quedar explícito. No se asignan nombres ni se registra feedback del cliente sin confirmación real.
+
+## 12.1.2 Duración y estructura de los sprints
+
+**Propuesta operativa:** sprints de dos semanas (10 días hábiles), sujeto a aprobación del equipo y a las fechas oficiales del curso. La guía permite trabajo iterativo pero no fija duración ni fechas. En Jira se registran los sprints con fechas reales acordadas; no se inventan fechas de inicio/fin.
+
+Cada sprint tendrá: objetivo de sprint, historias priorizadas y Ready, estimación de story points consensuada, responsable real por historia/subtarea, criterios de aceptación, pruebas previstas y capacidad acordada. Los story points que figuren en el backlog son estimaciones iniciales y deben revisarse en refinamiento/planning.
+
+## 12.1.3 Ceremonias, cadencia y salidas
+
+| Ceremonia | Cadencia / duración propuesta | Participantes | Agenda y salida obligatoria |
+|---|---|---|---|
+| Sprint Planning | Al inicio de cada sprint; 60–90 min para sprint de 2 semanas. | PO, facilitador, Developers. | Objetivo del sprint, historias seleccionadas según capacidad, dependencias, subtareas, estimaciones y Definition of Done. |
+| Daily Scrum | Cada día hábil; 15 min. | Developers; facilitador ayuda a eliminar impedimentos. | Ajuste del plan diario y bloqueos con responsable/acción en Jira. Si el equipo no puede reunirse a diario, registrar una alternativa acordada y no afirmar que se hizo Daily. |
+| Backlog Refinement | Una vez por semana; 30–60 min. | PO y Developers; facilitador si hace falta. | Historias entendibles, criterios verificables, dependencias, estimaciones revisadas y elementos Ready para la próxima planificación. |
+| Sprint Review | Al cierre de cada sprint; 45–60 min. | Equipo e interesados/representante de negocio. | Demostración real del incremento contra criterios, feedback registrado, historias aceptadas o devueltas al backlog. |
+| Sprint Retrospective | Después de la Review; 30–45 min. | Equipo Scrum. | Qué funcionó, qué mejorar y 1–3 acciones con responsable y fecha para el siguiente sprint. |
+| Release / revisión de integración | Cuando exista un incremento candidato; 30 min según necesidad. | Developers y revisor independiente. | CI verde, pruebas, Quality Gate cuando esté configurado, PR aprobado por otro integrante y release/trazabilidad actualizados. |
+
+Estas duraciones son una propuesta de trabajo para el equipo, no evidencia de reuniones ya celebradas. Deben calendarizarse y registrarse realmente.
+
+## 12.1.4 Propuesta de organización del backlog por sprint
+
+La asignación es una **propuesta inicial para discusión**, no un compromiso de capacidad ni fechas. Sprint 1 ya existe en Jira como sprint futuro; los demás deben crearse en el tablero MARKET si el equipo aprueba esta distribución.
+
+| Sprint propuesto | Objetivo | Historias sugeridas | Dependencias / salida |
+|---|---|---|---|
+| Sprint 1 — Fundamentos y oferta | Identidad, perfil, publicación y disponibilidad inicial. | HU-01, HU-02, HU-03, HU-04, HU-05, HU-06. | Permisos, modelo de usuario, estados de publicación y calendario coherentes. |
+| Sprint 2 — Descubrimiento y reserva | Permitir descubrir, cotizar y reservar con consistencia. | HU-07, HU-08, HU-09, HU-10, HU-11. | Búsqueda solo sobre publicaciones activas, tarifa definida, control de solapamiento e idempotencia. |
+| Sprint 3 — Ciclo posterior a reserva | Cancelación, notificaciones y reputación. | HU-12, HU-13, HU-14, HU-15. | Política de cancelación y definición de estancia completada aprobadas. |
+| Sprint 4 — Administración y calidad | Moderación, métricas, exportación y observabilidad. | HU-16, HU-17, HU-18, HU-19. | Fórmulas de indicadores, auditoría, privacidad y exportación verificables. |
+
+Antes de iniciar cada sprint, el equipo debe validar los puntos totales frente a la capacidad real. HU-10 está estimada inicialmente en 13 puntos; si el equipo considera que es demasiado grande, dividir trabajo técnico en subtareas no sustituye la posible división de la propia historia cuando no pueda completarse en un sprint.
+
 ## 12.2 WBS/EDT — Entrega 1
 
 | Código | Paquete de trabajo | Actividades | Resultado verificable |
