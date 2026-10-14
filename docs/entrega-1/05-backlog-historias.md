@@ -1,6 +1,6 @@
 # 5. Épicas e historias de usuario
 
-Estas 10 épicas y 19 historias están registradas en el proyecto [Jira Marketplace de Alojamientos (MARKET)](https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog). Este archivo conserva el detalle funcional y enlaza cada ID HU con su issue Jira. Las estimaciones en puntos son iniciales y requieren acuerdo del equipo; responsable, sprint e iteración se completan cuando el equipo los defina.
+Estas 10 épicas y 19 historias están registradas en el proyecto [Jira Marketplace de Alojamientos (MARKET)](https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog). Este archivo conserva el detalle funcional y enlaza cada ID HU con su issue Jira. Las estimaciones iniciales de Story Points ya están aplicadas en Jira y las historias se distribuyeron en cuatro sprints como propuesta de planificación; el equipo debe ratificar estimaciones, responsables y fechas/capacidad antes de comprometerlas.
 
 ## 5.1 Épicas
 
@@ -19,7 +19,7 @@ Estas 10 épicas y 19 historias están registradas en el proyecto [Jira Marketpl
 
 ## 5.2 Historias de usuario sincronizadas con Jira
 
-En todas las historias: **responsable: por asignar; estado inicial: propuesta/backlog; sprint: por planificar**. Los puntos son una estimación inicial relativa, no una estimación acordada.
+En todas las historias: **responsable: por asignar; estado inicial: To Do / backlog; sprint: MARKET Sprint 1–4 según la propuesta documentada en `18-plan-subtareas-jira.md`**. Los puntos son una estimación inicial relativa, no una estimación acordada.
 
 ### HU-01 — Registro e inicio de sesión · [MARKET-5](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-5)
 
