@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_Reserva" targetNamespace="https://unbosque.edu.co/marketplace/bpmn">
+  <bpmn:process id="Proceso_Busqueda_Reserva_Cancelacion" name="Descubrir, reservar y cancelar alojamiento" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Reserva">
+      <bpmn:lane id="Lane_Huesped" name="Huésped"><bpmn:flowNodeRef>Start_Buscar</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_EnviarFiltros</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_RevisarCotizacion</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_SolicitarReserva</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_SolicitarCancelacion</bpmn:flowNodeRef><bpmn:flowNodeRef>End_Rechazo</bpmn:flowNodeRef><bpmn:flowNodeRef>End_Confirmada</bpmn:flowNodeRef><bpmn:flowNodeRef>End_Cancelada</bpmn:flowNodeRef></bpmn:lane>
+      <bpmn:lane id="Lane_Marketplace" name="Marketplace"><bpmn:flowNodeRef>Task_BuscarDisponibles</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_HayResultados</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Cotizar</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Revalidar</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_Disponible</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_ReservarIdempotente</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_PagoTest</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_PagoOK</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_ConfirmarBloquear</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_ValidarCancelacion</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_Cancelable</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_AplicarPolitica</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_LiberarSiAplica</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_AuditarNotificar</bpmn:flowNodeRef></bpmn:lane>
+  </bpmn:laneSet>
+  <bpmn:startEvent id="Start_Buscar" name="Huésped inicia búsqueda"/>
+  <bpmn:task id="Task_EnviarFiltros" name="Enviar ciudad, fechas, capacidad y filtros"/>
+  <bpmn:task id="Task_BuscarDisponibles" name="Buscar anuncios activos y consultar calendario"/>
+  <bpmn:exclusiveGateway id="Gateway_HayResultados" name="¿Hay resultados disponibles?"/>
+  <bpmn:task id="Task_Cotizar" name="Calcular precio desglosado"/>
+  <bpmn:task id="Task_RevisarCotizacion" name="Revisar detalle y cotización"/>
+  <bpmn:task id="Task_SolicitarReserva" name="Solicitar reserva con Idempotency-Key"/>
+  <bpmn:task id="Task_Revalidar" name="Revalidar anuncio, fechas y disponibilidad al confirmar"/>
+  <bpmn:exclusiveGateway id="Gateway_Disponible" name="¿Disponible y válido?"/>
+  <bpmn:task id="Task_ReservarIdempotente" name="Registrar operación idempotente"/>
+  <bpmn:task id="Task_PagoTest" name="Ejecutar pago en modo de pruebas"/>
+  <bpmn:exclusiveGateway id="Gateway_PagoOK" name="¿Resultado válido según política?"/>
+  <bpmn:task id="Task_ConfirmarBloquear" name="Confirmar reserva y bloquear periodo de manera consistente"/>
+  <bpmn:task id="Task_AuditarNotificar" name="Registrar auditoría y notificar a participantes"/>
+  <bpmn:endEvent id="End_Rechazo" name="Búsqueda/solicitud rechazada o no disponible"/>
+  <bpmn:endEvent id="End_Confirmada" name="Reserva confirmada"/>
+  <bpmn:task id="Task_SolicitarCancelacion" name="Solicitar cancelación e informar motivo"/>
+  <bpmn:task id="Task_ValidarCancelacion" name="Validar titularidad, estado y política"/>
+  <bpmn:exclusiveGateway id="Gateway_Cancelable" name="¿Se puede cancelar?"/>
+  <bpmn:task id="Task_AplicarPolitica" name="Calcular devolución simulada y persistir cancelación"/>
+  <bpmn:task id="Task_LiberarSiAplica" name="Liberar periodo si lo autoriza la regla"/>
+  <bpmn:endEvent id="End_Cancelada" name="Cancelación aplicada y trazada"/>
+  <bpmn:sequenceFlow id="F01" sourceRef="Start_Buscar" targetRef="Task_EnviarFiltros"/>
+  <bpmn:sequenceFlow id="F02" sourceRef="Task_EnviarFiltros" targetRef="Task_BuscarDisponibles"/>
+  <bpmn:sequenceFlow id="F03" sourceRef="Task_BuscarDisponibles" targetRef="Gateway_HayResultados"/>
+  <bpmn:sequenceFlow id="F04" name="No" sourceRef="Gateway_HayResultados" targetRef="End_Rechazo"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">sinResultados</bpmn:conditionExpression></bpmn:sequenceFlow>
+  <bpmn:sequenceFlow id="F05" name="Sí" sourceRef="Gateway_HayResultados" targetRef="Task_Cotizar"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">hayResultados</bpmn:conditionExpression></bpmn:sequenceFlow>
+  <bpmn:sequenceFlow id="F06" sourceRef="Task_Cotizar" targetRef="Task_RevisarCotizacion"/>
+  <bpmn:sequenceFlow id="F07" sourceRef="Task_RevisarCotizacion" targetRef="Task_SolicitarReserva"/>
+  <bpmn:sequenceFlow id="F08" sourceRef="Task_SolicitarReserva" targetRef="Task_Revalidar"/>
+  <bpmn:sequenceFlow id="F09" sourceRef="Task_Revalidar" targetRef="Gateway_Disponible"/>
+  <bpmn:sequenceFlow id="F10" name="No" sourceRef="Gateway_Disponible" targetRef="End_Rechazo"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">noDisponible</bpmn:conditionExpression></bpmn:sequenceFlow>
+  <bpmn:sequenceFlow id="F11" name="Sí" sourceRef="Gateway_Disponible" targetRef="Task_ReservarIdempotente"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">disponible</bpmn:conditionExpression></bpmn:sequenceFlow>
+  <bpmn:sequenceFlow id="F12" sourceRef="Task_ReservarIdempotente" targetRef="Task_PagoTest"/>
+  <bpmn:sequenceFlow id="F13" sourceRef="Task_PagoTest" targetRef="Gateway_PagoOK"/>
+  <bpmn:sequenceFlow id="F14" name="No" sourceRef="Gateway_PagoOK" targetRef="End_Rechazo"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">pagoNoValido</bpmn:conditionExpression></bpmn:sequenceFlow>
+  <bpmn:sequenceFlow id="F15" name="Sí" sourceRef="Gateway_PagoOK" targetRef="Task_ConfirmarBloquear"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">pagoValido</bpmn:conditionExpression></bpmn:sequenceFlow>
+  <bpmn:sequenceFlow id="F16" sourceRef="Task_ConfirmarBloquear" targetRef="Task_AuditarNotificar"/>
+  <bpmn:sequenceFlow id="F17" sourceRef="Task_AuditarNotificar" targetRef="End_Confirmada"/>
+  <bpmn:sequenceFlow id="F18" sourceRef="End_Confirmada" targetRef="Task_SolicitarCancelacion"/>
+  <bpmn:sequenceFlow id="F19" sourceRef="Task_SolicitarCancelacion" targetRef="Task_ValidarCancelacion"/>
+  <bpmn:sequenceFlow id="F20" sourceRef="Task_ValidarCancelacion" targetRef="Gateway_Cancelable"/>
+  <bpmn:sequenceFlow id="F21" name="No" sourceRef="Gateway_Cancelable" targetRef="End_Rechazo"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">noCancelable</bpmn:conditionExpression></bpmn:sequenceFlow>
+  <bpmn:sequenceFlow id="F22" name="Sí" sourceRef="Gateway_Cancelable" targetRef="Task_AplicarPolitica"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">cancelable</bpmn:conditionExpression></bpmn:sequenceFlow>
+  <bpmn:sequenceFlow id="F23" sourceRef="Task_AplicarPolitica" targetRef="Task_LiberarSiAplica"/>
+  <bpmn:sequenceFlow id="F24" sourceRef="Task_LiberarSiAplica" targetRef="Task_AuditarNotificar"/>
+  <bpmn:textAnnotation id="Annotation_Reglas"><bpmn:text>La búsqueda no garantiza la reserva. Al confirmar se revalida; las reservas deben ser idempotentes y sin solapamiento. Pago exclusivamente simulado. Cancelación guarda solicitante, fecha, motivo y devolución simulada.</bpmn:text></bpmn:textAnnotation>
+  <bpmn:association id="Association_Reglas" sourceRef="Task_Revalidar" targetRef="Annotation_Reglas"/>
+  </bpmn:process>
+</bpmn:definitions>

@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: marketplace-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: marketplace
+      POSTGRES_USER: marketplace
+      POSTGRES_PASSWORD: marketplace_local
+    ports:
+      - "5432:5432"
+    volumes:
+      - marketplace-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marketplace -d marketplace"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  marketplace-postgres-data:
