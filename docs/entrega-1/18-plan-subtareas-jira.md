@@ -39,9 +39,38 @@ Las 19 historias tienen Story Point Estimate en el campo Jira `customfield_10016
 | MARKET Sprint 3 | HU-12–HU-15 | Cancelación, notificaciones y reseñas. | Futuro; fechas y capacidad por acordar. |
 | MARKET Sprint 4 | HU-16–HU-19 | Moderación, dashboard, reportes y logs. | Futuro; fechas y capacidad por acordar. |
 
-## 18.3 Responsables: pendiente de confirmación humana
+## 18.3 Responsables asignados en Jira
 
-No se asignaron responsables por nombre todavía. En Jira son asignables Juan Sebastián Morales Forero y Julián David Aguilera Párraga; sin embargo, no existe un acuerdo visible que relacione cada uno con una historia o subtarea, por lo que asignarlos arbitrariamente falsearía el acuerdo del equipo. En la siguiente planificación, asignar cada historia/subtarea al integrante que realmente la realizará y registrar PO/Scrum Master/Developers de acuerdo con el acuerdo del grupo.
+Se realizó una distribución inicial para equilibrar la estimación y separar implementación de validación cruzada. Las asignaciones ya están aplicadas en los campos Assignee de las historias y subtareas Jira.
+
+- **Juan Sebastián Morales Forero**: responsable de las historias HU-01, HU-02, HU-04, HU-06, HU-07, HU-09, HU-11, HU-14, HU-16 y HU-19.
+- **Julián David Aguilera Párraga**: responsable de las historias HU-03, HU-05, HU-08, HU-10, HU-12, HU-13, HU-15, HU-17 y HU-18.
+- **Subtarea de implementación**: se asigna al responsable de la historia padre.
+- **Subtarea de pruebas/validación**: se asigna al otro integrante, para promover revisión cruzada.
+
+| Historia | Responsable de historia e implementación | Responsable de pruebas/validación |
+|---|---|---|
+| HU-01 | Juan Sebastián Morales Forero | Julián David Aguilera Párraga |
+| HU-02 | Juan Sebastián Morales Forero | Julián David Aguilera Párraga |
+| HU-03 | Julián David Aguilera Párraga | Juan Sebastián Morales Forero |
+| HU-04 | Juan Sebastián Morales Forero | Julián David Aguilera Párraga |
+| HU-05 | Julián David Aguilera Párraga | Juan Sebastián Morales Forero |
+| HU-06 | Juan Sebastián Morales Forero | Julián David Aguilera Párraga |
+| HU-07 | Juan Sebastián Morales Forero | Julián David Aguilera Párraga |
+| HU-08 | Julián David Aguilera Párraga | Juan Sebastián Morales Forero |
+| HU-09 | Juan Sebastián Morales Forero | Julián David Aguilera Párraga |
+| HU-10 | Julián David Aguilera Párraga | Juan Sebastián Morales Forero |
+| HU-11 | Juan Sebastián Morales Forero | Julián David Aguilera Párraga |
+| HU-12 | Julián David Aguilera Párraga | Juan Sebastián Morales Forero |
+| HU-13 | Julián David Aguilera Párraga | Juan Sebastián Morales Forero |
+| HU-14 | Juan Sebastián Morales Forero | Julián David Aguilera Párraga |
+| HU-15 | Julián David Aguilera Párraga | Juan Sebastián Morales Forero |
+| HU-16 | Juan Sebastián Morales Forero | Julián David Aguilera Párraga |
+| HU-17 | Julián David Aguilera Párraga | Juan Sebastián Morales Forero |
+| HU-18 | Julián David Aguilera Párraga | Juan Sebastián Morales Forero |
+| HU-19 | Juan Sebastián Morales Forero | Julián David Aguilera Párraga |
+
+La distribución es una propuesta operativa inicial; ambos integrantes deben confirmarla en la planificación. Los Story Points también son estimaciones iniciales. La asignación no implica que la implementación o las pruebas ya se hayan completado.
 
 ## 18.4 Definición de terminado de una subtarea
 
