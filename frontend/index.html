@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Marketplace de alojamientos temporales de Inversiones LR." />
+    <title>Marketplace de Alojamientos</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Marketplace de Alojamientos, inicio">Aloja<span>Marketplace</span></a>
+      <nav aria-label="Navegación principal">
+        <a href="#buscar">Descubrir</a>
+        <a href="#anfitriones">Soy anfitrión</a>
+        <a class="nav-login" href="#iniciar-sesion">Iniciar sesión</a>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">INVERSIONES LR · ALOJAMIENTOS TEMPORALES</p>
+        <h1>Encuentra un lugar<br />para sentirte en casa.</h1>
+        <p class="hero-copy">Descubre alojamientos, compara opciones y planea tu próxima estancia.</p>
+        <form id="search-form" class="search-card" aria-label="Buscar alojamientos">
+          <label>Ciudad<input id="city" name="city" placeholder="¿A dónde vas?" /></label>
+          <label>Llegada<input id="checkin" name="checkin" type="date" /></label>
+          <label>Salida<input id="checkout" name="checkout" type="date" /></label>
+          <label>Huéspedes<input id="guests" name="guests" type="number" min="1" value="2" /></label>
+          <button type="submit">Buscar</button>
+        </form>
+        <p id="search-feedback" class="feedback" role="status" aria-live="polite"></p>
+      </section>
+      <section class="intro" id="buscar">
+        <p class="eyebrow">UN SOLO LUGAR PARA PLANEAR</p>
+        <h2>Tu próxima estancia empieza aquí.</h2>
+        <p>Muy pronto podrás consultar publicaciones activas, verificar disponibilidad y cotizar tu reserva desde la plataforma.</p>
+      </section>
+      <section class="host-banner" id="anfitriones">
+        <div><p class="eyebrow">PARA ANFITRIONES</p><h2>Tu espacio puede ser el lugar favorito de alguien.</h2><p>Administra publicaciones, precios y disponibilidad desde una plataforma centralizada.</p></div>
+        <span aria-hidden="true" class="host-symbol">⌂</span>
+      </section>
+    </main>
+    <footer><span>Marketplace de Alojamientos</span><span>Proyecto académico · Ingeniería de Software I · 2026-2</span></footer>
+  </body>
+</html>
