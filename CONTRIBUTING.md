@@ -7,6 +7,9 @@
 5. Abre el PR hacia develop, completa la plantilla y solicita revisión a otro integrante.
 6. Resuelve comentarios y espera a que las verificaciones requeridas estén verdes antes del merge.
 7. No hagas push directo a main ni develop una vez activadas sus reglas de protección.
+8. Limita el trabajo en curso: antes de abrir otra historia, revisa si hay trabajo bloqueado o esperando revisión; el límite inicial del equipo es dos historias activas de implementación.
+9. Mantén PR pequeños, solicita revisión tan pronto el cambio sea revisable y registra bloqueos/esperas en Jira. No omitas pruebas o revisiones para aparentar más velocidad.
+10. En cada retrospectiva registra una o dos acciones de mejora con responsable y fecha; revisa si funcionaron en el sprint siguiente.
 
 ## Comprobaciones locales
 
