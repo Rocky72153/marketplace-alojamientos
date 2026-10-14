@@ -1,0 +1,30 @@
+name: Nueva funcionalidad
+description: Proponer una capacidad nueva del Marketplace.
+title: "[HU] "
+labels: ["enhancement"]
+body:
+  - type: input
+    id: jira
+    attributes:
+      label: Historia o épica de Jira
+      description: Pega el enlace o la clave de Jira.
+    validations:
+      required: true
+  - type: textarea
+    id: user_story
+    attributes:
+      label: Historia de usuario
+      placeholder: Como [rol], quiero [capacidad], para [beneficio].
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Criterios de aceptación
+      description: Usa Dado que / Cuando / Entonces.
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Dependencias o notas
