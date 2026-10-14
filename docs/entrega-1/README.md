@@ -20,6 +20,10 @@
 12. [Planificación, WBS, cronograma relativo y riesgos](12-planificacion-riesgos.md)
 13. [Checklist contra la guía](13-checklist-entrega.md)
 14. [Diagramas de secuencia](14-secuencias.md)
+15. [Requisitos del negocio](15-requisitos-negocio.md)
+16. [Ciclo de vida del software](16-ciclo-vida-software.md)
+17. [Diseño de casos de prueba](17-casos-de-prueba.md)
+18. [Desglose de subtareas y planificación Jira](18-plan-subtareas-jira.md)
 
 ## Fuentes de diagramas y material complementario
 
@@ -35,15 +39,15 @@
 
 Los artefactos se construyeron a partir de la guía oficial del curso compartida en el proyecto. Las decisiones que el enunciado deja abiertas —por ejemplo, tecnologías, límites físicos de servicios, tarifas, política concreta de cancelación, metodología y fechas— se marcan como propuestas o pendientes de validación y no deben presentarse como acuerdos ya tomados por el grupo.
 
-Los identificadores se mantienen consistentes: ACT, INT, RN, RF, RNF, EP, HU, CU y ADR. Las historias tienen criterios de aceptación en formato **Dado que / Cuando / Entonces** y dependencias identificadas. La matriz CSV enlaza las claves reales de Jira y el PR de Entrega 1; los enlaces a pruebas de implementación, evidencias y release se agregan conforme existan.
+Los identificadores se mantienen consistentes: ACT, INT, RBN, RN, RF, RNF, EP, HU, CU, CP y ADR. Las historias tienen criterios de aceptación en formato **Dado que / Cuando / Entonces** y dependencias identificadas. La matriz CSV enlaza las claves reales de Jira y el PR de Entrega 1; los enlaces a pruebas de implementación, evidencias y release se agregan conforme existan.
 
 ## Validación y evidencia pendiente
 
 - Aprobación/revisión de los artefactos por integrantes y docente.
-- Completar en Jira las estimaciones acordadas, responsables, estados de trabajo y sprints/iteraciones reales; el backlog y sus claves están en la matriz sincronizada.
+- Jira contiene 10 épicas, 19 historias, 38 subtareas de implementación/prueba, estimaciones iniciales y distribución propuesta en cuatro sprints; el equipo debe validar los puntos, asignar responsables reales y acordar fechas/capacidad antes de comprometer cada sprint.
 - Publicar o enlazar los modelos aprobados en Confluence, como pide el enunciado.
 - Abrir los BPMN en un modelador compatible, validar reglas y exportar capturas/diagramas legibles para Confluence si se requiere.
-- Configurar protección de ramas, revisar un PR real con otro integrante, verificar checks CI y configurar SonarCloud.
-- Capturar evidencia auténtica de feedback del prototipo y del uso de IA con fecha/hora y prompts completos, conforme a la guía.
+- PR #4 ya está fusionado en `main`; no registra aprobación independiente de otro integrante. Configurar protección de ramas, exigir revisión real en futuros PR, verificar checks CI y configurar SonarCloud.
+- Capturar evidencia auténtica de feedback del prototipo y del uso de IA con fecha/hora y prompts/respuestas completos, conforme a la guía; la plantilla está en `docs/evidencias/README.md`.
 
 No se incluyen capturas ficticias ni se declara una validación que todavía no ha ocurrido.
