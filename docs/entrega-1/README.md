@@ -24,6 +24,7 @@
 16. [Ciclo de vida del software](16-ciclo-vida-software.md)
 17. [Diseño de casos de prueba](17-casos-de-prueba.md)
 18. [Desglose de subtareas y planificación Jira](18-plan-subtareas-jira.md)
+19. [Metodología Scrum + Lean](19-metodologia-scrum-lean.md)
 
 ## Fuentes de diagramas y material complementario
 
@@ -37,14 +38,14 @@
 
 ## Cómo interpretar este material
 
-Los artefactos se construyeron a partir de la guía oficial del curso compartida en el proyecto. Las decisiones que el enunciado deja abiertas —por ejemplo, tecnologías, límites físicos de servicios, tarifas, política concreta de cancelación, metodología y fechas— se marcan como propuestas o pendientes de validación y no deben presentarse como acuerdos ya tomados por el grupo.
+Los artefactos se construyeron a partir de la guía oficial del curso compartida en el proyecto. Las decisiones que el enunciado deja abiertas —por ejemplo, tecnologías, límites físicos de servicios, tarifas y política concreta de cancelación— se marcan como propuestas o pendientes de validación. Scrum + Lean, los roles operativos y la cadencia semanal quedaron registrados en la documentación de planificación y Jira, pero requieren ratificación explícita del equipo y no equivalen a evidencia de ceremonias ya realizadas.
 
 Los identificadores se mantienen consistentes: ACT, INT, RBN, RN, RF, RNF, EP, HU, CU, CP y ADR. Las historias tienen criterios de aceptación en formato **Dado que / Cuando / Entonces** y dependencias identificadas. La matriz CSV enlaza las claves reales de Jira y el PR de Entrega 1; los enlaces a pruebas de implementación, evidencias y release se agregan conforme existan.
 
 ## Validación y evidencia pendiente
 
 - Aprobación/revisión de los artefactos por integrantes y docente.
-- Jira contiene 10 épicas, 19 historias, 38 subtareas de implementación/prueba, Story Points iniciales, responsables asignados y distribución propuesta en cuatro sprints; el equipo debe ratificar estimaciones y acordar fechas/capacidad antes de comprometer cada sprint.
+- Jira contiene 10 épicas, 19 historias y 38 subtareas de implementación/prueba; las historias tienen responsables y están distribuidas en ocho sprints semanales del 19 de octubre al 14 de diciembre de 2026. Los Story Points siguen siendo iniciales: el equipo debe ratificar roles, estimaciones y capacidad antes de comprometer cada sprint.
 - Publicar o enlazar los modelos aprobados en Confluence, como pide el enunciado.
 - Abrir los BPMN en un modelador compatible, validar reglas y exportar capturas/diagramas legibles para Confluence si se requiere.
 - PR #4 ya está fusionado en `main` sin aprobación independiente registrada. PR #5 está abierto hacia `main`; requiere revisión independiente antes del merge. Configurar protección de ramas, exigir revisión real, verificar CI en el último commit y configurar SonarCloud.
