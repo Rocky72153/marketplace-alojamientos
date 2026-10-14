@@ -25,10 +25,10 @@ Esta lista se cruza con los productos esperados y las exigencias de la guía del
 | Subtareas por cada historia | Jira `MARKET-30` a `MARKET-67` | 38 subtareas creadas, dos por historia (implementación y prueba); responsables por asignar |
 | Jira: épicas/historias con prioridad, estimación, responsable, estado, sprint | Jira del equipo | Verificado: 10 épicas, 19 historias, 38 subtareas; story points iniciales aplicados y 4 sprints con distribución propuesta. Responsables y fechas/capacidad aún por acordar |
 | Confluence: visión, procesos, requisitos, diseño y manual de despliegue | Espacio Confluence del equipo | No verificable desde este repositorio; replicar/enlazar artefactos y evidencias |
-| GitHub: repositorio, ramas, commits coherentes, PR y releases | Repositorio y ramas actuales | PR #4 está fusionado en `main`; no registra aprobación de otro integrante. Protección de ramas y SonarCloud aún pendientes |
+| GitHub: repositorio, ramas, commits coherentes, PR y releases | Repositorio y ramas actuales | PR #4 está fusionado en `main` sin aprobación independiente registrada; PR #5 está abierto con documentación de brechas y CI verde. Protección de ramas y SonarCloud aún pendientes |
 | GitHub Actions: compilar/construir, verificaciones y pruebas por PR | `.github/workflows/ci.yml` | Backend, frontend y documentación pasaron en el commit sincronizado; conservar el enlace de la ejecución como evidencia |
 | SonarCloud integrado, Quality Gate visible | `.github/workflows/sonarcloud.yml` y `sonar-project.properties` | Pendiente de variables y secreto; job se omite a propósito hasta configuración |
-| Pull Request de integración con revisión de otro integrante | PR real en GitHub | PR #4 ya está fusionado sin aprobación independiente registrada; no se puede reconstruir retroactivamente una revisión auténtica. Aplicar revisión requerida a futuros PR y acordar con docente si acepta evidencia complementaria |
+| Pull Request de integración con revisión de otro integrante | PR real en GitHub | PR #4 está fusionado sin aprobación independiente registrada; PR #5 (cierre de brechas documentales) está abierto y requiere revisión humana antes del merge. No se puede reconstruir retroactivamente una aprobación auténtica del PR #4 |
 | Capturas de uso de IA con fecha/hora, prompts completos de entrada y salida | `docs/evidencias/README.md` | Guía de evidencia preparada; capturas auténticas pendientes |
 
 ## Antes de entregar
