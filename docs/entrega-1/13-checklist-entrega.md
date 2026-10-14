@@ -19,12 +19,16 @@ Esta lista se cruza con los productos esperados y las exigencias de la guía del
 | Manual de ejecución/despliegue | `docs/LOCAL_SETUP.md` | Guía local incluida; no equivale a despliegue de producción |
 | Matriz de trazabilidad requisito ↔ Jira ↔ AC ↔ branch/commit ↔ PR ↔ pruebas/evidencia ↔ release | `docs/TRACEABILITY_TEMPLATE.csv` | Claves Jira y PR #4 enlazados; evidencia de implementación, pruebas y release sigue pendiente |
 | Registro de decisiones y preguntas abiertas | `docs/DECISIONS.md` | Preguntas y propuestas registradas; decisiones requieren aprobación real |
-| Jira: épicas/historias con prioridad, estimación, responsable, estado, sprint | Jira del equipo | Verificado: 10 épicas y 19 historias en MARKET con AC, prioridades y épicas padre; estimaciones, responsables y sprints por acordar |
+| Requisitos del negocio explícitos derivados de objetivos del enunciado | `15-requisitos-negocio.md` | Catálogo RBN-001 a RBN-009 preparado; validar indicadores y trazabilidad con el equipo |
+| Ciclo de vida del software | `16-ciclo-vida-software.md` | Modelo iterativo-incremental propuesto, fases y criterios de salida documentados; aprobación del equipo pendiente |
+| Casos de prueba con ID, historia, precondiciones, pasos, datos y resultado esperado | `17-casos-de-prueba.md` | Casos CP-HU01 a CP-HU19 y transversales diseñados; ejecución/evidencia real pendiente |
+| Subtareas por cada historia | Jira `MARKET-30` a `MARKET-67` | 38 subtareas creadas, dos por historia (implementación y prueba); responsables por asignar |
+| Jira: épicas/historias con prioridad, estimación, responsable, estado, sprint | Jira del equipo | Verificado: 10 épicas, 19 historias, 38 subtareas; story points iniciales aplicados y 4 sprints con distribución propuesta. Responsables y fechas/capacidad aún por acordar |
 | Confluence: visión, procesos, requisitos, diseño y manual de despliegue | Espacio Confluence del equipo | No verificable desde este repositorio; replicar/enlazar artefactos y evidencias |
-| GitHub: repositorio, ramas, commits coherentes, PR y releases | Repositorio y ramas actuales | PR #4 abierto hacia develop y CI verde; revisión de otro integrante pendiente y reglas administrativas por verificar |
+| GitHub: repositorio, ramas, commits coherentes, PR y releases | Repositorio y ramas actuales | PR #4 está fusionado en `main`; no registra aprobación de otro integrante. Protección de ramas y SonarCloud aún pendientes |
 | GitHub Actions: compilar/construir, verificaciones y pruebas por PR | `.github/workflows/ci.yml` | Backend, frontend y documentación pasaron en el commit sincronizado; conservar el enlace de la ejecución como evidencia |
 | SonarCloud integrado, Quality Gate visible | `.github/workflows/sonarcloud.yml` y `sonar-project.properties` | Pendiente de variables y secreto; job se omite a propósito hasta configuración |
-| Pull Request de integración con revisión de otro integrante | PR real en GitHub | Pendiente; la conexión no puede proporcionar aprobación auténtica de un compañero |
+| Pull Request de integración con revisión de otro integrante | PR real en GitHub | PR #4 ya está fusionado sin aprobación independiente registrada; no se puede reconstruir retroactivamente una revisión auténtica. Aplicar revisión requerida a futuros PR y acordar con docente si acepta evidencia complementaria |
 | Capturas de uso de IA con fecha/hora, prompts completos de entrada y salida | `docs/evidencias/README.md` | Guía de evidencia preparada; capturas auténticas pendientes |
 
 ## Antes de entregar
