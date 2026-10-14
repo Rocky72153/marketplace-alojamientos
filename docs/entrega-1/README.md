@@ -35,12 +35,12 @@
 
 Los artefactos se construyeron a partir de la guía oficial del curso compartida en el proyecto. Las decisiones que el enunciado deja abiertas —por ejemplo, tecnologías, límites físicos de servicios, tarifas, política concreta de cancelación, metodología y fechas— se marcan como propuestas o pendientes de validación y no deben presentarse como acuerdos ya tomados por el grupo.
 
-Los identificadores se mantienen consistentes: ACT, INT, RN, RF, RNF, EP, HU, CU y ADR. Las historias tienen criterios de aceptación en formato **Dado que / Cuando / Entonces** y dependencias identificadas. El archivo CSV es una matriz inicial de diseño: las claves/enlaces reales de Jira, PR, pruebas y release deben agregarse conforme existan.
+Los identificadores se mantienen consistentes: ACT, INT, RN, RF, RNF, EP, HU, CU y ADR. Las historias tienen criterios de aceptación en formato **Dado que / Cuando / Entonces** y dependencias identificadas. La matriz CSV enlaza las claves reales de Jira y el PR de Entrega 1; los enlaces a pruebas de implementación, evidencias y release se agregan conforme existan.
 
 ## Validación y evidencia pendiente
 
 - Aprobación/revisión de los artefactos por integrantes y docente.
-- Cargar épicas e historias en Jira con responsables, estimaciones, estados y sprint/iteración reales.
+- Completar en Jira las estimaciones acordadas, responsables, estados de trabajo y sprints/iteraciones reales; el backlog y sus claves están en la matriz sincronizada.
 - Publicar o enlazar los modelos aprobados en Confluence, como pide el enunciado.
 - Abrir los BPMN en un modelador compatible, validar reglas y exportar capturas/diagramas legibles para Confluence si se requiere.
 - Configurar protección de ramas, revisar un PR real con otro integrante, verificar checks CI y configurar SonarCloud.
