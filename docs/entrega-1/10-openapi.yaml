@@ -501,7 +501,7 @@ components:
         pricePerNight: { type: number }
         currency: { type: string, example: COP }
         imageReference: { type: string }
-        averageRating: { type: number, nullable: true }
+        averageRating: { type: [number, "null"] }
     ListingDetail:
       allOf:
         - { $ref: '#/components/schemas/ListingSummary' }
@@ -524,7 +524,7 @@ components:
         - { $ref: '#/components/schemas/AvailabilityPeriodInput' }
         - type: object
           properties:
-            reservationId: { type: string, format: uuid, nullable: true }
+            reservationId: { type: [string, "null"], format: uuid }
     QuoteRequest:
       type: object
       required: [listingId, checkIn, checkOut, guests]
@@ -561,7 +561,7 @@ components:
         total: { type: number }
         currency: { type: string }
         createdAt: { type: string, format: date-time }
-        confirmedAt: { type: string, format: date-time, nullable: true }
+        confirmedAt: { type: [string, "null"], format: date-time }
     Cancellation:
       type: object
       properties:
@@ -579,7 +579,7 @@ components:
         type: { type: string }
         message: { type: string }
         createdAt: { type: string, format: date-time }
-        readAt: { type: string, format: date-time, nullable: true }
+        readAt: { type: [string, "null"], format: date-time }
     Review:
       type: object
       properties:
