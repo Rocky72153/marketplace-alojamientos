@@ -85,11 +85,36 @@ flowchart TD
 
 ## PB-04 — Moderación, auditoría y reportes
 
-- Administrador bloquea publicaciones por información engañosa; no se borran las reservas futuras: permanecen para auditoría y pasan a revisión manual.
-- Acciones relevantes de seguridad/cambios de estado generan eventos trazables con actor, entidad, fecha y resultado.
-- La exportación PDF/Excel debe corresponder a datos visibles/almacenados y registrar quién la pidió y cuándo.
-- El dashboard calcula usuarios, publicaciones activas, reservas por estado, ingresos estimados y ciudades con mayor demanda.
-- Moderación de reseñas se coordina con la elegibilidad de la reserva completada.
+**Objetivo:** controlar contenido y cuentas, dejar evidencia de operaciones y ofrecer información consistente para la gestión.  
+**Límite:** inicia cuando un administrador autorizado selecciona una acción o un reporte y termina con el cambio/consulta registrada y su resultado auditable.  
+**Participantes:** administrador, marketplace, auditoría, publicación/reserva/reseña y módulo de dashboard/reportes; dirección de Inversiones LR como interesada que consume resultados.  
+**Entradas:** usuario/publicación/reseña a moderar y motivo; o tipo de reporte, formato, filtros y parámetros de consulta.  
+**Reglas:** acción administrativa solo para rol autorizado; anuncio bloqueado no elimina reservas futuras, que pasan a revisión manual; los cambios relevantes se auditan; dashboard y exportaciones corresponden con información disponible; PDF/Excel debe registrar solicitante y fecha/hora.  
+**Salidas:** cuenta/publicación/reseña con estado actualizado, reservas futuras conservadas y señaladas cuando aplica, evento de auditoría consultable, indicadores del dashboard o reporte exportado con estado de generación.  
+**Eventos:** `UserRestricted`, `ListingBlocked`, `ReviewHidden`, `AuditEventRecorded`, `ReportRequested`, `ReportExported`, `ReportExportFailed`.
+
+```mermaid
+flowchart TD
+  A[Administrador selecciona acción o consulta] --> B[Validar rol y permiso]
+  B --> C{¿Autorizado?}
+  C -- No --> D[Rechazar y registrar resultado relevante]
+  C -- Sí --> E{Tipo de operación}
+  E -- Moderar --> F[Restringir usuario, bloquear anuncio u ocultar reseña]
+  F --> G{¿Anuncio con reservas futuras?}
+  G -- Sí --> H[Conservar reservas y marcar para revisión manual]
+  G -- No --> I[Continuar con estado actualizado]
+  H --> J[Registrar auditoría]
+  I --> J
+  E -- Dashboard --> K[Calcular indicadores desde datos del sistema]
+  K --> J
+  E -- Exportar reporte --> L[Generar PDF o Excel desde datos disponibles]
+  L --> M[Registrar solicitante, fecha y estado de exportación]
+  M --> J
+  D --> N[Informar resultado]
+  J --> N
+```
+
+**Indicadores:** usuarios, publicaciones activas, reservas por estado, ingresos estimados y ciudades con mayor demanda. Definición exacta de “ingreso estimado”, periodo de corte y filtros del reporte debe quedar aprobada; la guía no fija una fórmula específica.
 
 ## Relación proceso–requerimiento
 
