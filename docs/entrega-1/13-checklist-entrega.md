@@ -22,7 +22,7 @@ Esta lista se cruza con los productos esperados y las exigencias de la guía del
 | Jira: épicas/historias con prioridad, estimación, responsable, estado, sprint | Jira del equipo | Verificado: 10 épicas y 19 historias en MARKET con AC, prioridades y épicas padre; estimaciones, responsables y sprints por acordar |
 | Confluence: visión, procesos, requisitos, diseño y manual de despliegue | Espacio Confluence del equipo | No verificable desde este repositorio; replicar/enlazar artefactos y evidencias |
 | GitHub: repositorio, ramas, commits coherentes, PR y releases | Repositorio y ramas actuales | PR #4 abierto hacia develop y CI verde; revisión de otro integrante pendiente y reglas administrativas por verificar |
-| GitHub Actions: compilar/construir, verificaciones y pruebas por PR | `.github/workflows/ci.yml` | CI ha pasado en ejecuciones de ramas previas; confirmar ejecución final del PR de entrega |
+| GitHub Actions: compilar/construir, verificaciones y pruebas por PR | `.github/workflows/ci.yml` | Backend, frontend y documentación pasaron en el commit sincronizado; conservar el enlace de la ejecución como evidencia |
 | SonarCloud integrado, Quality Gate visible | `.github/workflows/sonarcloud.yml` y `sonar-project.properties` | Pendiente de variables y secreto; job se omite a propósito hasta configuración |
 | Pull Request de integración con revisión de otro integrante | PR real en GitHub | Pendiente; la conexión no puede proporcionar aprobación auténtica de un compañero |
 | Capturas de uso de IA con fecha/hora, prompts completos de entrada y salida | `docs/evidencias/README.md` | Guía de evidencia preparada; capturas auténticas pendientes |
