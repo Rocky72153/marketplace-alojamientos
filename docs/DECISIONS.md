@@ -14,6 +14,7 @@ Las entradas marcadas como propuestas no constituyen acuerdos adoptados hasta se
 | ADR-006 | 2026-10-13 | Propuesta de intervalos de estancia: llegada incluida y salida excluida. | Permite reservar la noche de salida para una llegada el mismo día sin solapamiento temporal. | Pendiente de decisión de negocio |
 | ADR-007 | 2026-10-13 | El snapshot de cotización aceptado se conserva ligado a la reserva. | Evita que un cambio posterior de precio reescriba el histórico de una operación aceptada. | Propuesta de diseño; confirmar |
 | ADR-008 | 2026-10-13 | SonarCloud no se exige como check hasta que proyecto, variables y secreto estén configurados y el análisis real pase. | Evita bloquear PR con un check que todavía no puede ejecutarse. | Pendiente de configuración externa |
+| ADR-009 | 2026-10-14 | Adoptar Scrum como marco de organización y Lean como principios de flujo/mejora continua; registrar a Juan Sebastián Morales Forero como PO, a Julián David Aguilera Párraga como Scrum Master/facilitador y una planificación inicial de ocho sprints semanales del 19 oct. al 14 dic. 2026. | Aporta objetivos semanales, priorización, visibilidad del WIP, reducción de esperas y revisión continua sin confundir velocidad con calidad. Los sprints, responsables y puntos iniciales están reflejados en Jira y `docs/entrega-1/19-metodologia-scrum-lean.md`. | Aplicado a la planificación y documentación; pendiente de ratificación explícita del equipo y revisión de capacidad con datos reales |
 
 ## Decisiones de negocio pendientes
 
@@ -28,7 +29,7 @@ Las entradas marcadas como propuestas no constituyen acuerdos adoptados hasta se
 | DEC-07 | ¿Qué permisos administrativos aplican a datos personales, reservas y reportes? | Impacta seguridad, privacidad y auditoría. | Product Owner/equipo por asignar | Abierta |
 | DEC-08 | ¿Qué objetivos cuantitativos de rendimiento y datos de prueba se usarán? | La guía no fija tiempos ni volumen; sin definición no se puede declarar un SLA. | Equipo técnico por asignar | Abierta |
 | DEC-09 | ¿Cuál es el framework frontend y la estrategia definitiva de despliegue? | Cambia pipeline, estructura y manual de despliegue. | Equipo técnico por asignar | Abierta |
-| DEC-10 | ¿Qué metodología, duración de sprint, fechas de entrega y responsables se adoptan? | Cambia cronograma, campos de Jira y evidencia de seguimiento. | Equipo por asignar | Abierta |
+| DEC-10 | ¿El equipo ratifica explícitamente el marco Scrum + Lean, roles y capacidad de los ocho sprints? | La planificación y los sprints ya están documentados; la confirmación conjunta y la capacidad real deben probarse en la ejecución. | Juan y Julián / docente si aplica | Ratificación pendiente |
 
 ## Control de cambios
 
