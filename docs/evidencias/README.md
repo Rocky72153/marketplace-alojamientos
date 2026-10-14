@@ -33,7 +33,7 @@ La guía del curso exige un documento con capturas del uso de IA donde sean visi
 | EV-02 | Backlog en Jira | https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog | Pendiente | Por asignar | Issues creados; captura pendiente y faltan estimaciones/responsables/sprints acordados |
 | EV-03 | Documentación publicada en Confluence | Pendiente de publicar/enlazar | Pendiente | Por asignar | Pendiente |
 | EV-04 | PR de entrega 1 con revisión real | https://github.com/Rocky72153/marketplace-alojamientos/pull/4 | Pendiente | Por asignar | PR abierto; revisión de otro integrante pendiente |
-| EV-05 | CI verde en PR | https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38503698908 | Pendiente | Por asignar | CI verde en PR #4; guardar captura/enlace de evidencia |
+| EV-05 | CI verde en PR | https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38508120405 | Pendiente | Por asignar | Backend, frontend y Documentation CI pasaron en el commit sincronizado; guardar captura final |
 | EV-06 | SonarCloud Quality Gate | Pendiente de importar/configurar | Pendiente | Por asignar | Pendiente |
 | EV-07 | Protección de ramas | Pendiente de configurar/verificar | Pendiente | Por asignar | Pendiente |
 | EV-08 | Revisión real de prototipo | Pendiente de realizar | Pendiente | Por asignar | Pendiente |
