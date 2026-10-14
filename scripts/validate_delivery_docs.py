@@ -85,16 +85,30 @@ def validate_openapi() -> None:
             if not isinstance(operation.get("responses"), dict) or not operation["responses"]:
                 fail(f"Faltan responses en {method.upper()} {route}")
             placeholders = set(re.findall(r"\{([^{}]+)\}", route))
+            def parameter_name(parameter: object) -> str | None:
+                if not isinstance(parameter, dict):
+                    return None
+                if parameter.get("name"):
+                    return str(parameter["name"])
+                ref = parameter.get("$ref")
+                if isinstance(ref, str) and ref.startswith("#/components/parameters/"):
+                    component_name = ref.rsplit("/", 1)[-1]
+                    component = spec.get("components", {}).get("parameters", {}).get(component_name, {})
+                    if isinstance(component, dict) and component.get("name"):
+                        return str(component["name"])
+                return None
+
             params = []
             for parameter in item.get("parameters", []):
-                if isinstance(parameter, dict):
-                    params.append(parameter.get("name"))
+                name = parameter_name(parameter)
+                if name:
+                    params.append(name)
             for parameter in operation.get("parameters", []):
-                if isinstance(parameter, dict):
-                    params.append(parameter.get("name"))
+                name = parameter_name(parameter)
+                if name:
+                    params.append(name)
             declared = set(params)
             for name in placeholders - declared:
-                # $ref path-level parameters need not be expanded here; this spec uses explicit path params.
                 fail(f"Parámetro de ruta {{{name}}} no declarado en {method.upper()} {route}")
 
     print(f"OpenAPI: YAML válido; {len(paths)} rutas y {len(operation_ids)} operaciones inspeccionadas")
