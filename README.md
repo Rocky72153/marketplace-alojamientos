@@ -46,7 +46,7 @@ Base de datos local: docker compose up -d db
 
 ## Flujo de trabajo
 
-1. Asegura que la historia exista en Jira e incluya criterios Dado que / Cuando / Entonces.
+1. Asegura que la historia exista en Jira e incluya criterios que comiencen con «El sistema debe» y conserven el escenario Dado que / Cuando / Entonces.
 2. Crea la rama de funcionalidad/corrección/documentación desde develop.
 3. Realiza commits pequeños y coherentes, vinculando Jira cuando aplique.
 4. Abre un Pull Request hacia develop con la plantilla incluida.
