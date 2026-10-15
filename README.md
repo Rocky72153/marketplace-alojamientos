@@ -65,3 +65,7 @@ Base de datos local: docker compose up -d db
 - Recopilar capturas auténticas de uso de IA con fecha/hora y prompts completos; la plantilla no sustituye esas capturas.
 
 Consulta CONTRIBUTING.md y docs/entrega-1/13-checklist-entrega.md antes de preparar la entrega.
+
+Links: 
+https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog
+https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/overview?homepageId=688238
