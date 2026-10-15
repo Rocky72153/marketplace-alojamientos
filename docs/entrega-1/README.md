@@ -2,7 +2,7 @@
 
 **Proyecto:** Marketplace de alojamientos temporales para Inversiones LR  
 **Curso:** Ingeniería de Software I · Ingeniería de Sistemas · Universidad El Bosque · 2026-2  
-**Estado:** paquete documental preparado y publicado en Confluence para revisión; las decisiones abiertas y evidencias externas están identificadas, no se presumen aprobadas.
+**Estado:** Juan Sebastián Morales y Julián Aguilera ratificaron el paquete documental en su estado actual el 14/10/2026; las validaciones externas/docentes y evidencias no realizadas siguen identificadas.
 
 ## Alcance según la guía oficial
 
@@ -50,17 +50,17 @@ Las fechas oficiales del cronograma, la aprobación del acta y las firmas están
 
 ## Cómo interpretar este material
 
-Los artefactos se construyeron a partir de la guía oficial del curso compartida en el proyecto. Las decisiones que el enunciado deja abiertas —por ejemplo, tecnologías, límites físicos de servicios, tarifas y política concreta de cancelación— se marcan como propuestas o pendientes de validación. Scrum + Lean, los roles operativos y la cadencia semanal quedaron registrados en la documentación de planificación y Jira, pero requieren ratificación explícita del equipo y no equivalen a evidencia de ceremonias ya realizadas.
+Los artefactos se construyeron a partir de la guía oficial del curso compartida en el proyecto. Las decisiones que el enunciado deja abiertas —por ejemplo, tecnologías, límites físicos de servicios, tarifas y política concreta de cancelación— se marcan como propuestas o pendientes de validación. Scrum + Lean, los roles operativos y la cadencia semanal quedaron registrados y fueron incluidos en la ratificación del paquete del 14/10/2026; esto no acredita que las ceremonias se hayan realizado.
 
 Los identificadores se mantienen consistentes: ACT, INT, RBN, RN, RF, RNF, EP, HU, CU, CP y ADR. Las historias tienen criterios de aceptación en formato **Dado que / Cuando / Entonces** y dependencias identificadas. La matriz CSV enlaza Jira, commits, PR, casos y la evidencia parcial ejecutada; la trazabilidad de implementación completa y releases se ampliará cuando el MVP exista.
 
 ## Validación y evidencia pendiente
 
-- Aprobación/revisión de los artefactos por integrantes y docente.
+- Ratificación del paquete por Juan Sebastián Morales y Julián Aguilera registrada el 14/10/2026. La revisión/aprobación docente no consta.
 - Jira contiene 10 épicas, 19 historias y 38 subtareas en ocho sprints semanales del 19 de octubre al 14 de diciembre de 2026. MARKET-68 está asignada a Julián y MARKET-69 a Juan, pero ambas siguen sin sprint; el equipo debe ratificar Story Points, capacidad y asignación temporal.
-- Los 20 artefactos están publicados/enlazados en el espacio MARKET, desde el [índice de Entrega 1](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/753665/Entrega+1+estado+evidencia+y+ratificaci+n+del+equipo). La página de procesos incluye enlaces a las tres fuentes BPMN versionadas; falta su validación visual y la ratificación del equipo.
+- Los 20 artefactos están publicados/enlazados en el espacio MARKET, desde el [índice de Entrega 1](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/753665/Entrega+1+estado+evidencia+y+ratificaci+n+del+equipo). La página de procesos incluye enlaces a las tres fuentes BPMN versionadas; la ratificación del equipo está registrada; falta la validación visual de los BPMN.
 - Abrir los BPMN en un modelador compatible, validar reglas y exportar capturas/diagramas legibles para Confluence si se requiere.
-- La auditoría [PR #1–#9](../evidencias/revision-pull-requests-2026-10.md) registra diffs, checks y decisión: PR #3–#9 integradas (la actualización de Java de la cerrada #2 se retomó en la #9); PR #1 sigue abierta y no se integra porque no compila sus pruebas con Spring Boot 4. No hay aprobación independiente de otro integrante. CI y SonarCloud pasaron en main, commit [e4d192e](https://github.com/Rocky72153/marketplace-alojamientos/commit/e4d192e8054484174b80a5820131a419da55e907): [run 38678644799](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644799) y [run 38678644828](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644828).
+- La auditoría [PR #1–#9](../evidencias/revision-pull-requests-2026-10.md) registra diffs, checks y decisión: PR #3–#9 integradas (la actualización de Java de la cerrada #2 se retomó en la #9); PR #1 sigue abierta y no se integra porque no compila sus pruebas con Spring Boot 4. No hay aprobación independiente registrada para los PR auditados; la ratificación documental no sustituye una revisión de código. CI y SonarCloud pasaron en main, commit [e4d192e](https://github.com/Rocky72153/marketplace-alojamientos/commit/e4d192e8054484174b80a5820131a419da55e907): [run 38678644799](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644799) y [run 38678644828](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644828).
 - La inspección técnica y los resultados parciales están en [`docs/evidencias/validacion-prototipo-y-pruebas-2026-10-14.md`](../evidencias/validacion-prototipo-y-pruebas-2026-10-14.md). No hay sesiones reales registradas; quedan pendientes el feedback de participantes y los casos de negocio que dependen de funciones/endpoints aún no implementados.
 - Capturar evidencia auténtica del uso de IA con fecha/hora y prompts/respuestas completos, conforme a la guía (p. 1); la plantilla está en `docs/evidencias/README.md`.
 
