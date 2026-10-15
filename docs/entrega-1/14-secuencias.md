@@ -78,14 +78,17 @@ sequenceDiagram
     participant L as Publicaciones
     participant R as Reservas
     participant A as Auditoría
-    AD->>FE: Selecciona anuncio e indica motivo
-    FE->>API: PATCH /listings/{id}/state (BLOCKED)
-    API->>API: Validar rol y permiso
-    API->>L: Cambiar estado a BLOQUEADA
+
+    AD->>FE: Selecciona la publicación e indica el motivo
+    FE->>API: PATCH /listings/{id}/state
+    Note over FE,API: Estado solicitado: BLOQUEADA
+    API->>API: Validar rol y permisos
+    API->>L: Cambiar estado de la publicación a BLOQUEADA
     L->>R: Marcar reservas futuras para revisión manual
-    Note over L,R: Las reservas futuras se conservan; no se borran/cancelan automáticamente.
+    Note over L,R: Las reservas futuras se conservan y no se borran ni cancelan automáticamente
     L->>A: Registrar actor, entidad, fecha, motivo y resultado
-    API-->>FE: Estado y confirmación trazable
+    API-->>FE: Devolver estado y confirmación trazable
+    FE-->>AD: Mostrar confirmación del bloqueo
 ```
 
 ## Criterios de consistencia de los diagramas
