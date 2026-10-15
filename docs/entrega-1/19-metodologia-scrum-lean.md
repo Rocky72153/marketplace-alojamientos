@@ -3,7 +3,7 @@
 **Proyecto:** Marketplace de Alojamientos  
 **Fecha de registro:** 2026-10-14  
 **Cadencia de planificación en Jira:** sprints de una semana, desde el 19 de octubre de 2026  
-**Estado:** marco de trabajo adoptado para organizar el proyecto y reflejado en Jira; el equipo debe ratificarlo explícitamente en la primera planificación y ajustarlo con evidencia de ejecución.
+**Estado:** propuesta de trabajo documentada y reflejada parcialmente en Jira; el equipo debe ratificarla explícitamente antes de tratar roles, cadencia y capacidad como acuerdos vigentes.
 
 ## 19.1 Decisión metodológica
 
@@ -18,9 +18,11 @@ Lean no se adopta como sinónimo de “trabajar más rápido” ni como justific
 
 | Rol | Responsable | Responsabilidades |
 |---|---|---|
-| Product Owner (PO) | Juan Sebastián Morales Forero | Ordenar el backlog por valor y riesgo; aclarar necesidades y reglas de negocio; mantener criterios de aceptación verificables; proponer el objetivo del sprint y revisar si el incremento satisface esos criterios. |
-| Scrum Master / facilitador | Julián David Aguilera Párraga | Facilitar la aplicación práctica de Scrum; hacer visibles bloqueos y dependencias; promover acciones de mejora Lean; ayudar a que los acuerdos, revisiones y retrospectivas queden registrados. No actúa como jefe del equipo. |
+| Product Owner / analista de requisitos | Julián David Aguilera Párraga | Aclarar necesidades y reglas de negocio; mantener criterios de aceptación verificables; apoyar la priorización y revisar si el incremento satisface esos criterios. |
+| Scrum Master / gerente del proyecto | Juan Sebastián Morales Forero | Facilitar la aplicación de Scrum; hacer visibles bloqueos y dependencias; promover acciones de mejora Lean; coordinar que acuerdos, revisiones y retrospectivas queden registrados. No actúa como jefe del equipo. |
 | Developers | Juan Sebastián Morales Forero y Julián David Aguilera Párraga | Diseñar, implementar, probar, revisar código, mantener documentación y trazabilidad, estimar trabajo y producir un incremento que cumpla la Definition of Done. |
+
+La asignación propuesta en esta tabla sigue la información del acta de constitución; su ratificación conjunta sigue pendiente. Los responsables de historias o subtareas en Jira no se toman por sí solos como evidencia de que el equipo haya aprobado los roles.
 | Interesado / representante de negocio | Representante de Inversiones LR simulado en el contexto académico | Aclarar necesidades y revisar prototipos o incrementos cuando esté disponible. El feedback debe registrarse solo cuando realmente ocurra; no se presume validación del cliente. |
 
 Los dos integrantes participan en desarrollo y pruebas. Para fomentar calidad y revisión cruzada, la subtarea de pruebas se asigna al integrante distinto de quien implementa la historia, conforme a la distribución registrada en Jira. La asignación y disponibilidad deben revisarse si hay ausencias o bloqueos.
