@@ -21,7 +21,7 @@ La guía del curso exige un documento con capturas del uso de IA donde sean visi
 
 ## Evidencias académicas
 
-- Captura real de épicas, 19 historias y sus criterios en Jira. Las estimaciones iniciales, los responsables y la distribución propuesta en cuatro sprints ya están aplicados; el equipo debe ratificar los puntos y acordar fechas/capacidad.
+- Captura real de épicas, 19 historias y sus criterios en Jira. Las estimaciones iniciales, responsables y distribución en ocho sprints semanales (19 oct.–14 dic. 2026) están aplicados. El equipo debe ratificar puntos y capacidad; MARKET-68/69 son tareas transversales todavía sin responsable ni sprint.
 - Enlace/captura a páginas Confluence con visión, actores, BPMN, requerimientos, historias, casos de uso, modelos, arquitectura, API y manual de despliegue.
 - Registro de feedback real del prototipo: fecha, rol participante, tarea, hallazgo, decisión y cambio asociado.
 - Validación del catálogo y de preguntas abiertas por el equipo; acuerdos/observaciones y responsable.
