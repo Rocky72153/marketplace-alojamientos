@@ -4,6 +4,7 @@ Esta lista se cruza con los productos esperados y las exigencias de la guía del
 
 | Ítem de la guía | Evidencia en el repositorio | Estado para revisión |
 |---|---|---|
+| Acta de constitución del proyecto | [Word](acta-constitucion-marketplace.docx) y [Markdown](acta-constitucion-marketplace.md) | Adaptada y alineada con Entrega 1; [PR #7](https://github.com/Rocky72153/marketplace-alojamientos/pull/7) abierto para revisión; fechas, aprobación y firmas pendientes |
 | Visión, alcance y objetivos del negocio | `01-vision-alcance.md` | Preparado; aprobación del equipo pendiente |
 | Actores/interesados con descripción, relación, necesidades, preocupaciones, responsabilidades y afectación | `02-actores-interesados.md` | Preparado; validar y completar nombres/responsables |
 | Procesos relevantes con límites, participantes, entradas/salidas, reglas, eventos/resultados y relación a requerimientos | `03-procesos-negocio.md` + `bpmn/*.bpmn` | Borrador; validar visualmente BPMN y acordar excepciones |
@@ -19,12 +20,12 @@ Esta lista se cruza con los productos esperados y las exigencias de la guía del
 | Manual de ejecución/despliegue | `docs/LOCAL_SETUP.md` | Guía local incluida; no equivale a despliegue de producción |
 | Matriz de trazabilidad requisito ↔ Jira ↔ AC ↔ branch/commit ↔ PR ↔ pruebas/evidencia ↔ release | `docs/TRACEABILITY_TEMPLATE.csv` | Claves Jira y PR #4 enlazados; evidencia de implementación, pruebas y release sigue pendiente |
 | Registro de decisiones y preguntas abiertas | `docs/DECISIONS.md` | Preguntas y propuestas registradas; decisiones requieren aprobación real |
-| Jira: épicas/historias con prioridad, estimación, responsable, estado, sprint | Jira del equipo | Verificado: 10 épicas y 19 historias en MARKET con AC, prioridades y épicas padre; estimaciones, responsables y sprints por acordar |
+| Jira: épicas/historias con prioridad, estimación, responsable, estado, sprint | Jira MARKET y [PR #5](https://github.com/Rocky72153/marketplace-alojamientos/pull/5) | Jira tiene 10 épicas, 19 historias, 38 subtareas y 2 tareas transversales; las 69 están asignadas y permanecen en To Do. PR #5 documenta 8 sprints y 106 SP iniciales; el equipo debe ratificar capacidad y planificación |
 | Confluence: visión, procesos, requisitos, diseño y manual de despliegue | Espacio Confluence del equipo | No verificable desde este repositorio; replicar/enlazar artefactos y evidencias |
-| GitHub: repositorio, ramas, commits coherentes, PR y releases | Repositorio y ramas actuales | PR #4 abierto hacia develop y CI verde; revisión de otro integrante pendiente y reglas administrativas por verificar |
-| GitHub Actions: compilar/construir, verificaciones y pruebas por PR | `.github/workflows/ci.yml` | Backend, frontend y documentación pasaron en el commit sincronizado; conservar el enlace de la ejecución como evidencia |
+| GitHub: repositorio, ramas, commits coherentes, PR y releases | [PR #4](https://github.com/Rocky72153/marketplace-alojamientos/pull/4), [PR #5](https://github.com/Rocky72153/marketplace-alojamientos/pull/5) y [PR #7](https://github.com/Rocky72153/marketplace-alojamientos/pull/7) | PR #4 está fusionado; PR #5 y PR #7 están abiertos, sin revisiones registradas. Las reglas administrativas y el release siguen por verificar |
+| GitHub Actions: compilar/construir, verificaciones y pruebas por PR | `.github/workflows/ci.yml`, [PR #5](https://github.com/Rocky72153/marketplace-alojamientos/pull/5) y [PR #7](https://github.com/Rocky72153/marketplace-alojamientos/pull/7) | CI pasó en el HEAD de PR #5 (`83da7ff`); CI del HEAD actual de PR #7 (`b436ae7`) está en ejecución. SonarCloud se omite mientras siga sin configuración |
 | SonarCloud integrado, Quality Gate visible | `.github/workflows/sonarcloud.yml` y `sonar-project.properties` | Pendiente de variables y secreto; job se omite a propósito hasta configuración |
-| Pull Request de integración con revisión de otro integrante | PR real en GitHub | Pendiente; la conexión no puede proporcionar aprobación auténtica de un compañero |
+| Pull Request de integración con revisión de otro integrante | [PR #4](https://github.com/Rocky72153/marketplace-alojamientos/pull/4), [PR #5](https://github.com/Rocky72153/marketplace-alojamientos/pull/5) y [PR #7](https://github.com/Rocky72153/marketplace-alojamientos/pull/7) | PR #4 se fusionó; PR #5 y PR #7 siguen abiertos sin revisión independiente. No fusionar hasta que otro integrante revise |
 | Capturas de uso de IA con fecha/hora, prompts completos de entrada y salida | `docs/evidencias/README.md` | Guía de evidencia preparada; capturas auténticas pendientes |
 
 ## Antes de entregar
