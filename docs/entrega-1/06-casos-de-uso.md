@@ -89,3 +89,38 @@ Estos casos describen interacciones funcionales candidatas para el MVP. Las prec
 - CU-06 incluye consulta de política de cancelación y, cuando corresponde, liberación de disponibilidad.
 - CU-07 depende de CU-05 y de una transición verificable de reserva a completada.
 - CU-08 depende de permisos administrativos y de los registros generados por los demás casos.
+
+
+## Diagrama de casos de uso
+
+El diagrama resume los ocho casos de uso descritos arriba y su relación con los actores principales. Es una vista de alcance; los flujos, precondiciones y excepciones permanecen en cada ficha.
+
+```mermaid
+flowchart LR
+  Guest[Huésped]
+  Host[Anfitrión]
+  Admin[Administrador]
+  Pay[Proveedor de pagos de prueba]
+  subgraph Marketplace[Marketplace Alojamientos]
+    CU01([CU-01 Registrarse e iniciar sesión])
+    CU02([CU-02 Crear y publicar alojamiento])
+    CU03([CU-03 Mantener disponibilidad])
+    CU04([CU-04 Buscar comparar y cotizar])
+    CU05([CU-05 Confirmar reserva inmediata])
+    CU06([CU-06 Cancelar reserva])
+    CU07([CU-07 Reseñar y moderar estancia])
+    CU08([CU-08 Administrar operación y exportar informe])
+  end
+  Guest --- CU01
+  Host --- CU01
+  Admin --- CU01
+  Host --- CU02
+  Host --- CU03
+  Guest --- CU04
+  Guest --- CU05
+  Guest --- CU06
+  Guest --- CU07
+  Admin --- CU07
+  Admin --- CU08
+  CU05 --- Pay
+```
