@@ -5,6 +5,13 @@ info:
   description: >-
     Contrato inicial propuesto para revisión en la Entrega 1. Describe capacidades
     del MVP académico; todavía no implica que todas las operaciones estén implementadas.
+    Los enums usan valores serializados en inglés: roles GUEST=HUÉSPED, HOST=ANFITRIÓN,
+    ADMIN=ADMINISTRADOR; estados de publicación DRAFT=BORRADOR,
+    PENDING_REVIEW=PENDIENTE_REVISION, ACTIVE=ACTIVA, PAUSED=PAUSADA y
+    BLOCKED=BLOQUEADA. En Booking.state, REQUESTED=SOLICITADA,
+    CONFIRMED=CONFIRMADA, CANCELLED=CANCELADA, COMPLETED=COMPLETADA,
+    REJECTED=RECHAZADA, PENDING_PAYMENT=PAGO_PENDIENTE y
+    PAYMENT_FAILED=PAGO_FALLIDO.
 servers:
   - url: http://localhost:8080/api
     description: Entorno local
