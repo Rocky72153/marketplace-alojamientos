@@ -31,9 +31,9 @@ Jira contiene ocho sprints semanales desde el 19 de octubre hasta el 14 de dicie
 | MARKET Sprint 6 | 23–30 nov 2026 | Cancelación, notificaciones y reseñas | HU-12–HU-14 | 16 |
 | MARKET Sprint 7 | 30 nov–7 dic 2026 | Moderación, administración y dashboard | HU-15–HU-17 | 16 |
 | MARKET Sprint 8 | 7–14 dic 2026 | Reportes y trazabilidad técnica | HU-18–HU-19 | 13 |
-| **Total** | **8 semanas** | **Alcance completo planificado** | **19 historias** | **106** |
+| **Total** | **8 semanas** | **Backlog total propuesto; no equivale al MVP MUST** | **19 historias** | **106** |
 
-La disponibilidad estimada es de 4–6 horas por semana por integrante (8–12 horas combinadas). La velocidad real todavía no se conoce y los Story Points son estimaciones iniciales; por tanto, 106 puntos en ocho semanas no se considera capacidad validada. En la planificación se revisarán horas disponibles, dependencias y tamaño, y al terminar el primer sprint se recalibrará el plan usando trabajo realmente terminado. Los sprints con 16 puntos requieren especial revisión y HU-10 (13 puntos) debe refinarse para confirmar que sea terminable en una semana.
+El backlog completo de 19 historias es una propuesta de planificación: HU-01, HU-04–HU-12 y HU-19 son MUST; HU-02, HU-03 y HU-13–HU-17 son SHOULD; HU-18 es COULD. Si la capacidad no alcanza, SHOULD/COULD se replanifican después de completar MUST; las ocho semanas y los puntos son estimaciones, no un compromiso de entrega de todas las historias. La disponibilidad estimada es de 4–6 horas por semana por integrante (8–12 horas combinadas). La velocidad real todavía no se conoce y los Story Points son estimaciones iniciales; por tanto, 106 puntos en ocho semanas no se considera capacidad validada. En la planificación se revisarán horas disponibles, dependencias y tamaño, y al terminar el primer sprint se recalibrará el plan usando trabajo realmente terminado. Los sprints con 16 puntos requieren especial revisión y HU-10 (13 puntos) debe refinarse para confirmar que sea terminable en una semana.
 
 ## 12.1.3 Cadencia, calidad y mejora Lean
 

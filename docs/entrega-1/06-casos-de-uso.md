@@ -1,8 +1,10 @@
 # 6. Casos de uso
 
-Estos casos describen interacciones funcionales candidatas para el MVP. Las precondiciones, flujos alternos y postcondiciones deberán usarse para derivar pruebas de aceptación.
+Estos casos describen interacciones funcionales diseñadas; la prioridad de cada flujo delimita el MVP y no acredita implementación. Los criterios asociados empiezan con «El sistema debe» en el catálogo y el backlog. Las precondiciones, flujos alternos y postcondiciones sirven para derivar pruebas de aceptación.
 
 ## CU-01 — Registrarse e iniciar sesión
+
+- **Prioridad de Entrega 1:** MUST para registro, autenticación y permisos; SHOULD para recuperación (HU-02) y autogestión de perfil (HU-03).
 
 - **Actor primario:** huésped/anfitrión/administrador.
 - **Objetivo:** acceder al marketplace con identidad y permisos correctos.
@@ -14,6 +16,8 @@ Estos casos describen interacciones funcionales candidatas para el MVP. Las prec
 
 ## CU-02 — Crear y publicar alojamiento
 
+- **Prioridad de Entrega 1:** MUST.
+
 - **Actor primario:** anfitrión. **Actor secundario:** administrador si requiere revisión.
 - **Objetivo:** ofrecer un alojamiento con información completa.
 - **Precondición:** anfitrión autenticado y cuenta habilitada.
@@ -23,6 +27,8 @@ Estos casos describen interacciones funcionales candidatas para el MVP. Las prec
 - **Historias:** HU-04, HU-05.
 
 ## CU-03 — Mantener disponibilidad
+
+- **Prioridad de Entrega 1:** MUST.
 
 - **Actor primario:** anfitrión.
 - **Objetivo:** controlar periodos válidos disponibles para sus anuncios.
@@ -34,6 +40,8 @@ Estos casos describen interacciones funcionales candidatas para el MVP. Las prec
 
 ## CU-04 — Buscar, comparar y cotizar
 
+- **Prioridad de Entrega 1:** MUST.
+
 - **Actor primario:** huésped.
 - **Objetivo:** hallar un alojamiento que cumpla criterios y conocer su coste total.
 - **Precondición:** formulario de búsqueda disponible.
@@ -44,25 +52,31 @@ Estos casos describen interacciones funcionales candidatas para el MVP. Las prec
 
 ## CU-05 — Confirmar reserva inmediata con pago de prueba
 
-- **Actor primario:** huésped. **Actores secundarios:** servicio de disponibilidad, reservas, proveedor de pagos de prueba, notificaciones.
+- **Prioridad de Entrega 1:** MUST para reserva, idempotencia y pago de prueba; las notificaciones de HU-13 son SHOULD.
+
+- **Actor primario:** huésped. **Actores secundarios:** servicios de disponibilidad y reservas, proveedor de pagos de prueba; notificaciones opcionales (SHOULD).
 - **Objetivo:** confirmar una estancia evitando duplicados.
 - **Precondición:** huésped autenticado; cotización válida; publicación activa.
-- **Flujo principal:** (1) huésped solicita reserva con clave idempotente; (2) backend valida rol, anuncio, fechas, cotización y disponibilidad de nuevo; (3) crea operación transaccional; (4) invoca proveedor de prueba; (5) registra resultado simulado según política acordada; (6) confirma reserva si procede y bloquea periodo; (7) emite auditoría/notificaciones.
+- **Flujo principal:** (1) huésped solicita reserva con clave idempotente; (2) backend valida rol, anuncio, fechas, cotización y disponibilidad de nuevo; (3) crea operación transaccional; (4) invoca proveedor de prueba; (5) registra resultado simulado según política acordada; (6) confirma reserva si procede y bloquea periodo; (7) registra auditoría; si se prioriza HU-13 (SHOULD), genera las notificaciones configuradas.
 - **Alternos:** disponibilidad ocupada, fecha inválida, reintento duplicado, error/fallo del proveedor de pruebas. Se evita crear reservas confirmadas solapadas; resultado y estado deben seguir reglas de recuperación documentadas.
 - **Postcondición:** reserva confirmada una sola vez y periodo bloqueado, o respuesta de rechazo/pendiente/fallo persistida sin doble reserva.
 - **Historias:** HU-09, HU-10, HU-11, HU-13.
 
 ## CU-06 — Cancelar reserva
 
-- **Actor primario:** huésped titular. **Actores secundarios:** servicio de reservas, política de cancelación, disponibilidad y notificaciones.
+- **Prioridad de Entrega 1:** MUST para cancelación y trazabilidad; las notificaciones de HU-13 son SHOULD.
+
+- **Actor primario:** huésped titular. **Actores secundarios:** servicios de reservas y disponibilidad, política de cancelación; notificaciones opcionales (SHOULD).
 - **Objetivo:** cancelar conforme a reglas y calcular devolución simulada.
 - **Precondición:** reserva pertenece al usuario y estado/política permiten cancelar.
-- **Flujo principal:** (1) huésped solicita cancelación y motivo; (2) sistema valida titularidad/estado; (3) consulta política asociada al alojamiento; (4) calcula devolución simulada; (5) registra usuario, fecha, motivo, monto y estado final; (6) libera calendario si aplica; (7) audita y notifica.
+- **Flujo principal:** (1) huésped solicita cancelación y motivo; (2) sistema valida titularidad/estado; (3) consulta política asociada al alojamiento; (4) calcula devolución simulada; (5) registra usuario, fecha, motivo, monto y estado final; (6) libera calendario si aplica; (7) registra auditoría; las notificaciones corresponden a HU-13 (SHOULD).
 - **Alternos:** reserva ajena, estado no cancelable, política no habilita la operación, error transaccional. No se libera disponibilidad si no se confirmó la cancelación.
 - **Postcondición:** estado final y cálculo quedan disponibles para consulta.
 - **Historias:** HU-12, HU-13.
 
 ## CU-07 — Reseñar y moderar estancia
+
+- **Prioridad de Entrega 1:** SHOULD; depende de una reserva completada y no bloquea el flujo transaccional.
 
 - **Actor primario:** huésped para reseñar; administrador para moderar.
 - **Objetivo:** asociar opinión a una estancia completada y aplicar políticas de contenido.
@@ -73,6 +87,8 @@ Estos casos describen interacciones funcionales candidatas para el MVP. Las prec
 - **Historias:** HU-14, HU-15.
 
 ## CU-08 — Administrar operación y exportar informe
+
+- **Prioridad de Entrega 1:** mixta: MUST para bloqueo de publicaciones y registro de acciones críticas (HU-05/HU-19); SHOULD para restricción de cuentas, consulta de auditoría y dashboard (HU-16/HU-17); COULD para exportación (HU-18).
 
 - **Actor primario:** administrador.
 - **Objetivo:** moderar usuarios/publicaciones, inspeccionar eventos y obtener información para gestión.

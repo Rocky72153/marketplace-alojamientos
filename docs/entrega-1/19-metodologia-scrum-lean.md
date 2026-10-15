@@ -41,7 +41,7 @@ Los sprints están configurados en Jira con inicio y fin los lunes a las 09:00, 
 | MARKET Sprint 6 | 23–30 nov 2026 | Cancelación, notificaciones y reseñas | HU-12 a HU-14 | 16 |
 | MARKET Sprint 7 | 30 nov–7 dic 2026 | Moderación, administración y dashboard | HU-15 a HU-17 | 16 |
 | MARKET Sprint 8 | 7–14 dic 2026 | Exportación de reportes y trazabilidad técnica | HU-18 a HU-19 | 13 |
-| **Total** | **8 semanas** | **Alcance completo planificado** | **HU-01 a HU-19** | **106** |
+| **Total** | **8 semanas** | **Backlog completo propuesto; MVP obligatorio definido por MoSCoW** | **HU-01 a HU-19** | **106** |
 
 La capacidad conocida es de aproximadamente 4–6 horas semanales por integrante (8–12 horas combinadas). Como no existe aún una velocidad histórica, no puede afirmarse que 106 puntos sean alcanzables en ocho semanas. Antes de comprometer cada sprint, el equipo revisará disponibilidad, dependencias y tamaño de historias; después del primer sprint calibrará el plan según trabajo realmente terminado. Los sprints con 16 puntos son especialmente sensibles a esa validación. HU-10 tiene 13 puntos iniciales y debe refinarse para verificar que sea terminable dentro del sprint; las subtareas por sí solas no sustituyen dividir una historia excesivamente grande.
 
