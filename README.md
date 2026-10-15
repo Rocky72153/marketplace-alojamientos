@@ -8,7 +8,7 @@ Marketplace web para conectar anfitriones con huéspedes y permitir publicación
 
 El acta de constitución está disponible en [Word](docs/entrega-1/acta-constitucion-marketplace.docx) y [Markdown](docs/entrega-1/acta-constitucion-marketplace.md); las fechas oficiales, la aprobación y las firmas siguen pendientes. La [documentación de Entrega 1](docs/entrega-1/README.md) reúne análisis, diseño, 19 artefactos, metodología y la [evidencia parcial de inspección y pruebas](docs/evidencias/validacion-prototipo-y-pruebas-2026-10-14.md).
 
-**Estado de los artefactos:** la documentación es una propuesta inicial basada en el enunciado del curso y requiere validación del equipo. SonarCloud está configurado y su [Quality Gate pasó en la PR #8](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38673786517); la cobertura reportada en código nuevo es 0.0 %. La validación del último commit de `main`, la publicación en Confluence y la revisión académica independiente siguen pendientes.
+**Estado de los artefactos:** el paquete documental de Entrega 1 está integrado en `main`, pero sigue sujeto a validación del equipo y del curso. En el commit [e4d192e](https://github.com/Rocky72153/marketplace-alojamientos/commit/e4d192e8054484174b80a5820131a419da55e907), CI pasó ([run 38678644799](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644799)) y SonarCloud aprobó el Quality Gate ([run 38678644828](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644828)); la cobertura de código nuevo reportada en PR #8 fue 0.0 %. La auditoría de [PR #1–#9](docs/evidencias/revision-pull-requests-2026-10.md) detalla qué se integró y qué no. Siguen pendientes la revisión independiente, la publicación en Confluence, la retroalimentación real y la ejecución de los casos de negocio no implementados.
 
 ## Tecnologías base propuestas
 
@@ -29,6 +29,7 @@ Las tecnologías son una propuesta técnica inicial y deben confirmarse con el e
 - docs/GITHUB_SETUP.md: configuración administrativa de GitHub y SonarCloud.
 - docs/TRACEABILITY_TEMPLATE.csv: matriz inicial de trazabilidad.
 - docs/DECISIONS.md: decisiones técnicas y asuntos por validar.
+- docs/evidencias/: inspección, ejecución parcial de pruebas y auditoría de PR.
 - scripts/: configuración auxiliar para reglas de protección vía GitHub CLI.
 
 ## Requisitos locales
@@ -57,7 +58,7 @@ Base de datos local: docker compose up -d db
 
 - Verificar visibilidad del repositorio y agregar colaboradores reales.
 - Proteger main y develop mediante Rulesets/Branch protection con revisión y checks reales.
-- Revisar el resultado de SonarCloud del último commit de `main`; la cobertura de código nuevo reportada en PR #8 fue 0.0 %.
+- Calidad de CI y SonarCloud verificada en main, commit [e4d192e](https://github.com/Rocky72153/marketplace-alojamientos/commit/e4d192e8054484174b80a5820131a419da55e907): [CI 38678644799](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644799) y [Quality Gate 38678644828](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644828); la cobertura de código nuevo de PR #8 fue 0.0 %.
 - Ratificar en Jira las estimaciones y capacidad; MARKET-68 y MARKET-69 tienen responsables pero siguen sin sprint. Publicar/enlazar la documentación aprobada en Confluence.
 - Sustituir cronograma relativo por fechas de la asignatura; asignar responsables y sprints reales.
 - Completar sesiones de validación con participantes reales; la inspección técnica y sus límites están en `docs/evidencias/validacion-prototipo-y-pruebas-2026-10-14.md`.
