@@ -27,6 +27,11 @@ Las fechas oficiales del cronograma, la aprobación del acta y las firmas están
 12. [Planificación, WBS, cronograma relativo y riesgos](12-planificacion-riesgos.md)
 13. [Checklist contra la guía](13-checklist-entrega.md)
 14. [Diagramas de secuencia](14-secuencias.md)
+15. [Requisitos del negocio](15-requisitos-negocio.md)
+16. [Ciclo de vida del software](16-ciclo-vida-software.md)
+17. [Diseño de casos de prueba](17-casos-de-prueba.md)
+18. [Desglose de subtareas y planificación Jira](18-plan-subtareas-jira.md)
+19. [Metodología Scrum + Lean](19-metodologia-scrum-lean.md)
 
 ## Fuentes de diagramas y material complementario
 
@@ -37,20 +42,22 @@ Las fechas oficiales del cronograma, la aprobación del acta y las firmas están
 - Registro de decisiones/preguntas abiertas: [../DECISIONS.md](../DECISIONS.md).
 - Guía de ejecución local: [../LOCAL_SETUP.md](../LOCAL_SETUP.md).
 - Evidencias que debe recopilar el equipo: [../evidencias/README.md](../evidencias/README.md).
+- Registro de inspección y pruebas parciales: [validacion-prototipo-y-pruebas-2026-10-14.md](../evidencias/validacion-prototipo-y-pruebas-2026-10-14.md).
 
 ## Cómo interpretar este material
 
-Los artefactos se construyeron a partir de la guía oficial del curso compartida en el proyecto. Las decisiones que el enunciado deja abiertas —por ejemplo, tecnologías, límites físicos de servicios, tarifas, política concreta de cancelación, metodología y fechas— se marcan como propuestas o pendientes de validación y no deben presentarse como acuerdos ya tomados por el grupo.
+Los artefactos se construyeron a partir de la guía oficial del curso compartida en el proyecto. Las decisiones que el enunciado deja abiertas —por ejemplo, tecnologías, límites físicos de servicios, tarifas y política concreta de cancelación— se marcan como propuestas o pendientes de validación. Scrum + Lean, los roles operativos y la cadencia semanal quedaron registrados en la documentación de planificación y Jira, pero requieren ratificación explícita del equipo y no equivalen a evidencia de ceremonias ya realizadas.
 
-Los identificadores se mantienen consistentes: ACT, INT, RN, RF, RNF, EP, HU, CU y ADR. Las historias tienen criterios de aceptación en formato **Dado que / Cuando / Entonces** y dependencias identificadas. La matriz CSV enlaza las claves reales de Jira y el PR de Entrega 1; los enlaces a pruebas de implementación, evidencias y release se agregan conforme existan.
+Los identificadores se mantienen consistentes: ACT, INT, RBN, RN, RF, RNF, EP, HU, CU, CP y ADR. Las historias tienen criterios de aceptación en formato **Dado que / Cuando / Entonces** y dependencias identificadas. La matriz CSV enlaza Jira, commits, PR, casos y la evidencia parcial ejecutada; la trazabilidad de implementación completa y releases se ampliará cuando el MVP exista.
 
 ## Validación y evidencia pendiente
 
 - Aprobación/revisión de los artefactos por integrantes y docente.
-- Ratificar en Jira las estimaciones, responsables y sprints iniciales; el plan de ocho sprints y las 38 subtareas están en revisión en [PR #5](https://github.com/Rocky72153/marketplace-alojamientos/pull/5). Confirmar capacidad real; las 69 incidencias permanecen en To Do.
+- Jira contiene 10 épicas, 19 historias y 38 subtareas en ocho sprints semanales del 19 de octubre al 14 de diciembre de 2026. MARKET-68 está asignada a Julián y MARKET-69 a Juan, pero ambas siguen sin sprint; el equipo debe ratificar Story Points, capacidad y asignación temporal.
 - Publicar o enlazar los modelos aprobados en Confluence, como pide el enunciado.
 - Abrir los BPMN en un modelador compatible, validar reglas y exportar capturas/diagramas legibles para Confluence si se requiere.
-- Configurar protección de ramas, revisar un PR real con otro integrante, verificar checks CI y configurar SonarCloud.
-- Capturar evidencia auténtica de feedback del prototipo y del uso de IA con fecha/hora y prompts completos, conforme a la guía.
+- Las PR #5, #7 y #8 tienen cambios revisados técnicamente; el estado de integración se puede consultar en [GitHub](https://github.com/Rocky72153/marketplace-alojamientos/pulls?q=is%3Apr+is%3Amerged). No consta una aprobación independiente de otro integrante, por lo que la revisión académica entre pares sigue pendiente. Configurar protección de ramas. Verificar CI y Quality Gate del último commit de `main`.
+- La inspección técnica y los resultados parciales están en `docs/evidencias/validacion-prototipo-y-pruebas-2026-10-14.md`; completar feedback con participantes reales y ejecutar el resto de los 44 casos cuando exista funcionalidad.
+- Capturar evidencia auténtica del uso de IA con fecha/hora y prompts/respuestas completos, conforme a la guía; la plantilla está en `docs/evidencias/README.md`.
 
 No se incluyen capturas ficticias ni se declara una validación que todavía no ha ocurrido.
