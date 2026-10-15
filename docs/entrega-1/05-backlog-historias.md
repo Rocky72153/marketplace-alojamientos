@@ -1,6 +1,6 @@
 # 5. Épicas e historias de usuario
 
-Estas 10 épicas y 19 historias están registradas en el proyecto [Jira Marketplace de Alojamientos (MARKET)](https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog). Este archivo conserva el detalle funcional y enlaza cada ID HU con su issue Jira. Las estimaciones iniciales de Story Points ya están aplicadas en Jira y las historias se distribuyeron en cuatro sprints como propuesta de planificación; el equipo debe ratificar estimaciones, responsables y fechas/capacidad antes de comprometerlas.
+Estas 10 épicas y 19 historias están registradas en el proyecto [Jira Marketplace de Alojamientos (MARKET)](https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog). Este archivo conserva el detalle funcional y enlaza cada ID HU con su issue Jira. Las estimaciones iniciales de Story Points ya están aplicadas en Jira y las historias se distribuyeron en ocho sprints semanales (19 oct.–14 dic. 2026) como propuesta de planificación; el equipo debe ratificar estimaciones, responsables y capacidad antes de comprometerlas.
 
 ## 5.1 Épicas
 
