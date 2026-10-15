@@ -124,3 +124,28 @@ La persistencia única dibujada facilita el primer despliegue académico; el own
 ## 9.7 Mapeo requerimiento–servicio
 
 La matriz completa debe mantenerse en Jira/Confluence y `docs/TRACEABILITY_TEMPLATE.csv`. Como mínimo, cada servicio lógico se relaciona con sus RF/ RN, procesos PB, historias HU, contrato API, propietario lógico de los datos y pruebas end-to-end. Antes de implementación, el equipo debe acordar si los servicios son módulos del mismo backend o despliegues independientes.
+
+
+## 9.8 Diagrama de despliegue propuesto
+
+Esta vista muestra los nodos lógicos de ejecución para la demostración. El proveedor y la URL de alojamiento todavía no están seleccionados, por lo que el diagrama no afirma que exista un despliegue publicado. GitHub Actions compila y verifica; no se representa como despliegue automático.
+
+```mermaid
+flowchart LR
+  User[Huésped anfitrión o administrador]
+  Browser[Navegador web]
+  subgraph Hosting[Todavía por seleccionar]
+    Web[Frontend web estático]
+    API[Backend REST Marketplace Spring Boot]
+    DB[(PostgreSQL)]
+  end
+  Payment[Proveedor de pagos en modo test]
+  CI[GitHub Actions CI]
+  User --> Browser
+  Browser -->|HTTPS| Web
+  Web -->|REST JSON HTTPS| API
+  API --> DB
+  API -->|API de prueba| Payment
+  CI -.compila y verifica el código.-> Web
+  CI -.compila y verifica el código.-> API
+```

@@ -37,6 +37,10 @@ def validate_required_files() -> None:
         "12-planificacion-riesgos.md",
         "13-checklist-entrega.md",
         "14-secuencias.md",
+        "15-requisitos-negocio.md",
+        "16-ciclo-vida-software.md",
+        "17-casos-de-prueba.md",
+        "18-plan-subtareas-jira.md",
     ]
     for relative in required:
         if not (DOCS / relative).is_file():
@@ -153,14 +157,14 @@ def validate_traceability() -> None:
         fail("La matriz de trazabilidad está vacía")
         return
     width = len(rows[0])
-    expected_columns = {"Requirement_ID", "Jira_Issue", "Acceptance_Criteria", "Design_Artifact", "Branch", "Commit", "Pull_Request", "Test_or_Evidence", "Release", "Status", "Owner"}
+    expected_columns = {"Requirement_ID", "Jira_Issue", "Acceptance_Criteria", "Design_Artifact", "Branch", "Commit", "Pull_Request", "Test_or_Evidence", "Release", "Status", "Owner", "Business_Requirement_ID", "Test_Case_ID", "Implementation_Subtask", "Test_Subtask"}
     missing = expected_columns - set(rows[0])
     if missing:
         fail(f"Faltan columnas de trazabilidad: {', '.join(sorted(missing))}")
     for number, row in enumerate(rows[1:], start=2):
         if len(row) != width:
             fail(f"Fila CSV {number} tiene {len(row)} campos, se esperaban {width}")
-        if row and row[0] and not re.match(r"^(RF|RNF|RN)-\d+$", row[0]):
+        if row and row[0] and not re.match(r"^(RF|RNF|RN|RBN)-\d+$", row[0]):
             fail(f"Identificador de requisito no reconocido en fila {number}: {row[0]}")
     if len(rows) < 10:
         fail("La matriz debe incluir el mapeo inicial de requisitos y artefactos")
