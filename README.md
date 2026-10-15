@@ -6,7 +6,7 @@ Marketplace web para conectar anfitriones con huéspedes y permitir publicación
 
 ## Entrega 1 — Análisis de requerimientos y diseño
 
-La documentación versionada de la entrega 1 se encuentra en [docs/entrega-1/README.md](docs/entrega-1/README.md). Incluye visión/alcance, actores/interesados, procesos de negocio y fuente BPMN 2.0, catálogo de requerimientos/reglas, backlog de historias con criterios de aceptación, casos de uso, modelos de dominio y datos, arquitectura orientada a servicios, contrato OpenAPI, prototipo, cronograma/WBS/riesgos, secuencias y checklist contra la guía del curso.
+El acta de constitución está disponible en [Word](docs/entrega-1/acta-constitucion-marketplace.docx) y [Markdown](docs/entrega-1/acta-constitucion-marketplace.md); las fechas oficiales, la aprobación y las firmas siguen pendientes. La documentación versionada de la entrega 1 se encuentra en [docs/entrega-1/README.md](docs/entrega-1/README.md). Incluye visión/alcance, actores/interesados, procesos de negocio y fuente BPMN 2.0, catálogo de requerimientos/reglas, backlog de historias con criterios de aceptación, casos de uso, modelos de dominio y datos, arquitectura orientada a servicios, contrato OpenAPI, prototipo, cronograma/WBS/riesgos, secuencias y checklist contra la guía del curso.
 
 **Estado de los artefactos:** son una propuesta inicial basada en el enunciado del curso. Deben ser revisados y aprobados por el equipo; Jira, Confluence, reglas administrativas y SonarCloud requieren configuración/evidencia real antes de marcarlos como completos.
 
@@ -58,7 +58,7 @@ Base de datos local: docker compose up -d db
 - Verificar visibilidad del repositorio y agregar colaboradores reales.
 - Proteger main y develop mediante Rulesets/Branch protection con revisión y checks reales.
 - Crear el proyecto SonarCloud, configurar las variables SONAR_ORGANIZATION y SONAR_PROJECT_KEY y guardar SONAR_TOKEN como secreto de Actions.
-- Completar en Jira estimaciones acordadas, responsables y sprints de las historias cargadas; publicar/enlazar la documentación en Confluence.
+- Ratificar en Jira las estimaciones, responsables y sprints iniciales registrados; el plan de ocho sprints y las 38 subtareas están en revisión en [PR #5](https://github.com/Rocky72153/marketplace-alojamientos/pull/5). Confirmar capacidad real y publicar/enlazar la documentación aprobada en Confluence.
 - Sustituir cronograma relativo por fechas de la asignatura; asignar responsables y sprints reales.
 - Capturar evidencia auténtica de validación, revisiones, PR y uso de IA conforme a la guía.
 
