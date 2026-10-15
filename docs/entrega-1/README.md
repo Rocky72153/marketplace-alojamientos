@@ -4,6 +4,13 @@
 **Curso:** Ingeniería de Software I · Ingeniería de Sistemas · Universidad El Bosque · 2026-2  
 **Estado:** paquete documental preparado para revisión; las decisiones abiertas y evidencias externas están identificadas, no se presumen aprobadas.
 
+## Acta de constitución
+
+- [Acta de constitución del proyecto en Word](acta-constitucion-marketplace.docx).
+- [Acta de constitución del proyecto en Markdown](acta-constitucion-marketplace.md).
+
+Las fechas oficiales del cronograma, la aprobación del acta y las firmas están pendientes.
+
 ## Navegación de artefactos
 
 1. [Visión, objetivos y alcance](01-vision-alcance.md)
@@ -40,7 +47,7 @@ Los identificadores se mantienen consistentes: ACT, INT, RN, RF, RNF, EP, HU, CU
 ## Validación y evidencia pendiente
 
 - Aprobación/revisión de los artefactos por integrantes y docente.
-- Completar en Jira las estimaciones acordadas, responsables, estados de trabajo y sprints/iteraciones reales; el backlog y sus claves están en la matriz sincronizada.
+- Ratificar en Jira las estimaciones, responsables y sprints iniciales; el plan de ocho sprints y las 38 subtareas están en revisión en [PR #5](https://github.com/Rocky72153/marketplace-alojamientos/pull/5). Confirmar capacidad real; las 69 incidencias permanecen en To Do.
 - Publicar o enlazar los modelos aprobados en Confluence, como pide el enunciado.
 - Abrir los BPMN en un modelador compatible, validar reglas y exportar capturas/diagramas legibles para Confluence si se requiere.
 - Configurar protección de ramas, revisar un PR real con otro integrante, verificar checks CI y configurar SonarCloud.
