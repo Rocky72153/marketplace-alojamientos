@@ -76,14 +76,3 @@ La columna «Fuente de levantamiento» identifica la guía y los artefactos del 
 
 - **WON'T en esta entrega:** procesar pagos reales o usar credenciales de producción. El flujo de reserva usa únicamente la simulación con proveedor de pruebas indicada en RF-012/RN-016.
 - Esta exclusión no es un RF entregable ni una función implementada; documenta un límite explícito del alcance académico.
-
-## 4.5 Preguntas abiertas de requisitos
-
-1. ¿Qué fórmula y porcentajes predeterminados se usarán para limpieza, tarifa de servicio, descuentos y servicios adicionales?
-2. ¿Cuál es la política concreta de cancelación y el cálculo de devolución simulada?
-3. ¿Cuáles transiciones exactas de publicación requieren revisión administrativa?
-4. ¿Cómo se define una estancia completada para habilitar reseñas en ausencia de un proceso operacional externo?
-5. ¿Qué ocurre con una reserva si el proveedor de pago de pruebas simula error o queda sin respuesta?
-6. ¿Qué intervalos de fecha y zona horaria se admiten? ¿Se excluye el día de salida del bloqueo? Propuesta habitual: sí, llegada incluida/salida excluida, confirmar.
-7. ¿Qué métricas y filtros requieren los reportes y dashboard? La guía da categorías mínimas, pero no define formato exacto.
-8. ¿Qué requisitos RNF cuantitativos (tiempos de respuesta, concurrencia y disponibilidad) desea aprobar el interesado? El enunciado no ofrece cifras.
