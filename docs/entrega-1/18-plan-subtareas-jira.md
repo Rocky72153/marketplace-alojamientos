@@ -42,7 +42,7 @@ Las historias están asignadas a los ocho sprints semanales configurados en Jira
 | MARKET Sprint 6 (23–30 nov 2026) | HU-12–HU-14 | 16 | Cancelación, notificaciones y reseñas | Futuro; carga alta, validar estimación y dependencias. |
 | MARKET Sprint 7 (30 nov–7 dic 2026) | HU-15–HU-17 | 16 | Moderación, administración y dashboard | Futuro; carga alta, validar estimación y dependencias. |
 | MARKET Sprint 8 (7–14 dic 2026) | HU-18–HU-19 | 13 | Exportación de reportes y trazabilidad técnica | Futuro; revisar capacidad en Planning. |
-| **Total** | **HU-01–HU-19** | **106** | **Alcance completo planificado** | **Velocidad todavía no medida; recalibrar después del primer sprint.** |
+| **Total** | **HU-01–HU-19** | **106** | **Backlog completo propuesto; el MVP obligatorio son HU-01, HU-04–HU-12 y HU-19** | **Velocidad todavía no medida; recalibrar después del primer sprint.** |
 
 Con una disponibilidad estimada de 4–6 horas semanales por persona, los 106 puntos no deben interpretarse como compromiso de capacidad validado. Registrar el trabajo terminado de los primeros sprints y ajustar alcance, estimaciones o duración con base en evidencia, sin degradar la Definition of Done.
 
