@@ -9,16 +9,16 @@ Esta lista se cruza con los productos esperados y las exigencias de la guía del
 | Procesos relevantes con límites, participantes, entradas/salidas, reglas, eventos/resultados y relación a requerimientos | `03-procesos-negocio.md` + `bpmn/*.bpmn` | Borrador; validar visualmente BPMN y acordar excepciones |
 | Catálogo de requerimientos identificados y priorización MVP | `04-catalogo-requerimientos.md` | Preparado; revisión de cobertura y aprobación pendiente |
 | Historias con ID, épica, enunciado, AC Dado/Cuando/Entonces, prioridad, estimación, responsable, estado, sprint y dependencias | `05-backlog-historias.md` y Jira MARKET | 19 historias cargadas; Story Points iniciales, responsables y sprints asignados; ratificación del equipo y fechas/capacidad pendientes |
-| Casos de uso con flujos principales y alternos | `06-casos-de-uso.md` | Preparado; walkthrough pendiente |
+| Casos de uso con flujos principales y alternos y diagrama | `06-casos-de-uso.md` | Ocho casos descritos y diagrama Mermaid agregado; walkthrough pendiente |
 | Modelo de dominio | `07-modelo-dominio.md` | Preparado; revisar y versionar la versión aprobada en Confluence |
 | Modelo lógico de datos y reglas de integridad | `08-modelo-datos.md` | Preparado; validar restricciones físicas y propiedad de datos |
-| Contexto, solución orientada a servicios, responsabilidades e interacciones | `09-arquitectura-servicios.md` y `14-secuencias.md` | Propuesta preparada; equipo debe aprobar límites modulares/distribuidos |
+| Contexto, solución orientada a servicios, responsabilidades, interacciones y despliegue | `09-arquitectura-servicios.md` y `14-secuencias.md` | Propuesta y diagrama de despliegue lógico agregados; proveedor/URL de hosting por definir y límites modulares por aprobar |
 | Contratos de API OpenAPI | `10-openapi.yaml` | Borrador; validar sintaxis, seguridad, códigos y relación con servicios |
 | Prototipo y plan de validación | `frontend/` y `11-prototipo-validacion.md` | Prototipo inicial; feedback real pendiente |
 | Cronograma, WBS/EDT, riesgos y responsabilidades | `12-planificacion-riesgos.md` y `19-metodologia-scrum-lean.md` | Scrum + Lean, roles operativos y ocho sprints semanales documentados; ratificación conjunta y capacidad real pendientes |
 | Manual de ejecución/despliegue | `docs/LOCAL_SETUP.md` | Guía local incluida; no equivale a despliegue de producción |
 | Metodología ágil y mejora de flujo | `19-metodologia-scrum-lean.md`, Jira MARKET | Scrum + Lean y roles operativos documentados; ratificación conjunta, ceremonias reales y métricas de ejecución pendientes |
-| Matriz de trazabilidad requisito ↔ Jira ↔ AC ↔ branch/commit ↔ PR ↔ pruebas/evidencia ↔ release | `docs/TRACEABILITY_TEMPLATE.csv` | Claves Jira y PR #4 enlazados; evidencia de implementación, pruebas y release sigue pendiente |
+| Matriz de trazabilidad requisito ↔ Jira ↔ AC ↔ branch/commit ↔ PR ↔ pruebas/evidencia ↔ release | `docs/TRACEABILITY_TEMPLATE.csv` | 20 RF, 19 RN, 9 RNF y 9 RBN trazados; casos diseñados; ejecución y release pendientes |
 | Registro de decisiones y preguntas abiertas | `docs/DECISIONS.md` | Preguntas y propuestas registradas; decisiones requieren aprobación real |
 | Requisitos del negocio explícitos derivados de objetivos del enunciado | `15-requisitos-negocio.md` | Catálogo RBN-001 a RBN-009 preparado; validar indicadores y trazabilidad con el equipo |
 | Ciclo de vida del software | `16-ciclo-vida-software.md` | Modelo iterativo-incremental propuesto, fases y criterios de salida documentados; aprobación del equipo pendiente |
@@ -26,10 +26,10 @@ Esta lista se cruza con los productos esperados y las exigencias de la guía del
 | Subtareas por cada historia | Jira `MARKET-30` a `MARKET-67` | 38 subtareas creadas y asignadas, dos por historia (implementación al responsable de la historia y prueba al otro integrante); confirmar la distribución con el equipo |
 | Jira: épicas/historias con prioridad, estimación, responsable, estado, sprint | Jira del equipo | Verificado: 10 épicas, 19 historias, 38 subtareas; story points iniciales, responsables asignados y 8 sprints semanales (19 oct.–14 dic. 2026). Capacidad no validada; ratificar estimaciones tras observar el primer sprint |
 | Confluence: visión, procesos, requisitos, diseño y manual de despliegue | Espacio Confluence del equipo | No verificable desde este repositorio; replicar/enlazar artefactos y evidencias |
-| GitHub: repositorio, ramas, commits coherentes, PR y releases | Repositorio y ramas actuales | PR #4 está fusionado en `main` sin aprobación independiente registrada; PR #5 está abierto con documentación de brechas y CI verde. Protección de ramas y SonarCloud aún pendientes |
-| GitHub Actions: compilar/construir, verificaciones y pruebas por PR | `.github/workflows/ci.yml` | Las ejecuciones de backend, frontend y documentación pasan; comprobar siempre los checks correspondientes al HEAD actual del PR antes del merge |
+| GitHub: repositorio, ramas, commits coherentes, PR y releases | Repositorio y ramas actuales | PR #5 abierto y sin revisión registrada; la CI pasa en HEAD `82371a3` pero hay commits posteriores que requieren nueva ejecución; SonarCloud está omitido. Protección de ramas y release pendientes |
+| GitHub Actions: compilar/construir, verificaciones y pruebas por PR | `.github/workflows/ci.yml` | Run `38600164927`: Backend, Frontend y Documentation CI pasaron para `82371a3`; ejecutar y revisar la CI asociada al HEAD final antes del merge |
 | SonarCloud integrado, Quality Gate visible | `.github/workflows/sonarcloud.yml` y `sonar-project.properties` | Pendiente de variables y secreto; job se omite a propósito hasta configuración |
-| Pull Request de integración con revisión de otro integrante | PR real en GitHub | PR #4 está fusionado sin aprobación independiente registrada; PR #5 (cierre de brechas documentales) está abierto y requiere revisión humana antes del merge. No se puede reconstruir retroactivamente una aprobación auténtica del PR #4 |
+| Pull Request de integración con revisión de otro integrante | PR real en GitHub | PR #5 está abierto y no tiene revisiones registradas; requiere revisión humana independiente antes del merge. No se puede reconstruir retroactivamente una aprobación auténtica del PR #4 |
 | Capturas de uso de IA con fecha/hora, prompts completos de entrada y salida | `docs/evidencias/README.md` | Guía de evidencia preparada; capturas auténticas pendientes |
 
 ## Antes de entregar
