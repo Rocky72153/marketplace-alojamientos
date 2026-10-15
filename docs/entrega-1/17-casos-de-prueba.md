@@ -2,7 +2,7 @@
 
 ## 17.1 Propósito y estado
 
-Este documento define los casos de prueba iniciales trazados a las 19 historias de usuario Jira `MARKET-5` a `MARKET-23`. **Son casos diseñados, no resultados ejecutados**: el equipo debe implementarlos, vincular la evidencia real en Jira/PR y registrar `Aprobado`, `Fallido` o `Bloqueado` con versión, fecha, responsable y evidencia cuando se ejecuten.
+Este documento define los casos de prueba iniciales trazados a las 19 historias de usuario Jira `MARKET-5` a `MARKET-23`. Son casos diseñados. A 14/10/2026 existe una ejecución parcial de validaciones del frontend para HU-07; no representa la ejecución completa de los casos. Consulta el registro real en la sección 17.6.
 
 Los datos son sintéticos. El rango de calificación 1–5, correo de prueba y algunos valores de precio son datos de prueba propuestos; confirmar los límites configurables con las decisiones de negocio. Las credenciales deben crearse en un ambiente de prueba y nunca pegarse en el documento.
 
@@ -71,3 +71,17 @@ Los datos son sintéticos. El rango de calificación 1–5, correo de prueba y a
 ## 17.5 Registro de ejecución
 
 Al ejecutar cada caso, añadir un resultado en Jira o una tabla vinculada con estos campos: `Case_ID`, `Build/Commit`, `Environment`, `Executed_By`, `Execution_Date`, `Actual_Result`, `Status (Passed/Failed/Blocked)`, `Evidence_Link`, `Defect_ID`. No convertir un caso diseñado en aprobado sin evidencia real.
+
+## 17.6 Ejecución parcial registrada
+
+La inspección técnica interactiva y las pruebas automáticas del frontend se documentan en [docs/evidencias/validacion-prototipo-y-pruebas-2026-10-14.md](../evidencias/validacion-prototipo-y-pruebas-2026-10-14.md). Las tres pruebas automáticas de entradas pasaron; CI de frontend, backend y documentación también pasó en el HEAD `83da7ff` del PR #5. Estas verificaciones no acreditan el comportamiento de los servicios de negocio.
+
+| Caso diseñado | Resultado comprobado | Estado actualizado |
+|---|---|---|
+| CP-HU07-01 | El formulario acepta datos válidos, pero no llama un servicio ni devuelve alojamientos. | Bloqueado para verificar filtros/resultados; búsqueda REST no implementada |
+| CP-HU07-02 | Las pruebas verifican ciudad vacía y salida igual a llegada; la búsqueda sin coincidencias y el rechazo de fechas invertidas en backend no se comprobaron. | Parcial; comportamiento funcional pendiente |
+| CP-ENV-01 | No se ejecutó instalación desde un clon limpio. | Pendiente |
+| CP-INT-05 | Los checks de documentación pasaron, pero no se introdujo el defecto temporal descrito por el caso. | Pendiente |
+| Otros casos HU-01–HU-19 y CP-INT-01–04 | Requieren endpoints y flujos de negocio que aún no están implementados. | Pendientes; no aprobados |
+
+La suite existente valida entradas del formulario, no los 44 casos end-to-end. No cambiar el estado de los casos restantes sin ejecutar los pasos del diseño y enlazar resultados auténticos.

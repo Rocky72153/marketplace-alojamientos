@@ -6,9 +6,9 @@ Marketplace web para conectar anfitriones con huéspedes y permitir publicación
 
 ## Entrega 1 — Análisis de requerimientos y diseño
 
-La documentación versionada de la entrega 1 se encuentra en [docs/entrega-1/README.md](docs/entrega-1/README.md). Incluye visión/alcance, actores/interesados, procesos BPMN, requerimientos, backlog, casos de uso, modelos, arquitectura, OpenAPI, prototipo, planificación y riesgos, secuencias, checklist y la metodología operativa [Scrum + Lean](docs/entrega-1/19-metodologia-scrum-lean.md).
+El acta de constitución está disponible en [Word](docs/entrega-1/acta-constitucion-marketplace.docx) y [Markdown](docs/entrega-1/acta-constitucion-marketplace.md); las fechas oficiales, la aprobación y las firmas siguen pendientes. La [documentación de Entrega 1](docs/entrega-1/README.md) reúne análisis, diseño, 19 artefactos, metodología y la [evidencia parcial de inspección y pruebas](docs/evidencias/validacion-prototipo-y-pruebas-2026-10-14.md).
 
-**Estado de los artefactos:** son una propuesta inicial basada en el enunciado del curso. Deben ser revisados y aprobados por el equipo; Jira, Confluence, reglas administrativas y SonarCloud requieren configuración/evidencia real antes de marcarlos como completos.
+**Estado de los artefactos:** la documentación es una propuesta inicial basada en el enunciado del curso y requiere validación del equipo. SonarCloud está configurado y su [Quality Gate pasó en la PR #8](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38673786517); la cobertura reportada en código nuevo es 0.0 %. La validación del último commit de `main`, la publicación en Confluence y la revisión académica independiente siguen pendientes.
 
 ## Tecnologías base propuestas
 
@@ -16,7 +16,7 @@ La documentación versionada de la entrega 1 se encuentra en [docs/entrega-1/REA
 - Persistencia: PostgreSQL.
 - Frontend inicial: HTML, CSS y JavaScript nativo.
 - CI: GitHub Actions.
-- Análisis estático: SonarQube Cloud (SonarCloud), pendiente de vincular credenciales/variables.
+- Análisis estático: SonarQube Cloud (SonarCloud), integrado en GitHub Actions; [Quality Gate aprobado en el PR #8](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38673786517).
 
 Las tecnologías son una propuesta técnica inicial y deben confirmarse con el equipo.
 
@@ -45,8 +45,6 @@ Base de datos local: docker compose up -d db
 
 ## Flujo de trabajo
 
-La planificación combina Scrum (objetivos semanales, revisión y retrospectiva) con Lean (WIP limitado, eliminación de esperas y mejora continua). Los ocho sprints están registrados en Jira; los puntos son iniciales y la capacidad deberá calibrarse con trabajo realmente terminado. Consulta [19. Metodología Scrum + Lean](docs/entrega-1/19-metodologia-scrum-lean.md).
-
 1. Asegura que la historia exista en Jira e incluya criterios Dado que / Cuando / Entonces.
 2. Crea la rama de funcionalidad/corrección/documentación desde develop.
 3. Realiza commits pequeños y coherentes, vinculando Jira cuando aplique.
@@ -59,9 +57,10 @@ La planificación combina Scrum (objetivos semanales, revisión y retrospectiva)
 
 - Verificar visibilidad del repositorio y agregar colaboradores reales.
 - Proteger main y develop mediante Rulesets/Branch protection con revisión y checks reales.
-- Crear el proyecto SonarCloud, configurar las variables SONAR_ORGANIZATION y SONAR_PROJECT_KEY y guardar SONAR_TOKEN como secreto de Actions.
-- Completar en Jira estimaciones acordadas, responsables y sprints de las historias cargadas; publicar/enlazar la documentación en Confluence.
+- Revisar el resultado de SonarCloud del último commit de `main`; la cobertura de código nuevo reportada en PR #8 fue 0.0 %.
+- Ratificar en Jira las estimaciones y capacidad; MARKET-68 y MARKET-69 tienen responsables pero siguen sin sprint. Publicar/enlazar la documentación aprobada en Confluence.
 - Sustituir cronograma relativo por fechas de la asignatura; asignar responsables y sprints reales.
-- Capturar evidencia auténtica de validación, revisiones, PR y uso de IA conforme a la guía.
+- Completar sesiones de validación con participantes reales; la inspección técnica y sus límites están en `docs/evidencias/validacion-prototipo-y-pruebas-2026-10-14.md`.
+- Recopilar capturas auténticas de uso de IA con fecha/hora y prompts completos; la plantilla no sustituye esas capturas.
 
 Consulta CONTRIBUTING.md y docs/entrega-1/13-checklist-entrega.md antes de preparar la entrega.
