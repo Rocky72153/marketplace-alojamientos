@@ -37,11 +37,3 @@ Estos escenarios son una propuesta. **No representan sesiones ya realizadas.** R
 | Revisión del dominio/datos | Comprobar relaciones, cardinalidades, propiedad de recursos y estados. | Modelo de dominio y datos sin contradicciones importantes. |
 | Revisión de API | Comparar contrato OpenAPI con historias/modelos y errores esperados. | Contratos entendibles, respuestas de error y seguridad por rol. |
 | Prueba exploratoria del prototipo | Pedir a participantes que completen escenarios sin instrucciones adicionales. | Feedback concreto y lista priorizada de ajustes. |
-
-## 11.5 Registro de validación (completar tras la revisión real)
-
-| Fecha | Artefacto/versión | Revisores/roles | Hallazgo | Decisión | Responsable | Estado |
-|---|---|---|---|---|---|---|
-| Pendiente | Pendiente | Pendiente | Pendiente | Pendiente | Pendiente | No ejecutado |
-
-No guardar datos personales sin necesidad; las capturas de evidencia deben respetar privacidad. Mantener la versión validada enlazada desde Confluence y Jira.
