@@ -47,10 +47,3 @@ La guía solicita distinguir actores que interactúan directamente, interesados,
 | Reseñas | Escribe según reserva completada | Consulta las publicadas | Modera/oculta | No aplica |
 | Dashboard y reportes globales | No | No, salvo reporte propio si se prioriza | Sí | No aplica |
 | Simular pago | Inicia/consulta resultado de su reserva | Consulta estado asociado si se define | Auditoría según permisos | Procesa resultado de prueba |
-
-## 2.5 Decisiones por confirmar
-
-- Si el anfitrión es un rol de usuario separado o una cuenta con permisos adicionales; la guía establece roles HUÉSPED, ANFITRIÓN y ADMINISTRADOR.
-- Si soporte es un actor autenticado o un interesado operativo fuera del MVP.
-- Si los administradores pueden consultar datos personales completos o solo los mínimos necesarios.
-- Qué permisos específicos tiene administración sobre reseñas y reservas futuras.
