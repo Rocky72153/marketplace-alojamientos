@@ -8,7 +8,7 @@
 ## Historial de versiones
 
 | Fecha | Versión | Autores | Organización | Descripción |
-|---|---:|---|---|---|
+|---|---|---|---|---|
 | 14/10/2026 | 1.0 | Julián Aguilera y Juan Sebastián Morales | Universidad El Bosque | Versión inicial del acta de constitución |
 
 ## Información del proyecto
@@ -30,31 +30,31 @@ El crecimiento de huéspedes y propietarios que confían la gestión de sus inmu
 
 ## Requerimientos del producto
 
-El MVP comprende las historias HU-01 a HU-19 registradas en el backlog de Entrega 1. La relación conserva la cobertura funcional del proyecto:
+El backlog de Entrega 1 documenta 19 historias del producto, pero no todas bloquean el MVP. El corte propuesto es 11 MUST (HU-01, HU-04–HU-12 y HU-19), 7 SHOULD (HU-02, HU-03, HU-13–HU-17) y 1 COULD (HU-18). Las prioridades identifican alcance planificado, no implementación actual. El levantamiento disponible es análisis documental de la guía oficial del proyecto y de sus artefactos; no se registran entrevistas ni aprobación del cliente. La relación conserva la cobertura funcional:
 
-| Historia | Alcance |
-|---|---|
-| HU-01 | Registro e inicio de sesión para huéspedes, anfitriones y administradores, con permisos según rol |
-| HU-02 | Recuperación simulada de contraseña |
-| HU-03 | Consulta y actualización del perfil; activación o desactivación de cuenta |
-| HU-04 | Creación y edición de publicaciones de alojamientos |
-| HU-05 | Activación, pausa, consulta y moderación de publicaciones |
-| HU-06 | Administración de disponibilidad y bloqueo de periodos reservados |
-| HU-07 | Búsqueda y filtros por ciudad, fechas, capacidad, tipo, precio y servicios |
-| HU-08 | Consulta del detalle del alojamiento |
-| HU-09 | Cotización desglosada por noches, precio base, limpieza, tarifa de servicio, descuentos, extras y total |
-| HU-10 | Creación inmediata de reservas, con control de disponibilidad y solicitudes repetidas |
-| HU-11 | Consulta del estado e historial de reservas |
-| HU-12 | Cancelación según la política aplicable y liberación del periodo cuando corresponda |
-| HU-13 | Notificaciones dentro de la plataforma |
-| HU-14 | Creación de reseñas y calificaciones tras una estancia completada |
-| HU-15 | Consulta y moderación de reseñas |
-| HU-16 | Administración de publicaciones, usuarios y eventos de auditoría |
-| HU-17 | Panel con usuarios, publicaciones activas, reservas, ingresos estimados y ciudades con mayor demanda |
-| HU-18 | Exportación de reportes de gestión a PDF o Excel |
-| HU-19 | Logs estructurados de autenticación, publicaciones, reservas, cancelaciones, reseñas, errores y acciones administrativas |
+| Historia | Prioridad | Alcance |
+|---|---|---|
+| HU-01 | MUST | Registro e inicio de sesión para huéspedes, anfitriones y administradores, con permisos según rol |
+| HU-02 | SHOULD | Recuperación simulada de contraseña |
+| HU-03 | SHOULD | Consulta y actualización del perfil; activación o desactivación de cuenta |
+| HU-04 | MUST | Creación y edición de publicaciones de alojamientos |
+| HU-05 | MUST | Activación, pausa, consulta y moderación de publicaciones |
+| HU-06 | MUST | Administración de disponibilidad y bloqueo de periodos reservados |
+| HU-07 | MUST | Búsqueda y filtros por ciudad, fechas, capacidad, tipo, precio y servicios |
+| HU-08 | MUST | Consulta del detalle del alojamiento |
+| HU-09 | MUST | Cotización desglosada por noches, precio base, limpieza, tarifa de servicio, descuentos, extras y total |
+| HU-10 | MUST | Creación inmediata de reservas, con control de disponibilidad y solicitudes repetidas |
+| HU-11 | MUST | Consulta del estado e historial de reservas |
+| HU-12 | MUST | Cancelación según la política aplicable y liberación del periodo cuando corresponda |
+| HU-13 | SHOULD | Notificaciones dentro de la plataforma |
+| HU-14 | SHOULD | Creación de reseñas y calificaciones tras una estancia completada |
+| HU-15 | SHOULD | Consulta y moderación de reseñas |
+| HU-16 | SHOULD | Restricción de cuentas y consulta de auditoría administrativa |
+| HU-17 | SHOULD | Panel con usuarios, publicaciones activas, reservas, ingresos estimados y ciudades con mayor demanda |
+| HU-18 | COULD | Exportación de reportes de gestión a PDF o Excel |
+| HU-19 | MUST | Logs estructurados de autenticación, publicaciones, reservas, cancelaciones, reseñas, errores y acciones administrativas |
 
-Los pagos no serán reales. El flujo se simulará exclusivamente con Stripe en modo de pruebas.
+WON'T en Entrega 1: procesar pagos reales o usar credenciales de producción. La reserva MUST usa pagos simulados exclusivamente con proveedor en modo de pruebas.
 
 ## Requerimientos del proyecto
 
@@ -72,10 +72,10 @@ La solución propuesta es un frontend web en HTML, CSS y JavaScript que consumir
 
 | Etapa | Entregables | Criterio de aceptación |
 |---|---|---|
-| Análisis | Catálogo de requerimientos y reglas, actores e interesados, procesos BPMN y backlog de épicas e historias | Historias identificables, con criterios Dado que / Cuando / Entonces y trazabilidad |
-| Diseño | Casos de uso, modelos de dominio y datos, arquitectura orientada a servicios, contrato OpenAPI, secuencias y prototipo | Diagramas coherentes con los requerimientos y servicios relacionados con las historias que atienden |
-| Construcción | Código de backend y frontend versionado en GitHub | Integración mediante Pull Request revisado; Quality Gate de SonarCloud cuando el servicio esté configurado |
-| Prueba | Pruebas automatizadas y evidencias de validación | Ejecución en GitHub Actions y demostración del flujo de publicación, búsqueda, disponibilidad, cotización y reserva inmediata |
+| Análisis | Catálogo de requerimientos y reglas, actores e interesados, procesos BPMN y backlog de épicas e historias | El sistema debe contar con historias identificables, prioridad MoSCoW y trazabilidad; cada criterio empieza con «El sistema debe» y conserva Dado que / Cuando / Entonces |
+| Diseño | Casos de uso, modelos de dominio y datos, arquitectura orientada a servicios, contrato OpenAPI, secuencias y prototipo | El sistema debe tener diagramas coherentes con requerimientos priorizados y servicios relacionados con las historias que atienden |
+| Construcción | Código de backend y frontend versionado en GitHub | El sistema debe integrarse mediante Pull Request revisado y cumplir el Quality Gate de SonarCloud cuando el servicio esté configurado |
+| Prueba | Pruebas automatizadas y evidencias de validación | El sistema debe superar la ejecución de pruebas en GitHub Actions y demostrar el flujo de publicación, búsqueda, disponibilidad, cotización y reserva inmediata |
 
 Los grupos de procesos se relacionan con estos entregables: iniciación (acta), planeación (cronograma, WBS/EDT, riesgos y backlog), ejecución (Entregas 1 y 2), monitoreo y control (Jira, integración continua, análisis estático y trazabilidad), y cierre (acta de cierre, informe final y sustentación).
 
