@@ -4,7 +4,9 @@ info:
   version: 0.1.0
   description: >-
     Contrato inicial propuesto para revisión en la Entrega 1. Describe capacidades
-    del MVP académico; todavía no implica que todas las operaciones estén implementadas.
+    del catálogo del producto; las prioridades MoSCoW de los RF delimitan cuáles
+    son obligatorias para el MVP. Las operaciones SHOULD/COULD no bloquean el MVP
+    y ninguna operación descrita implica que ya esté implementada.
     Los enums usan valores serializados en inglés: roles GUEST=HUÉSPED, HOST=ANFITRIÓN,
     ADMIN=ADMINISTRADOR; estados de publicación DRAFT=BORRADOR,
     PENDING_REVIEW=PENDIENTE_REVISION, ACTIVE=ACTIVA, PAUSED=PAUSADA y
