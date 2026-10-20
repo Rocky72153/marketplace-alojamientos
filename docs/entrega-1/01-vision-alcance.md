@@ -31,26 +31,28 @@ El aumento de oferta y demanda exige coordinar datos de los alojamientos, period
 
 Los indicadores son propuestas para el dashboard; el enunciado requiere indicadores básicos, pero no suministra metas numéricas ni una línea base.
 
-## 1.6 Alcance obligatorio del MVP
+## 1.6 Alcance obligatorio del MVP (MUST)
 
-1. Registro e inicio de sesión para roles HUÉSPED, ANFITRIÓN y ADMINISTRADOR; protección de rutas y recuperación simulada de contraseña.
-2. Consulta y actualización de perfil; activación y desactivación de cuenta.
-3. Crear, editar, activar, pausar y consultar publicaciones con título, descripción, ubicación textual, tipo, capacidad, precio por noche, servicios, reglas e imágenes.
-4. Administración de periodos disponibles y bloqueo automático de periodos reservados.
-5. Búsqueda por ciudad, fechas, capacidad, tipo, rango de precio y servicios; detalle para comparación.
-6. Cotización con noches, precio base, limpieza, servicio, descuentos, servicios adicionales y total.
-7. Creación consistente de reservas, consulta de estado e historial.
-8. Cancelaciones aplicando la política de la publicación y liberando disponibilidad cuando corresponda.
-9. Registro y consulta de notificaciones en la plataforma.
-10. Reseñas/calificaciones después de una estancia completada, consulta y moderación administrativa.
-11. Administración: bloquear publicaciones, restringir usuarios y consultar auditoría.
-12. Dashboard básico: usuarios, publicaciones activas, reservas por estado, ingresos estimados y ciudades con mayor demanda.
-13. Exportación PDF o Excel de reportes de usuarios, publicaciones, reservas, ingresos estimados o demanda.
-14. Logs estructurados de autenticación, publicación, reserva, cancelación, reseñas, errores y acciones administrativas.
+Para Entrega 1, MUST define el corte funcional mínimo y sus dependencias; SHOULD queda para después de completar el flujo MUST si hay capacidad, y COULD es opcional. La prioridad indica alcance planificado, no implementación existente. Las 19 historias del backlog describen el producto objetivo, pero solo estas 11 historias son puerta de salida del MVP:
+
+1. HU-01: registro/inicio de sesión por rol, rutas protegidas y permisos.
+2. HU-04 y HU-05: crear/editar publicaciones, datos mínimos, estados y bloqueo administrativo de publicaciones.
+3. HU-06: disponibilidad y bloqueo de periodos confirmados.
+4. HU-07 y HU-08: búsqueda, filtros y detalle de alojamientos.
+5. HU-09: cotización desglosada.
+6. HU-10 y HU-11: reserva inmediata idempotente, pago de prueba y consulta de estado/historial.
+7. HU-12: cancelación conforme a la política y liberación autorizada de disponibilidad.
+8. HU-19: trazabilidad técnica mínima para operaciones críticas, errores y acciones administrativas.
+
+**SHOULD (HU-02, HU-03, HU-13, HU-14, HU-15, HU-16, HU-17):** recuperación simulada de contraseña, autogestión del perfil/cuenta, notificaciones, reseñas/moderación, restricción de cuentas/consulta administrativa y dashboard. Son capacidades valiosas, pero no bloquean el flujo transaccional mínimo.
+
+**COULD (HU-18):** exportación PDF/Excel, si hay capacidad después de completar MUST y SHOULD prioritarios.
+
+La prioridad, fuente de levantamiento y criterio verificable de cada RF están en [04. Catálogo de requerimientos](04-catalogo-requerimientos.md); la relación con historias, casos de uso, pruebas y evidencias está en la matriz de trazabilidad.
 
 ## 1.7 Fuera de alcance o límites explícitos
 
-- Pagos reales: prohibidos en el MVP académico; el pago debe simularse mediante un proveedor como Stripe en modo de pruebas.
+- WON'T de Entrega 1: procesar pagos reales o usar credenciales de producción. El pago del MVP se simula mediante un proveedor en modo de pruebas.
 - No se da por hecho un sistema de chat, mapas, favoritos, MFA, contenerización de la aplicación completa ni despliegue automatizado: son funcionalidades opcionales.
 - No se han definido impuestos, moneda alternativa, reglas antifraude, verificación legal de identidad ni políticas legales reales; no deben inventarse como requisitos confirmados.
 - El prototipo actual es solamente una interfaz inicial de búsqueda y no constituye una implementación funcional del marketplace.
@@ -65,8 +67,8 @@ Los indicadores son propuestas para el dashboard; el enunciado requiere indicado
 
 ## 1.9 Criterios globales de éxito de la entrega 1
 
-- Actores, procesos, requerimientos, historias y reglas de negocio son consistentes entre sí.
-- Cada historia priorizada tiene criterios de aceptación verificables y dependencias identificadas.
-- Los modelos explican el dominio, los datos y la arquitectura propuesta.
-- Las decisiones abiertas se documentan, se asigna responsable y se obtiene aprobación antes de implementar.
-- La trazabilidad permite conectar cada requerimiento con backlog, diseño y futura evidencia de código/pruebas/release.
+- El sistema debe contar con una especificación en la que actores, procesos, requerimientos, historias y reglas de negocio sean consistentes entre sí.
+- El sistema debe tener historias priorizadas con criterios de aceptación verificables y dependencias identificadas.
+- El sistema debe estar descrito con modelos coherentes del dominio, los datos y la arquitectura propuesta.
+- El sistema debe avanzar a implementación solo con decisiones abiertas documentadas, responsables asignados y aprobaciones requeridas.
+- El sistema debe permitir trazar cada requerimiento al backlog, diseño y futura evidencia de código, pruebas y release.
