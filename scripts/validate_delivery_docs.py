@@ -157,7 +157,7 @@ def validate_traceability() -> None:
         fail("La matriz de trazabilidad está vacía")
         return
     width = len(rows[0])
-    expected_columns = {"Requirement_ID", "Jira_Issue", "Acceptance_Criteria", "Design_Artifact", "Branch", "Commit", "Pull_Request", "Test_or_Evidence", "Release", "Status", "Owner", "Business_Requirement_ID", "Test_Case_ID", "Implementation_Subtask", "Test_Subtask"}
+    expected_columns = {"Requirement_ID", "MoSCoW_Priority", "Elicitation_Source", "Jira_Issue", "Acceptance_Criteria", "Design_Artifact", "Branch", "Commit", "Pull_Request", "Test_or_Evidence", "Release", "Status", "Owner", "Business_Requirement_ID", "Test_Case_ID", "Implementation_Subtask", "Test_Subtask"}
     missing = expected_columns - set(rows[0])
     if missing:
         fail(f"Faltan columnas de trazabilidad: {', '.join(sorted(missing))}")

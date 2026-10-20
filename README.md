@@ -46,7 +46,7 @@ Base de datos local: docker compose up -d db
 
 ## Flujo de trabajo
 
-1. Asegura que la historia exista en Jira e incluya criterios Dado que / Cuando / Entonces.
+1. Asegura que la historia exista en Jira e incluya criterios que comiencen con «El sistema debe» y conserven el escenario Dado que / Cuando / Entonces.
 2. Crea la rama de funcionalidad/corrección/documentación desde develop.
 3. Realiza commits pequeños y coherentes, vinculando Jira cuando aplique.
 4. Abre un Pull Request hacia develop con la plantilla incluida.
@@ -65,3 +65,7 @@ Base de datos local: docker compose up -d db
 - Recopilar capturas auténticas de uso de IA con fecha/hora y prompts completos; la plantilla no sustituye esas capturas.
 
 Consulta CONTRIBUTING.md y docs/entrega-1/13-checklist-entrega.md antes de preparar la entrega.
+
+Links: 
+https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/753665/Entrega+1+estado+evidencia+y+ratificaci+n+del+equipo
+https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog

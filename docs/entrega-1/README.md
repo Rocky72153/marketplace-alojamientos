@@ -52,7 +52,7 @@ Las fechas oficiales del cronograma, la aprobación del acta y las firmas están
 
 Los artefactos se construyeron a partir de la guía oficial del curso compartida en el proyecto. Las decisiones que el enunciado deja abiertas —por ejemplo, tecnologías, límites físicos de servicios, tarifas y política concreta de cancelación— se marcan como propuestas o pendientes de validación. Scrum + Lean, los roles operativos y la cadencia semanal quedaron registrados y fueron incluidos en la ratificación del paquete del 14/10/2026; esto no acredita que las ceremonias se hayan realizado.
 
-Los identificadores se mantienen consistentes: ACT, INT, RBN, RN, RF, RNF, EP, HU, CU, CP y ADR. Las historias tienen criterios de aceptación en formato **Dado que / Cuando / Entonces** y dependencias identificadas. La matriz CSV enlaza Jira, commits, PR, casos y la evidencia parcial ejecutada; la trazabilidad de implementación completa y releases se ampliará cuando el MVP exista.
+Los identificadores se mantienen consistentes: ACT, INT, RBN, RN, RF, RNF, EP, HU, CU, CP y ADR. Las historias tienen criterios que empiezan con **El sistema debe**, conservan el escenario **Dado que / Cuando / Entonces** y declaran dependencias. El catálogo prioriza 11 historias MUST, 7 SHOULD y 1 COULD para Entrega 1; prioridad no equivale a implementación. La matriz CSV registra también prioridad MoSCoW y fuente de levantamiento, además de enlazar Jira, commits, PR, casos y evidencia parcial ejecutada; la trazabilidad de implementación completa y releases se ampliará cuando el MVP exista.
 
 ## Validación y evidencia pendiente
 
