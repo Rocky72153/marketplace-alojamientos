@@ -54,16 +54,6 @@ Base de datos local: docker compose up -d db
 6. Integra a main mediante Pull Request cuando la versión esté estable.
 7. Actualiza la matriz de trazabilidad con las claves/enlaces reales de Jira, commits, PR, pruebas y releases.
 
-## Pendientes de configuración externa
-
-- Verificar visibilidad del repositorio y agregar colaboradores reales.
-- Proteger main y develop mediante Rulesets/Branch protection con revisión y checks reales.
-- Calidad de CI y SonarCloud verificada en main, commit [e4d192e](https://github.com/Rocky72153/marketplace-alojamientos/commit/e4d192e8054484174b80a5820131a419da55e907): [CI 38678644799](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644799) y [Quality Gate 38678644828](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644828); la cobertura de código nuevo de PR #8 fue 0.0 %.
-- Ratificar en Jira las estimaciones y capacidad; MARKET-68 y MARKET-69 tienen responsables pero siguen sin sprint. La documentación de Entrega 1 ya está enlazada en el [índice de Confluence MARKET](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/753665/Entrega+1+estado+evidencia+y+ratificaci+n+del+equipo).
-- Sustituir cronograma relativo por fechas de la asignatura; asignar responsables y sprints reales.
-- Completar sesiones de validación con participantes reales; la inspección técnica y sus límites están en `docs/evidencias/validacion-prototipo-y-pruebas-2026-10-14.md`.
-- Recopilar capturas auténticas de uso de IA con fecha/hora y prompts completos; la plantilla no sustituye esas capturas.
-
 Consulta CONTRIBUTING.md y docs/entrega-1/13-checklist-entrega.md antes de preparar la entrega.
 
 Links: 
