@@ -203,10 +203,3 @@ erDiagram
 4. **Bloqueo de anuncio:** no eliminar reservas futuras al bloquear la publicación; señalarlas para revisión manual.
 5. **Auditoría/exportación:** registrar actor y fecha sin exponer secretos o innecesarios datos sensibles.
 
-## Pendientes para completar el modelo físico
-
-- Definir estrategia exacta de intervalos y bloqueos concurrentes.
-- Definir moneda y redondeo decimal de importes.
-- Definir si la publicación puede tener más de una política/versiones históricas.
-- Alinear propiedad de tablas/entidades con límites de servicios para evitar acoplamiento transaccional indebido.
-- Derivar migraciones SQL versionadas cuando se acepte el esquema físico.
