@@ -49,21 +49,20 @@ public class Listing {
 
     protected Listing() { }
 
-    public Listing(MarketplaceUser host, String title, String description, String city, String location, String type,
-            int capacity, BigDecimal pricePerNight, Set<String> amenityIds, String rules, Set<String> imageReferences) {
+    public Listing(MarketplaceUser host, ListingData details) {
         this.id = UUID.randomUUID();
         this.host = host;
         this.status = ListingStatus.DRAFT;
-        update(title, description, city, location, type, capacity, pricePerNight, amenityIds, rules, imageReferences);
+        update(details);
     }
 
-    public void update(String title, String description, String city, String location, String type, int capacity,
-            BigDecimal pricePerNight, Set<String> amenityIds, String rules, Set<String> imageReferences) {
-        this.title = title.trim(); this.description = description.trim(); this.city = city.trim();
-        this.location = location.trim(); this.type = type.trim(); this.capacity = capacity; this.pricePerNight = pricePerNight;
-        this.amenityIds = amenityIds == null ? new LinkedHashSet<>() : new LinkedHashSet<>(amenityIds);
-        this.rules = rules == null ? null : rules.trim();
-        this.imageReferences = imageReferences == null ? new LinkedHashSet<>() : new LinkedHashSet<>(imageReferences);
+    public void update(ListingData details) {
+        this.title = details.title().trim(); this.description = details.description().trim(); this.city = details.city().trim();
+        this.location = details.location().trim(); this.type = details.type().trim(); this.capacity = details.capacity();
+        this.pricePerNight = details.pricePerNight();
+        this.amenityIds = details.amenityIds() == null ? new LinkedHashSet<>() : new LinkedHashSet<>(details.amenityIds());
+        this.rules = details.rules() == null ? null : details.rules().trim();
+        this.imageReferences = details.imageReferences() == null ? new LinkedHashSet<>() : new LinkedHashSet<>(details.imageReferences());
     }
 
     public void setStatus(ListingStatus status) { this.status = status; }

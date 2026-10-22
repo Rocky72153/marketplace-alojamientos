@@ -15,6 +15,7 @@
 # Node
 **/node_modules/
 frontend/dist/
+frontend/coverage/
 npm-debug.log*
 
 # Local configuration / secrets

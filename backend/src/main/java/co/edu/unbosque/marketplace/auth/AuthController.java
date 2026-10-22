@@ -53,7 +53,7 @@ public class AuthController {
         }
         MarketplaceUser user = users.save(new MarketplaceUser(request.name().trim(), email,
                 passwordEncoder.encode(request.password()), role));
-        audit.record("ACCOUNT_REGISTERED", user.getId(), "USER", user.getId(), "SUCCESS", null);
+        audit.recordEvent("ACCOUNT_REGISTERED", user.getId(), "USER", user.getId(), "SUCCESS", null);
         return response(user);
     }
 
@@ -62,10 +62,10 @@ public class AuthController {
         String email = normalizeEmail(request.email());
         MarketplaceUser user = users.findByEmail(email).orElse(null);
         if (user == null || !passwordEncoder.matches(request.password(), user.getPassword()) || !user.isEnabled() || !user.isAccountNonLocked()) {
-            audit.record("LOGIN", user == null ? null : user.getId(), "USER", user == null ? null : user.getId(), "REJECTED", null);
+            audit.recordEvent("LOGIN", user == null ? null : user.getId(), "USER", user == null ? null : user.getId(), "REJECTED", null);
             throw new DomainException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Correo o contraseña inválidos.");
         }
-        audit.record("LOGIN", user.getId(), "USER", user.getId(), "SUCCESS", null);
+        audit.recordEvent("LOGIN", user.getId(), "USER", user.getId(), "SUCCESS", null);
         return response(user);
     }
 
@@ -73,7 +73,7 @@ public class AuthController {
     public RecoveryResponse recovery(@Valid @RequestBody RecoveryRequest request) {
         String email = normalizeEmail(request.email());
         MarketplaceUser user = users.findByEmail(email).orElse(null);
-        audit.record("RECOVERY_REQUESTED", user == null ? null : user.getId(), "USER", user == null ? null : user.getId(), "RECEIVED", null);
+        audit.recordEvent("RECOVERY_REQUESTED", user == null ? null : user.getId(), "USER", user == null ? null : user.getId(), "RECEIVED", null);
         return new RecoveryResponse("Si la cuenta existe, recibirás instrucciones para continuar.");
     }
 

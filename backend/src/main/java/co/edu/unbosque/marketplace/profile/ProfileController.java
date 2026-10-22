@@ -38,7 +38,7 @@ public class ProfileController {
         MarketplaceUser user = current(principal);
         user.updateProfile(request.name(), request.phone(), request.photoReference());
         users.save(user);
-        audit.record("PROFILE_UPDATED", user.getId(), "USER", user.getId(), "SUCCESS", null);
+        audit.recordEvent("PROFILE_UPDATED", user.getId(), "USER", user.getId(), "SUCCESS", null);
         return ProfileResponse.from(user);
     }
 
@@ -47,7 +47,7 @@ public class ProfileController {
         MarketplaceUser user = current(principal);
         user.deactivate();
         users.save(user);
-        audit.record("ACCOUNT_DEACTIVATED", user.getId(), "USER", user.getId(), "SUCCESS", null);
+        audit.recordEvent("ACCOUNT_DEACTIVATED", user.getId(), "USER", user.getId(), "SUCCESS", null);
         return new DeactivationResponse("La cuenta fue desactivada.");
     }
 

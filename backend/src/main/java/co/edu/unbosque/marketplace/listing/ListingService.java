@@ -4,10 +4,8 @@ import co.edu.unbosque.marketplace.api.DomainException;
 import co.edu.unbosque.marketplace.audit.AuditService;
 import co.edu.unbosque.marketplace.security.AccountRole;
 import co.edu.unbosque.marketplace.security.MarketplaceUser;
-import co.edu.unbosque.marketplace.security.MarketplaceUserRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -24,23 +22,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ListingService {
+    private static final String LISTING_ENTITY = "LISTING";
+    private static final String SUCCESS = "SUCCESS";
     private final ListingRepository listings;
     private final AvailabilityRepository availability;
-    private final MarketplaceUserRepository users;
     private final AuditService audit;
 
-    public ListingService(ListingRepository listings, AvailabilityRepository availability,
-            MarketplaceUserRepository users, AuditService audit) {
-        this.listings = listings; this.availability = availability; this.users = users; this.audit = audit;
+    public ListingService(ListingRepository listings, AvailabilityRepository availability, AuditService audit) {
+        this.listings = listings; this.availability = availability; this.audit = audit;
     }
 
     @Transactional
     public Listing create(MarketplaceUser principal, ListingInput input) {
         requireRole(principal, AccountRole.HOST, AccountRole.ADMIN);
         MarketplaceUser host = principal;
-        Listing listing = listings.save(new Listing(host, input.title(), input.description(), input.city(), input.location(),
-                input.type(), input.capacity(), input.pricePerNight(), input.amenityIds(), input.rules(), input.imageReferences()));
-        audit.record("LISTING_CREATED", principal.getId(), "LISTING", listing.getId(), "SUCCESS", null);
+        Listing listing = listings.save(new Listing(host, input.toData()));
+        audit.recordEvent("LISTING_CREATED", principal.getId(), LISTING_ENTITY, listing.getId(), SUCCESS, null);
         return listing;
     }
 
@@ -49,9 +46,8 @@ public class ListingService {
         Listing listing = get(id);
         requireOwnerOrAdmin(principal, listing);
         if (listing.getStatus() == ListingStatus.BLOCKED) throw forbidden("Una publicación bloqueada no se puede editar.");
-        listing.update(input.title(), input.description(), input.city(), input.location(), input.type(), input.capacity(),
-                input.pricePerNight(), input.amenityIds(), input.rules(), input.imageReferences());
-        audit.record("LISTING_UPDATED", principal.getId(), "LISTING", id, "SUCCESS", null);
+        listing.update(input.toData());
+        audit.recordEvent("LISTING_UPDATED", principal.getId(), LISTING_ENTITY, id, SUCCESS, null);
         return listings.save(listing);
     }
 
@@ -72,7 +68,7 @@ public class ListingService {
         if (!allowed) throw new DomainException(HttpStatus.CONFLICT, "INVALID_STATE_TRANSITION", "El cambio de estado solicitado no está permitido.");
         listing.setStatus(target);
         listings.save(listing);
-        audit.record("LISTING_STATE_CHANGED", principal.getId(), "LISTING", id, "SUCCESS", reason);
+        audit.recordEvent("LISTING_STATE_CHANGED", principal.getId(), LISTING_ENTITY, id, SUCCESS, reason);
         return listing;
     }
 
@@ -82,21 +78,12 @@ public class ListingService {
         if ((checkIn == null) != (checkOut == null)) throw validation("Debes indicar llegada y salida.");
         if (checkIn != null && !checkOut.isAfter(checkIn)) throw validation("La salida debe ser posterior a la llegada.");
         if (guests != null && guests < 1) throw validation("El número de huéspedes debe ser al menos 1.");
-        if (minPrice != null && minPrice.signum() < 0 || maxPrice != null && maxPrice.signum() < 0
+        if ((minPrice != null && minPrice.signum() < 0) || (maxPrice != null && maxPrice.signum() < 0)
                 || minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) throw validation("El rango de precios no es válido.");
-        List<Listing> results = new ArrayList<>();
-        for (Listing listing : listings.findByStatus(ListingStatus.ACTIVE)) {
-            if (city != null && !listing.getCity().toLowerCase(Locale.ROOT).contains(city.trim().toLowerCase(Locale.ROOT))) continue;
-            if (type != null && !listing.getType().equalsIgnoreCase(type.trim())) continue;
-            if (guests != null && listing.getCapacity() < guests) continue;
-            if (minPrice != null && listing.getPricePerNight().compareTo(minPrice) < 0) continue;
-            if (maxPrice != null && listing.getPricePerNight().compareTo(maxPrice) > 0) continue;
-            if (amenityIds != null && !amenityIds.isEmpty() && !listing.getAmenityIds().containsAll(amenityIds)) continue;
-            if (checkIn != null && !isAvailable(listing, checkIn, checkOut)) continue;
-            results.add(listing);
-        }
-        results.sort(Comparator.comparing(Listing::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())));
-        return results;
+        return listings.findByStatus(ListingStatus.ACTIVE).stream()
+                .filter(listing -> matchesFilters(listing, city, checkIn, checkOut, guests, type, minPrice, maxPrice, amenityIds))
+                .sorted(Comparator.comparing(Listing::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -137,7 +124,7 @@ public class ListingService {
         List<AvailabilityPeriod> saved = sorted.stream().map(period -> new AvailabilityPeriod(listing, period.startDate(),
                 period.endDate(), period.type(), null)).toList();
         availability.saveAll(saved);
-        audit.record("AVAILABILITY_UPDATED", principal.getId(), "LISTING", listingId, "SUCCESS", null);
+        audit.recordEvent("AVAILABILITY_UPDATED", principal.getId(), LISTING_ENTITY, listingId, SUCCESS, null);
         return availability.findByListing_Id(listingId);
     }
 
@@ -146,6 +133,34 @@ public class ListingService {
         boolean covered = periods.stream().anyMatch(period -> period.getType() == AvailabilityType.AVAILABLE
                 && !period.getStartDate().isAfter(checkIn) && !period.getEndDate().isBefore(checkOut));
         return covered && periods.stream().noneMatch(period -> period.getType() != AvailabilityType.AVAILABLE && period.overlaps(checkIn, checkOut));
+    }
+
+    private boolean matchesFilters(Listing listing, String city, LocalDate checkIn, LocalDate checkOut, Integer guests,
+            String type, BigDecimal minPrice, BigDecimal maxPrice, Set<String> amenityIds) {
+        return matchesCity(listing, city) && matchesType(listing, type) && hasCapacity(listing, guests)
+                && withinPriceRange(listing, minPrice, maxPrice) && hasAmenities(listing, amenityIds)
+                && (checkIn == null || isAvailable(listing, checkIn, checkOut));
+    }
+
+    private boolean matchesCity(Listing listing, String city) {
+        return city == null || listing.getCity().toLowerCase(Locale.ROOT).contains(city.trim().toLowerCase(Locale.ROOT));
+    }
+
+    private boolean matchesType(Listing listing, String type) {
+        return type == null || listing.getType().equalsIgnoreCase(type.trim());
+    }
+
+    private boolean hasCapacity(Listing listing, Integer guests) {
+        return guests == null || listing.getCapacity() >= guests;
+    }
+
+    private boolean withinPriceRange(Listing listing, BigDecimal minPrice, BigDecimal maxPrice) {
+        return (minPrice == null || listing.getPricePerNight().compareTo(minPrice) >= 0)
+                && (maxPrice == null || listing.getPricePerNight().compareTo(maxPrice) <= 0);
+    }
+
+    private boolean hasAmenities(Listing listing, Set<String> amenityIds) {
+        return amenityIds == null || amenityIds.isEmpty() || listing.getAmenityIds().containsAll(amenityIds);
     }
 
     private Listing get(UUID id) { return listings.findById(id).orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "NOT_FOUND", "No se encontró la publicación.")); }
@@ -163,6 +178,11 @@ public class ListingService {
             @NotBlank @Size(max=120) String city, @NotBlank @Size(max=240) String location,
             @NotBlank @Size(max=50) String type, @Min(1) int capacity,
             @NotNull @DecimalMin(value="0.01") BigDecimal pricePerNight, Set<String> amenityIds,
-            @Size(max=2000) String rules, Set<String> imageReferences) { }
+            @Size(max=2000) String rules, Set<String> imageReferences) {
+        ListingData toData() {
+            return new ListingData(title, description, city, location, type, capacity, pricePerNight,
+                    amenityIds, rules, imageReferences);
+        }
+    }
     public record AvailabilityInput(@NotNull LocalDate startDate, @NotNull LocalDate endDate, @NotNull AvailabilityType type) { }
 }

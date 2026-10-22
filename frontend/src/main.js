@@ -43,9 +43,11 @@ if (typeof document !== 'undefined') {
           card.append(title, location, price);
           results?.append(card);
         }
-        feedback.textContent = total ? `${total} alojamiento${total === 1 ? '' : 's'} encontrado${total === 1 ? '' : 's'}.` : 'No encontramos alojamientos con esos criterios.';
-      }).catch((failure) => {
-        feedback.textContent = failure.message || 'No fue posible consultar los alojamientos.';
+        const noun = total === 1 ? 'alojamiento' : 'alojamientos';
+        const resultLabel = `${total} ${noun} encontrado${total === 1 ? '' : 's'}.`;
+        feedback.textContent = total ? resultLabel : 'No encontramos alojamientos con esos criterios.';
+      }).catch((error_) => {
+        feedback.textContent = error_.message || 'No fue posible consultar los alojamientos.';
         results?.replaceChildren();
       });
     });

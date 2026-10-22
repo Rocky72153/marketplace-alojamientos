@@ -12,7 +12,7 @@ public class AuditService {
         this.repository = repository;
     }
 
-    public void record(String eventType, UUID actorId, String entityType, UUID entityId, String result, String reason) {
+    public void recordEvent(String eventType, UUID actorId, String entityType, UUID entityId, String result, String reason) {
         repository.save(new AuditEvent(eventType, actorId, entityType, entityId, result, reason));
     }
 }

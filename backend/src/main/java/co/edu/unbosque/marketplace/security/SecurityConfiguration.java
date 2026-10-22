@@ -29,6 +29,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfiguration {
+    private static final String CORRELATION_ID_HEADER = "X-Correlation-ID";
 
     @Bean
     UserDetailsService userDetailsService(MarketplaceUserRepository users) {
@@ -43,9 +44,9 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, exception) -> writeError(
-                                response, objectMapper, 401, "UNAUTHORIZED", "Sesión ausente o inválida.", request.getHeader("X-Correlation-ID")))
+                                response, objectMapper, 401, "UNAUTHORIZED", "Sesión ausente o inválida.", request.getHeader(CORRELATION_ID_HEADER)))
                         .accessDeniedHandler((request, response, exception) -> writeError(
-                                response, objectMapper, 403, "FORBIDDEN", "No tienes permiso para realizar esta operación.", request.getHeader("X-Correlation-ID"))))
+                                response, objectMapper, 403, "FORBIDDEN", "No tienes permiso para realizar esta operación.", request.getHeader(CORRELATION_ID_HEADER))))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
@@ -67,8 +68,8 @@ public class SecurityConfiguration {
         configuration.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim).filter(origin -> !origin.isEmpty()).toList());
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Correlation-ID", "X-Admin-Bootstrap"));
-        configuration.setExposedHeaders(Arrays.asList("X-Correlation-ID"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", CORRELATION_ID_HEADER, "X-Admin-Bootstrap"));
+        configuration.setExposedHeaders(Arrays.asList(CORRELATION_ID_HEADER));
         configuration.setAllowCredentials(false);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", configuration);
