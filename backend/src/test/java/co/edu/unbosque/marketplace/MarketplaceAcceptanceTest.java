@@ -24,6 +24,10 @@ import co.edu.unbosque.marketplace.listing.AvailabilityPeriod;
 import co.edu.unbosque.marketplace.listing.AvailabilityRepository;
 import co.edu.unbosque.marketplace.listing.AvailabilityType;
 import co.edu.unbosque.marketplace.listing.ListingRepository;
+import co.edu.unbosque.marketplace.listing.ListingService;
+import co.edu.unbosque.marketplace.audit.AuditEventRepository;
+import co.edu.unbosque.marketplace.security.MarketplaceUserRepository;
+import co.edu.unbosque.marketplace.audit.AuditEvent;
 import java.time.LocalDate;
 
 @SpringBootTest
@@ -34,6 +38,9 @@ class MarketplaceAcceptanceTest {
     @Autowired ObjectMapper mapper;
     @Autowired ListingRepository listings;
     @Autowired AvailabilityRepository availability;
+    @Autowired ListingService listingService;
+    @Autowired AuditEventRepository auditEvents;
+    @Autowired MarketplaceUserRepository users;
 
     @Test
     void registrationLoginRecoveryAndProfileAreSafe() throws Exception {
@@ -51,6 +58,7 @@ class MarketplaceAcceptanceTest {
                         .content("{\"email\":\"" + email.toUpperCase() + "\",\"password\":\"safe-password-123\"}"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.user.role").value("GUEST"));
 
+        long recoveryEventsBefore = auditEvents.countByEventType("RECOVERY_REQUESTED");
         String existing = mockMvc.perform(post("/api/auth/recovery").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"" + email + "\"}"))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
@@ -58,11 +66,28 @@ class MarketplaceAcceptanceTest {
                         .content("{\"email\":\"absent-" + UUID.randomUUID() + "@example.test\"}"))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         org.junit.jupiter.api.Assertions.assertEquals(mapper.readTree(existing).get("message").asText(), mapper.readTree(absent).get("message").asText());
+        org.junit.jupiter.api.Assertions.assertEquals(recoveryEventsBefore + 2, auditEvents.countByEventType("RECOVERY_REQUESTED"));
+        mockMvc.perform(post("/api/auth/recovery").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"not-an-email\"}"))
+                .andExpect(status().isBadRequest());
 
         mockMvc.perform(get("/api/profile/me").header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.email").value(email));
+        mockMvc.perform(get("/api/profile/me"))
+                .andExpect(status().isUnauthorized());
         mockMvc.perform(patch("/api/profile/me").header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"Updated Guest\",\"phone\":\"3001234567\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.name").value("Updated Guest"));
+
+        String otherEmail = "profile-other-" + UUID.randomUUID() + "@example.test";
+        MvcResult other = mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Other Guest\",\"email\":\"" + otherEmail + "\",\"password\":\"safe-password-123\"}"))
+                .andExpect(status().isOk()).andReturn();
+        String otherToken = mapper.readTree(other.getResponse().getContentAsString()).get("accessToken").asText();
+        mockMvc.perform(patch("/api/profile/me").header("Authorization", "Bearer " + otherToken).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Other Profile\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.email").value(otherEmail));
+        mockMvc.perform(get("/api/profile/me").header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.name").value("Updated Guest"));
         mockMvc.perform(delete("/api/profile/me").header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
@@ -81,6 +106,12 @@ class MarketplaceAcceptanceTest {
                 .andExpect(status().isOk()).andReturn();
         String token = mapper.readTree(registered.getResponse().getContentAsString()).get("accessToken").asText();
         String listingBody = "{\"title\":\"Casa central\",\"description\":\"Alojamiento de prueba\",\"city\":\"Bogotá\",\"location\":\"Chapinero\",\"type\":\"APARTMENT\",\"capacity\":4,\"pricePerNight\":180000,\"amenityIds\":[\"WIFI\"],\"rules\":\"No fumar\",\"imageReferences\":[]}";
+        mockMvc.perform(post("/api/listings").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content(listingBody.replace("\"capacity\":4", "\"capacity\":0")))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(post("/api/listings").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content(listingBody.replace("180000", "0")))
+                .andExpect(status().isBadRequest());
         MvcResult created = mockMvc.perform(post("/api/listings").header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON).content(listingBody))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("DRAFT")).andReturn();
@@ -114,6 +145,29 @@ class MarketplaceAcceptanceTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(1));
         mockMvc.perform(get("/api/listings/" + id + "/availability").param("from", "2026-12-03").param("to", "2026-12-05"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$[0].type").value("AVAILABLE"));
+        long reservationEventsBefore = auditEvents.countByEventType("AVAILABILITY_RESERVED");
+        AvailabilityPeriod reserved = listingService.confirmReservation(UUID.fromString(id),
+                LocalDate.parse("2026-12-03"), LocalDate.parse("2026-12-05"), "reservation-confirmed-test");
+        org.junit.jupiter.api.Assertions.assertEquals(AvailabilityType.RESERVED, reserved.getType());
+        org.junit.jupiter.api.Assertions.assertEquals("reservation-confirmed-test", reserved.getReservationReference());
+        org.junit.jupiter.api.Assertions.assertEquals(reservationEventsBefore + 1, auditEvents.countByEventType("AVAILABILITY_RESERVED"));
+        var periodsAfterReservation = availability.findByListing_Id(UUID.fromString(id));
+        org.junit.jupiter.api.Assertions.assertEquals(3, periodsAfterReservation.size());
+        org.junit.jupiter.api.Assertions.assertEquals(AvailabilityType.AVAILABLE, periodsAfterReservation.get(0).getType());
+        org.junit.jupiter.api.Assertions.assertEquals(LocalDate.parse("2026-12-03"), periodsAfterReservation.get(0).getEndDate());
+        org.junit.jupiter.api.Assertions.assertEquals(AvailabilityType.RESERVED, periodsAfterReservation.get(1).getType());
+        org.junit.jupiter.api.Assertions.assertEquals(AvailabilityType.AVAILABLE, periodsAfterReservation.get(2).getType());
+        org.junit.jupiter.api.Assertions.assertEquals(LocalDate.parse("2026-12-05"), periodsAfterReservation.get(2).getStartDate());
+        mockMvc.perform(get("/api/listings").param("checkIn", "2026-12-03").param("checkOut", "2026-12-05"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(0));
+        mockMvc.perform(get("/api/listings/" + id + "/availability").param("from", "2026-12-03").param("to", "2026-12-05"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].type").value("RESERVED"));
+        org.junit.jupiter.api.Assertions.assertThrows(co.edu.unbosque.marketplace.api.DomainException.class,
+                () -> listingService.confirmReservation(UUID.fromString(id), LocalDate.parse("2026-12-03"),
+                        LocalDate.parse("2026-12-05"), "reservation-duplicate-test"));
+        mockMvc.perform(put("/api/listings/" + id + "/availability").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"periods\":[{\"startDate\":\"2026-12-01\",\"endDate\":\"2026-12-01\",\"type\":\"AVAILABLE\"}]}"))
+                .andExpect(status().isBadRequest());
         mockMvc.perform(put("/api/listings/" + id + "/availability").header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"periods\":[{\"startDate\":\"2026-12-01\",\"endDate\":\"2026-12-07\",\"type\":\"AVAILABLE\"},{\"startDate\":\"2026-12-06\",\"endDate\":\"2026-12-10\",\"type\":\"AVAILABLE\"}]}"))
                 .andExpect(status().isConflict());
@@ -166,6 +220,9 @@ class MarketplaceAcceptanceTest {
                         .contentType(MediaType.APPLICATION_JSON).content(validListing))
                 .andExpect(status().isOk()).andReturn();
         String listingId = mapper.readTree(created.getResponse().getContentAsString()).get("id").asText();
+        var persistedListing = listings.findById(UUID.fromString(listingId)).orElseThrow();
+        availability.save(new AvailabilityPeriod(persistedListing, LocalDate.parse("2027-01-10"),
+                LocalDate.parse("2027-01-12"), AvailabilityType.RESERVED, "reservation-review-test"));
 
         String adminEmail = "admin-" + UUID.randomUUID() + "@example.test";
         MvcResult admin = mockMvc.perform(post("/api/auth/register").header("X-Admin-Bootstrap", "bootstrap-key-for-tests")
@@ -176,9 +233,21 @@ class MarketplaceAcceptanceTest {
         mockMvc.perform(patch("/api/listings/" + listingId + "/state").header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"BLOCKED\"}"))
                 .andExpect(status().isForbidden());
+        long stateEventsBeforeBlock = auditEvents.countByEventType("LISTING_STATE_CHANGED");
         mockMvc.perform(patch("/api/listings/" + listingId + "/state").header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"BLOCKED\",\"reason\":\"Incumple las reglas\"}"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("BLOCKED"));
+        org.junit.jupiter.api.Assertions.assertEquals(stateEventsBeforeBlock + 1, auditEvents.countByEventType("LISTING_STATE_CHANGED"));
+        AuditEvent blockEvent = auditEvents.findFirstByEventTypeOrderByOccurredAtDesc("LISTING_STATE_CHANGED");
+        org.junit.jupiter.api.Assertions.assertEquals(users.findByEmail(adminEmail).orElseThrow().getId(), blockEvent.getActorId());
+        org.junit.jupiter.api.Assertions.assertEquals("LISTING", blockEvent.getEntityType());
+        org.junit.jupiter.api.Assertions.assertEquals(UUID.fromString(listingId), blockEvent.getEntityId());
+        org.junit.jupiter.api.Assertions.assertEquals("SUCCESS", blockEvent.getResult());
+        org.junit.jupiter.api.Assertions.assertEquals("Incumple las reglas", blockEvent.getReason());
+        org.junit.jupiter.api.Assertions.assertNotNull(blockEvent.getOccurredAt());
+        mockMvc.perform(get("/api/listings/" + listingId + "/availability").header("Authorization", "Bearer " + adminToken)
+                        .param("from", "2027-01-10").param("to", "2027-01-12"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].type").value("RESERVED"));
         mockMvc.perform(get("/api/listings").param("city", "Cali"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(0));
     }

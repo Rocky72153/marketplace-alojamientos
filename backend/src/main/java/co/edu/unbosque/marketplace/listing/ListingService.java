@@ -108,7 +108,7 @@ public class ListingService {
 
     @Transactional
     public List<AvailabilityPeriod> replaceAvailability(MarketplaceUser principal, UUID listingId, List<AvailabilityInput> periods) {
-        Listing listing = get(listingId);
+        Listing listing = getForUpdate(listingId);
         requireOwnerOrAdmin(principal, listing);
         List<AvailabilityPeriod> current = availability.findByListing_Id(listingId);
         List<AvailabilityInput> incoming = periods == null ? List.of() : periods;
@@ -127,6 +127,43 @@ public class ListingService {
         availability.saveAll(saved);
         audit.recordEvent("AVAILABILITY_UPDATED", principal.getId(), LISTING_ENTITY, listingId, SUCCESS, null);
         return availability.findByListing_Id(listingId);
+    }
+
+    @Transactional
+    public AvailabilityPeriod confirmReservation(UUID listingId, LocalDate startDate, LocalDate endDate,
+            String reservationReference) {
+        if (startDate == null || endDate == null || !endDate.isAfter(startDate)) {
+            throw validation("El intervalo de la reserva no es válido.");
+        }
+        if (reservationReference == null || reservationReference.isBlank() || reservationReference.length() > 100) {
+            throw validation("La referencia de la reserva no es válida.");
+        }
+
+        Listing listing = getForUpdate(listingId);
+        List<AvailabilityPeriod> current = availability.findByListing_Id(listingId);
+        boolean conflicts = current.stream().anyMatch(period -> period.getType() != AvailabilityType.AVAILABLE
+                && period.overlaps(startDate, endDate));
+        AvailabilityPeriod coveringPeriod = current.stream()
+                .filter(period -> period.getType() == AvailabilityType.AVAILABLE
+                        && !period.getStartDate().isAfter(startDate) && !period.getEndDate().isBefore(endDate))
+                .findFirst().orElse(null);
+        if (conflicts || coveringPeriod == null) {
+            throw conflict("El intervalo ya no está disponible para reservar.");
+        }
+
+        availability.deleteById(coveringPeriod.getId());
+        if (coveringPeriod.getStartDate().isBefore(startDate)) {
+            availability.save(new AvailabilityPeriod(listing, coveringPeriod.getStartDate(), startDate,
+                    AvailabilityType.AVAILABLE, null));
+        }
+        AvailabilityPeriod reserved = availability.save(new AvailabilityPeriod(listing, startDate, endDate,
+                AvailabilityType.RESERVED, reservationReference));
+        if (endDate.isBefore(coveringPeriod.getEndDate())) {
+            availability.save(new AvailabilityPeriod(listing, endDate, coveringPeriod.getEndDate(),
+                    AvailabilityType.AVAILABLE, null));
+        }
+        audit.recordEvent("AVAILABILITY_RESERVED", null, LISTING_ENTITY, listingId, SUCCESS, reservationReference);
+        return reserved;
     }
 
     private boolean isAvailable(Listing listing, LocalDate checkIn, LocalDate checkOut) {
@@ -164,6 +201,7 @@ public class ListingService {
     }
 
     private Listing get(UUID id) { return listings.findById(id).orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "NOT_FOUND", "No se encontró la publicación.")); }
+    private Listing getForUpdate(UUID id) { return listings.lockById(id).orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "NOT_FOUND", "No se encontró la publicación.")); }
     private void requireOwnerOrAdmin(MarketplaceUser principal, Listing listing) {
         if (principal == null || !(principal.getRole() == AccountRole.ADMIN || listing.getHost().getId().equals(principal.getId()))) throw forbidden("No tienes permiso sobre esta publicación.");
     }

@@ -39,6 +39,9 @@ test('conecta validación, búsqueda y mensajes de error de la interfaz', async 
     assert.match(url, /type=APARTMENT/);
     assert.match(url, /minPrice=100000/);
     assert.deepEqual(new URL(url).searchParams.getAll('amenityIds'), ['WIFI', 'POOL']);
+    if (formValues.city === 'Sin resultados') {
+      return { ok: true, async json() { return { total: 0, items: [] }; } };
+    }
     return { ok: true, async json() { return { total: 1, items: [{ title: 'Casa segura', city: 'Bogotá', type: 'APARTMENT', capacity: 4, pricePerNight: 180000 }] }; } };
   };
 
@@ -59,6 +62,12 @@ test('conecta validación, búsqueda y mensajes de error de la interfaz', async 
     await new Promise(setImmediate);
     assert.match(feedback.textContent, /1 alojamiento encontrado/i);
     assert.equal(cards[0].children[0].textContent, 'Casa segura');
+
+    formValues.city = 'Sin resultados';
+    handlers.submit({ preventDefault() {} });
+    await new Promise(setImmediate);
+    assert.match(feedback.textContent, /no encontramos alojamientos/i);
+    assert.equal(cards.length, 0);
 
     formValues.city = 'Error';
     handlers.submit({ preventDefault() {} });
