@@ -49,6 +49,6 @@ jobs:
           args: >-
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
-            -Dsonar.projectName=Marketplace de Alojamientos
+            -Dsonar.projectName=Marketplace-Alojamientos
             -Dsonar.qualitygate.wait=true
             -Dsonar.qualitygate.timeout=600

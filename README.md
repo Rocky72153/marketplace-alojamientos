@@ -4,9 +4,9 @@ Proyecto de curso de Ingeniería de Software I — Universidad El Bosque, period
 
 Marketplace web para conectar anfitriones con huéspedes y permitir publicación, búsqueda, consulta de disponibilidad, cotización, reserva y cancelación de alojamientos temporales.
 
-## Estado inicial
+## Alcance implementado
 
-Esta es la base de trabajo del repositorio. La funcionalidad de negocio se desarrollará de forma incremental a partir del backlog aprobado en Jira y de los requerimientos de la guía del proyecto.
+La base funcional cubre las primeras historias priorizadas: registro e inicio de sesión con token, recuperación simulada, lectura/edición/desactivación del perfil, publicación y cambio de estado de alojamientos, administración de disponibilidad y búsqueda por ciudad, fechas, huéspedes, tipo, precio y servicios. Las publicaciones no activas no aparecen en la búsqueda pública. Las reservas y el envío real de correos siguen fuera de este alcance.
 
 ## Tecnologías base propuestas
 
@@ -37,6 +37,10 @@ Backend: `mvn -B -f backend/pom.xml verify`
 Frontend: `cd frontend && npm ci && npm run lint && npm test && npm run build`
 
 Base de datos local: `docker compose up -d db`
+
+Para que los tokens sigan siendo válidos tras reiniciar el backend, configura `AUTH_TOKEN_SECRET` con al menos 32 bytes. `ADMIN_BOOTSTRAP_KEY` permite registrar una cuenta `ADMIN` de forma controlada; sin esa clave, el registro público solo admite `GUEST` y `HOST`. Define `CORS_ALLOWED_ORIGINS` si el frontend se sirve desde otro origen. La recuperación de cuenta solo registra la solicitud y devuelve el mismo mensaje exista o no la cuenta; no envía correo ni cambia contraseñas.
+
+El backend expone `/api/auth/register`, `/api/auth/login`, `/api/auth/recovery`, `/api/profile/me`, `/api/listings`, `/api/listings/{listingId}/state` y `/api/listings/{listingId}/availability`. El frontend consume la búsqueda pública en `GET /api/listings`; ajusta la etiqueta `api-base-url` en `frontend/index.html` si el backend usa otra dirección.
 
 ## Flujo de trabajo
 
