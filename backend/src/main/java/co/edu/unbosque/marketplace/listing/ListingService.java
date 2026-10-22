@@ -80,8 +80,9 @@ public class ListingService {
         if (guests != null && guests < 1) throw validation("El número de huéspedes debe ser al menos 1.");
         if ((minPrice != null && minPrice.signum() < 0) || (maxPrice != null && maxPrice.signum() < 0)
                 || minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) throw validation("El rango de precios no es válido.");
+        SearchFilters filters = new SearchFilters(city, checkIn, checkOut, guests, type, minPrice, maxPrice, amenityIds);
         return listings.findByStatus(ListingStatus.ACTIVE).stream()
-                .filter(listing -> matchesFilters(listing, city, checkIn, checkOut, guests, type, minPrice, maxPrice, amenityIds))
+                .filter(listing -> matchesFilters(listing, filters))
                 .sorted(Comparator.comparing(Listing::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
                 .toList();
     }
@@ -135,11 +136,10 @@ public class ListingService {
         return covered && periods.stream().noneMatch(period -> period.getType() != AvailabilityType.AVAILABLE && period.overlaps(checkIn, checkOut));
     }
 
-    private boolean matchesFilters(Listing listing, String city, LocalDate checkIn, LocalDate checkOut, Integer guests,
-            String type, BigDecimal minPrice, BigDecimal maxPrice, Set<String> amenityIds) {
-        return matchesCity(listing, city) && matchesType(listing, type) && hasCapacity(listing, guests)
-                && withinPriceRange(listing, minPrice, maxPrice) && hasAmenities(listing, amenityIds)
-                && (checkIn == null || isAvailable(listing, checkIn, checkOut));
+    private boolean matchesFilters(Listing listing, SearchFilters filters) {
+        return matchesCity(listing, filters.city()) && matchesType(listing, filters.type()) && hasCapacity(listing, filters.guests())
+                && withinPriceRange(listing, filters.minPrice(), filters.maxPrice()) && hasAmenities(listing, filters.amenityIds())
+                && (filters.checkIn() == null || isAvailable(listing, filters.checkIn(), filters.checkOut()));
     }
 
     private boolean matchesCity(Listing listing, String city) {
@@ -185,4 +185,6 @@ public class ListingService {
         }
     }
     public record AvailabilityInput(@NotNull LocalDate startDate, @NotNull LocalDate endDate, @NotNull AvailabilityType type) { }
+    private record SearchFilters(String city, LocalDate checkIn, LocalDate checkOut, Integer guests, String type,
+            BigDecimal minPrice, BigDecimal maxPrice, Set<String> amenityIds) { }
 }
