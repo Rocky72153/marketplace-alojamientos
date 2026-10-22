@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Marketplace de alojamientos temporales de Inversiones LR." />
+    <meta name="api-base-url" content="http://localhost:8080" />
     <title>Marketplace de Alojamientos</title>
     <link rel="stylesheet" href="/src/styles.css" />
     <script type="module" src="/src/main.js"></script>
@@ -28,13 +29,25 @@
           <label>Salida<input id="checkout" name="checkout" type="date" /></label>
           <label>Huéspedes<input id="guests" name="guests" type="number" min="1" value="2" /></label>
           <button type="submit">Buscar</button>
+          <div class="search-filters">
+            <label>Tipo<select name="type"><option value="">Cualquier tipo</option><option value="APARTMENT">Apartamento</option><option value="HOUSE">Casa</option><option value="ROOM">Habitación</option><option value="CABIN">Cabaña</option></select></label>
+            <label>Precio mínimo<input name="minPrice" type="number" min="0" placeholder="COP" /></label>
+            <label>Precio máximo<input name="maxPrice" type="number" min="0" placeholder="COP" /></label>
+            <fieldset><legend>Servicios</legend>
+              <label><input name="amenityIds" type="checkbox" value="WIFI" /> Wi-Fi</label>
+              <label><input name="amenityIds" type="checkbox" value="PARKING" /> Parqueadero</label>
+              <label><input name="amenityIds" type="checkbox" value="POOL" /> Piscina</label>
+              <label><input name="amenityIds" type="checkbox" value="AIR_CONDITIONING" /> Aire acondicionado</label>
+            </fieldset>
+          </div>
         </form>
         <p id="search-feedback" class="feedback" role="status" aria-live="polite"></p>
+        <div id="search-results" class="listing-results" aria-live="polite"></div>
       </section>
       <section class="intro" id="buscar">
         <p class="eyebrow">UN SOLO LUGAR PARA PLANEAR</p>
         <h2>Tu próxima estancia empieza aquí.</h2>
-        <p>Muy pronto podrás consultar publicaciones activas, verificar disponibilidad y cotizar tu reserva desde la plataforma.</p>
+        <p>Consulta alojamientos activos y encuentra opciones según tu ciudad, fechas y número de huéspedes.</p>
       </section>
       <section class="host-banner" id="anfitriones">
         <div><p class="eyebrow">PARA ANFITRIONES</p><h2>Tu espacio puede ser el lugar favorito de alguien.</h2><p>Administra publicaciones, precios y disponibilidad desde una plataforma centralizada.</p></div>
