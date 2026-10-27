@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildSearchUrl, validateSearch } from '../src/search.js';
+import { buildCitySuggestionsUrl, buildSearchUrl, fetchCitySuggestions, validateSearch } from '../src/search.js';
 
 test('rechaza una búsqueda sin ciudad', () => {
   assert.match(validateSearch({ city: ' ', checkin: '2026-11-01', checkout: '2026-11-03', guests: '2' }), /ciudad/i);
@@ -28,4 +28,27 @@ test('rechaza una salida igual o anterior a la llegada', () => {
 
 test('acepta una búsqueda válida', () => {
   assert.equal(validateSearch({ city: 'Bogotá', checkin: '2026-11-01', checkout: '2026-11-03', guests: '2' }), '');
+});
+
+test('construye la consulta de sugerencias y deja cargar destinos iniciales sin filtro', () => {
+  const filtered = new URL(buildCitySuggestionsUrl('  Bogotá  ', 'http://localhost:8080/'));
+  assert.equal(filtered.pathname, '/api/listings/cities');
+  assert.equal(filtered.searchParams.get('query'), 'Bogotá');
+  assert.equal(buildCitySuggestionsUrl('', 'http://localhost:8080'), 'http://localhost:8080/api/listings/cities');
+});
+
+test('consulta sugerencias públicas de ciudad', async () => {
+  const previousFetch = globalThis.fetch;
+  let requestedUrl = '';
+  globalThis.fetch = async (url, options) => {
+    requestedUrl = String(url);
+    assert.equal(options.headers.Accept, 'application/json');
+    return { ok: true, async json() { return ['Bogotá D.C., Bogotá D.C.']; } };
+  };
+  try {
+    assert.deepEqual(await fetchCitySuggestions('Bogota'), ['Bogotá D.C., Bogotá D.C.']);
+    assert.equal(new URL(requestedUrl).searchParams.get('query'), 'Bogota');
+  } finally {
+    globalThis.fetch = previousFetch;
+  }
 });

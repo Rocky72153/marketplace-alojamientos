@@ -38,6 +38,11 @@ public class ListingController {
         return new SearchResponse(items, items.size());
     }
 
+    @GetMapping("/cities")
+    public List<String> citySuggestions(@RequestParam(required=false) String query) {
+        return service.citySuggestions(query);
+    }
+
     @GetMapping("/{listingId}")
     public ListingView get(@PathVariable UUID listingId, @AuthenticationPrincipal MarketplaceUser principal) {
         return ListingView.from(service.getPublicOrOwned(listingId, principal));

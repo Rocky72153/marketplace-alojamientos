@@ -26,6 +26,7 @@ export function initAccount(documentRef = globalThis.document, apiBase = 'http:/
   let session = readSession();
   const panel = documentRef?.querySelector('#account-panel');
   const accountLink = documentRef?.querySelector('#account-link');
+  const reservationLink = documentRef?.querySelector('#reservation-link');
   const forms = documentRef?.querySelector('#account-forms');
   const loginForm = documentRef?.querySelector('#login-form');
   const registerForm = documentRef?.querySelector('#register-form');
@@ -64,6 +65,13 @@ export function initAccount(documentRef = globalThis.document, apiBase = 'http:/
   accountLink?.addEventListener?.('click', (event) => {
     event.preventDefault();
     if (panel) panel.hidden = !panel.hidden;
+    panel?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+  });
+  reservationLink?.addEventListener?.('click', (event) => {
+    if (session) return;
+    event.preventDefault();
+    if (panel) panel.hidden = false;
+    if (feedback) feedback.textContent = 'Inicia sesión para consultar tus reservas.';
     panel?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
   });
   loginForm?.addEventListener?.('submit', (event) => {
