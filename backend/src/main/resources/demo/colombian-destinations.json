@@ -5435,6 +5435,11 @@
     "department": "PUTUMAYO"
   },
   {
+    "code": "88001",
+    "city": "SAN ANDRÉS",
+    "department": "ARCHIPIÉLAGO DE SAN ANDRÉS, PROVIDENCIA Y SANTA CATALINA"
+  },
+  {
     "code": "88564",
     "city": "PROVIDENCIA",
     "department": "ARCHIPIÉLAGO DE SAN ANDRÉS, PROVIDENCIA Y SANTA CATALINA"
@@ -5445,8 +5450,53 @@
     "department": "AMAZONAS"
   },
   {
+    "code": "91263",
+    "city": "EL ENCANTO",
+    "department": "AMAZONAS"
+  },
+  {
+    "code": "91405",
+    "city": "LA CHORRERA",
+    "department": "AMAZONAS"
+  },
+  {
+    "code": "91407",
+    "city": "LA PEDRERA",
+    "department": "AMAZONAS"
+  },
+  {
+    "code": "91430",
+    "city": "LA VICTORIA",
+    "department": "AMAZONAS"
+  },
+  {
+    "code": "91460",
+    "city": "MIRITÍ - PARANÁ",
+    "department": "AMAZONAS"
+  },
+  {
+    "code": "91530",
+    "city": "PUERTO ALEGRÍA",
+    "department": "AMAZONAS"
+  },
+  {
+    "code": "91536",
+    "city": "PUERTO ARICA",
+    "department": "AMAZONAS"
+  },
+  {
     "code": "91540",
     "city": "PUERTO NARIÑO",
+    "department": "AMAZONAS"
+  },
+  {
+    "code": "91669",
+    "city": "PUERTO SANTANDER",
+    "department": "AMAZONAS"
+  },
+  {
+    "code": "91798",
+    "city": "TARAPACÁ",
     "department": "AMAZONAS"
   },
   {
@@ -5457,6 +5507,36 @@
   {
     "code": "94343",
     "city": "BARRANCOMINAS",
+    "department": "GUAINÍA"
+  },
+  {
+    "code": "94883",
+    "city": "SAN FELIPE",
+    "department": "GUAINÍA"
+  },
+  {
+    "code": "94884",
+    "city": "PUERTO COLOMBIA",
+    "department": "GUAINÍA"
+  },
+  {
+    "code": "94885",
+    "city": "LA GUADALUPE",
+    "department": "GUAINÍA"
+  },
+  {
+    "code": "94886",
+    "city": "CACAHUAL",
+    "department": "GUAINÍA"
+  },
+  {
+    "code": "94887",
+    "city": "PANA PANA",
+    "department": "GUAINÍA"
+  },
+  {
+    "code": "94888",
+    "city": "MORICHAL",
     "department": "GUAINÍA"
   },
   {
@@ -5490,8 +5570,23 @@
     "department": "VAUPÉS"
   },
   {
+    "code": "97511",
+    "city": "PACOA",
+    "department": "VAUPÉS"
+  },
+  {
     "code": "97666",
     "city": "TARAIRA",
+    "department": "VAUPÉS"
+  },
+  {
+    "code": "97777",
+    "city": "PAPUNAHUA",
+    "department": "VAUPÉS"
+  },
+  {
+    "code": "97889",
+    "city": "YAVARATÉ",
     "department": "VAUPÉS"
   },
   {

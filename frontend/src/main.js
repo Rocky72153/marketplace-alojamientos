@@ -1,5 +1,7 @@
 import { fetchCitySuggestions, searchListings, validateSearch } from './search.js';
 import { buildListingDetailUrl, fetchListingDetail, renderListingDetail, renderListingDetailError } from './detail.js';
+import { initAccount, renderReservationHistory } from './account.js';
+import { initBooking } from './booking.js';
 
 if (typeof document !== 'undefined') {
   const searchForm = document.querySelector('#search-form');
@@ -91,6 +93,16 @@ if (typeof document !== 'undefined') {
     cityInput.addEventListener('blur', () => setTimeout(closeSuggestions, 120));
     void loadSuggestions();
   }
+  const historyContainer = document.querySelector('#reservation-history');
+  let currentToken = null;
+  let bookingFlow = null;
+  const refreshHistory = (notice = '') => renderReservationHistory(historyContainer, apiBase, currentToken, globalThis.fetch,
+    document, notice);
+  initAccount(document, apiBase, (session) => {
+    currentToken = session?.accessToken || null;
+    void refreshHistory();
+    bookingFlow?.syncAccount();
+  });
 
   const requestedListingId = typeof window === 'undefined'
     ? null
@@ -100,6 +112,8 @@ if (typeof document !== 'undefined') {
     detailFeedback.textContent = 'Cargando alojamiento…';
     fetchListingDetail(requestedListingId, apiBase).then((listing) => {
       renderListingDetail(detailContent, listing);
+      bookingFlow = initBooking(detailContent, listing, apiBase, () => currentToken, () => refreshHistory());
+      bookingFlow?.syncAccount();
       detailFeedback.textContent = '';
     }).catch((error) => {
       const message = error.message || 'No fue posible consultar este alojamiento.';

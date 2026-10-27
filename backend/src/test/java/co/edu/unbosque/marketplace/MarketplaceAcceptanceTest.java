@@ -153,7 +153,7 @@ class MarketplaceAcceptanceTest {
         org.junit.jupiter.api.Assertions.assertEquals(AvailabilityType.RESERVED, reserved.getType());
         org.junit.jupiter.api.Assertions.assertEquals("reservation-confirmed-test", reserved.getReservationReference());
         org.junit.jupiter.api.Assertions.assertEquals(reservationEventsBefore + 1, auditEvents.countByEventType("AVAILABILITY_RESERVED"));
-        var periodsAfterReservation = availability.findByListing_Id(UUID.fromString(id));
+        var periodsAfterReservation = availability.findByListing_IdOrderByStartDateAsc(UUID.fromString(id));
         org.junit.jupiter.api.Assertions.assertEquals(3, periodsAfterReservation.size());
         org.junit.jupiter.api.Assertions.assertEquals(AvailabilityType.AVAILABLE, periodsAfterReservation.get(0).getType());
         org.junit.jupiter.api.Assertions.assertEquals(LocalDate.parse("2026-12-03"), periodsAfterReservation.get(0).getEndDate());
