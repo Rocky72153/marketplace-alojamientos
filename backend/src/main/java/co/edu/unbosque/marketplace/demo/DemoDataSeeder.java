@@ -112,7 +112,7 @@ public class DemoDataSeeder implements CommandLineRunner {
     }
 
     private List<Destination> loadDestinations() {
-        try (var input = new ClassPathResource("demo/colombian-municipalities.json").getInputStream()) {
+        try (var input = new ClassPathResource("demo/colombian-destinations.json").getInputStream()) {
             List<Destination> rawDestinations = objectMapper.readValue(input, new TypeReference<>() { });
             if (rawDestinations.size() < 1_000) {
                 throw new IllegalStateException("El catálogo colombiano debe incluir al menos 1.000 municipios.");

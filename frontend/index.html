@@ -15,15 +15,50 @@
       <nav aria-label="Navegación principal">
         <a href="#buscar">Descubrir</a>
         <a href="#anfitriones">Soy anfitrión</a>
-        <a class="nav-login" href="#iniciar-sesion">Iniciar sesión</a>
+        <a id="account-link" class="nav-login" href="#mi-cuenta">Iniciar sesión</a>
+        <a id="reservation-link" href="#reservation-history">Mis reservas</a>
       </nav>
     </header>
     <main>
+      <section id="account-panel" class="account-panel" aria-labelledby="account-title" hidden>
+        <div class="account-shell">
+          <p class="eyebrow">TU CUENTA</p>
+          <h2 id="account-title">Inicia sesión para reservar</h2>
+          <div id="account-forms" class="account-forms">
+            <form id="login-form" class="account-form">
+              <h3>Ya tengo una cuenta</h3>
+              <label>Correo<input name="email" type="email" autocomplete="email" required /></label>
+              <label>Contraseña<input name="password" type="password" autocomplete="current-password" required /></label>
+              <button type="submit">Iniciar sesión</button>
+            </form>
+            <form id="register-form" class="account-form">
+              <h3>Crear cuenta de huésped</h3>
+              <label>Nombre<input name="name" autocomplete="name" required maxlength="120" /></label>
+              <label>Correo<input name="email" type="email" autocomplete="email" required /></label>
+              <label>Contraseña<input name="password" type="password" autocomplete="new-password" required minlength="8" /></label>
+              <button type="submit">Crear cuenta</button>
+            </form>
+          </div>
+          <div id="session-panel" class="session-panel" hidden>
+            <p id="session-summary"></p>
+            <button id="logout-button" type="button" class="secondary-button">Cerrar sesión</button>
+          </div>
+          <p id="account-feedback" class="feedback" role="status" aria-live="polite"></p>
+        </div>
+      </section>
       <section id="listing-detail" class="detail-section" aria-labelledby="detail-title" hidden>
         <div class="detail-shell">
           <a class="back-link" href="/">← Volver a buscar</a>
           <p id="detail-feedback" class="feedback" role="status" aria-live="polite"></p>
           <div id="detail-content"></div>
+        </div>
+      </section>
+      <section id="reservation-history" class="reservation-history" aria-labelledby="reservation-history-title" hidden>
+        <div class="reservation-history-shell">
+          <p class="eyebrow">SEGUIMIENTO</p>
+          <h2 id="reservation-history-title">Mis reservas</h2>
+          <p id="reservation-history-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <div id="reservation-history-items" class="reservation-history-items"></div>
         </div>
       </section>
       <section class="hero">
