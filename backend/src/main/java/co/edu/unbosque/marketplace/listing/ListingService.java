@@ -7,11 +7,15 @@ import co.edu.unbosque.marketplace.security.MarketplaceUser;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -36,7 +40,9 @@ public class ListingService {
     public Listing create(MarketplaceUser principal, ListingInput input) {
         requireRole(principal, AccountRole.HOST, AccountRole.ADMIN);
         MarketplaceUser host = principal;
-        Listing listing = listings.save(new Listing(host, input.toData()));
+        Listing listing = new Listing(host, input.toData());
+        applyCommercialTerms(listing, input, true);
+        listing = listings.save(listing);
         audit.recordEvent("LISTING_CREATED", principal.getId(), LISTING_ENTITY, listing.getId(), SUCCESS, null);
         return listing;
     }
@@ -47,6 +53,7 @@ public class ListingService {
         requireOwnerOrAdmin(principal, listing);
         if (listing.getStatus() == ListingStatus.BLOCKED) throw forbidden("Una publicación bloqueada no se puede editar.");
         listing.update(input.toData());
+        applyCommercialTerms(listing, input, false);
         audit.recordEvent("LISTING_UPDATED", principal.getId(), LISTING_ENTITY, id, SUCCESS, null);
         return listings.save(listing);
     }
@@ -101,16 +108,43 @@ public class ListingService {
     public List<AvailabilityPeriod> getAvailability(UUID listingId, LocalDate from, LocalDate to) {
         Listing listing = get(listingId);
         if ((from == null) != (to == null) || from != null && !to.isAfter(from)) throw validation("El intervalo consultado no es válido.");
-        return availability.findByListing_Id(listing.getId()).stream()
+        return availability.findByListing_IdOrderByStartDateAsc(listing.getId()).stream()
                 .filter(period -> from == null || period.overlaps(from, to))
                 .sorted(Comparator.comparing(AvailabilityPeriod::getStartDate)).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Listing getActiveListing(UUID listingId) {
+        Listing listing = get(listingId);
+        if (listing.getStatus() != ListingStatus.ACTIVE) {
+            throw new DomainException(HttpStatus.NOT_FOUND, "NOT_FOUND", "No se encontró la publicación.");
+        }
+        return listing;
+    }
+
+    @Transactional
+    public Listing lockActiveListing(UUID listingId) {
+        Listing listing = getForUpdate(listingId);
+        if (listing.getStatus() != ListingStatus.ACTIVE) {
+            throw new DomainException(HttpStatus.NOT_FOUND, "NOT_FOUND", "No se encontró la publicación.");
+        }
+        return listing;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasAvailableRange(UUID listingId, LocalDate startDate, LocalDate endDate) {
+        Listing listing = get(listingId);
+        List<AvailabilityPeriod> current = availability.findByListing_IdOrderByStartDateAsc(listingId);
+        boolean conflicts = current.stream().anyMatch(period -> period.getType() != AvailabilityType.AVAILABLE
+                && period.overlaps(startDate, endDate));
+        return !conflicts && coversAvailability(current, startDate, endDate);
     }
 
     @Transactional
     public List<AvailabilityPeriod> replaceAvailability(MarketplaceUser principal, UUID listingId, List<AvailabilityInput> periods) {
         Listing listing = getForUpdate(listingId);
         requireOwnerOrAdmin(principal, listing);
-        List<AvailabilityPeriod> current = availability.findByListing_Id(listingId);
+        List<AvailabilityPeriod> current = availability.findByListing_IdOrderByStartDateAsc(listingId);
         List<AvailabilityInput> incoming = periods == null ? List.of() : periods;
         List<AvailabilityInput> sorted = incoming.stream().sorted(Comparator.comparing(AvailabilityInput::startDate)).toList();
         for (int i = 0; i < sorted.size(); i++) {
@@ -126,7 +160,7 @@ public class ListingService {
                 period.endDate(), period.type(), null)).toList();
         availability.saveAll(saved);
         audit.recordEvent("AVAILABILITY_UPDATED", principal.getId(), LISTING_ENTITY, listingId, SUCCESS, null);
-        return availability.findByListing_Id(listingId);
+        return availability.findByListing_IdOrderByStartDateAsc(listingId);
     }
 
     @Transactional
@@ -140,37 +174,85 @@ public class ListingService {
         }
 
         Listing listing = getForUpdate(listingId);
-        List<AvailabilityPeriod> current = availability.findByListing_Id(listingId);
+        if (listing.getStatus() != ListingStatus.ACTIVE) throw conflict("La publicación ya no está activa.");
+        List<AvailabilityPeriod> current = availability.findByListing_IdOrderByStartDateAsc(listingId);
         boolean conflicts = current.stream().anyMatch(period -> period.getType() != AvailabilityType.AVAILABLE
                 && period.overlaps(startDate, endDate));
-        AvailabilityPeriod coveringPeriod = current.stream()
-                .filter(period -> period.getType() == AvailabilityType.AVAILABLE
-                        && !period.getStartDate().isAfter(startDate) && !period.getEndDate().isBefore(endDate))
-                .findFirst().orElse(null);
-        if (conflicts || coveringPeriod == null) {
+        List<AvailabilityPeriod> availablePeriods = current.stream()
+                .filter(period -> period.getType() == AvailabilityType.AVAILABLE && period.overlaps(startDate, endDate))
+                .toList();
+        if (conflicts || !coversAvailability(availablePeriods, startDate, endDate)) {
             throw conflict("El intervalo ya no está disponible para reservar.");
         }
 
-        availability.deleteById(coveringPeriod.getId());
-        if (coveringPeriod.getStartDate().isBefore(startDate)) {
-            availability.save(new AvailabilityPeriod(listing, coveringPeriod.getStartDate(), startDate,
-                    AvailabilityType.AVAILABLE, null));
+        availability.deleteAll(availablePeriods);
+        for (AvailabilityPeriod period : availablePeriods) {
+            if (period.getStartDate().isBefore(startDate)) {
+                availability.save(new AvailabilityPeriod(listing, period.getStartDate(), startDate,
+                        AvailabilityType.AVAILABLE, null));
+            }
+            if (period.getEndDate().isAfter(endDate)) {
+                availability.save(new AvailabilityPeriod(listing, endDate, period.getEndDate(),
+                        AvailabilityType.AVAILABLE, null));
+            }
         }
         AvailabilityPeriod reserved = availability.save(new AvailabilityPeriod(listing, startDate, endDate,
                 AvailabilityType.RESERVED, reservationReference));
-        if (endDate.isBefore(coveringPeriod.getEndDate())) {
-            availability.save(new AvailabilityPeriod(listing, endDate, coveringPeriod.getEndDate(),
-                    AvailabilityType.AVAILABLE, null));
-        }
         audit.recordEvent("AVAILABILITY_RESERVED", null, LISTING_ENTITY, listingId, SUCCESS, reservationReference);
         return reserved;
     }
 
+    @Transactional
+    public void releaseReservation(UUID listingId, UUID reservationId) {
+        Listing listing = getForUpdate(listingId);
+        AvailabilityPeriod reserved = availability.findByListing_IdAndReservationReference(listingId, reservationId.toString())
+                .filter(period -> period.getType() == AvailabilityType.RESERVED)
+                .orElseThrow(() -> conflict("No se encontró el periodo reservado para liberar."));
+        availability.deleteById(reserved.getId());
+
+        List<AvailabilityPeriod> existingAvailable = new ArrayList<>(availability
+                .findByListing_IdAndType(listingId, AvailabilityType.AVAILABLE));
+        List<AvailabilityPeriod> availablePeriods = new ArrayList<>(existingAvailable);
+        availablePeriods.add(new AvailabilityPeriod(listing, reserved.getStartDate(), reserved.getEndDate(),
+                AvailabilityType.AVAILABLE, null));
+        availablePeriods.sort(Comparator.comparing(AvailabilityPeriod::getStartDate));
+        availability.deleteAll(existingAvailable);
+
+        List<AvailabilityPeriod> merged = new ArrayList<>();
+        LocalDate mergedStart = null;
+        LocalDate mergedEnd = null;
+        for (AvailabilityPeriod period : availablePeriods) {
+            if (mergedEnd == null || period.getStartDate().isAfter(mergedEnd)) {
+                if (mergedStart != null) merged.add(new AvailabilityPeriod(listing, mergedStart, mergedEnd,
+                        AvailabilityType.AVAILABLE, null));
+                mergedStart = period.getStartDate();
+                mergedEnd = period.getEndDate();
+            } else if (period.getEndDate().isAfter(mergedEnd)) {
+                mergedEnd = period.getEndDate();
+            }
+        }
+        if (mergedStart != null) merged.add(new AvailabilityPeriod(listing, mergedStart, mergedEnd,
+                AvailabilityType.AVAILABLE, null));
+        availability.saveAll(merged);
+        audit.recordEvent("AVAILABILITY_RELEASED", null, LISTING_ENTITY, listingId, SUCCESS, reservationId.toString());
+    }
+
     private boolean isAvailable(Listing listing, LocalDate checkIn, LocalDate checkOut) {
-        List<AvailabilityPeriod> periods = availability.findByListing_Id(listing.getId());
-        boolean covered = periods.stream().anyMatch(period -> period.getType() == AvailabilityType.AVAILABLE
-                && !period.getStartDate().isAfter(checkIn) && !period.getEndDate().isBefore(checkOut));
+        List<AvailabilityPeriod> periods = availability.findByListing_IdOrderByStartDateAsc(listing.getId());
+        boolean covered = coversAvailability(periods, checkIn, checkOut);
         return covered && periods.stream().noneMatch(period -> period.getType() != AvailabilityType.AVAILABLE && period.overlaps(checkIn, checkOut));
+    }
+
+    private boolean coversAvailability(List<AvailabilityPeriod> periods, LocalDate startDate, LocalDate endDate) {
+        LocalDate cursor = startDate;
+        for (AvailabilityPeriod period : periods.stream().filter(p -> p.getType() == AvailabilityType.AVAILABLE)
+                .sorted(Comparator.comparing(AvailabilityPeriod::getStartDate)).toList()) {
+            if (!period.getEndDate().isAfter(cursor)) continue;
+            if (period.getStartDate().isAfter(cursor)) return false;
+            if (period.getEndDate().isAfter(cursor)) cursor = period.getEndDate();
+            if (!cursor.isBefore(endDate)) return true;
+        }
+        return false;
     }
 
     private boolean matchesFilters(Listing listing, SearchFilters filters) {
@@ -212,16 +294,48 @@ public class ListingService {
     private DomainException validation(String message) { return new DomainException(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", message); }
     private DomainException conflict(String message) { return new DomainException(HttpStatus.CONFLICT, "CONFLICT", message); }
 
+    private void applyCommercialTerms(Listing listing, ListingInput input, boolean creating) {
+        if (creating || input.extraOptions() != null) {
+            List<ListingExtraOption> options = input.extraOptions() == null ? List.of() : input.extraOptions().stream()
+                    .map(option -> new ListingExtraOption(option.id() == null || option.id().isBlank()
+                            ? UUID.randomUUID().toString() : option.id(), option.name().trim(),
+                            option.unitPrice().setScale(2, java.math.RoundingMode.HALF_UP)))
+                    .toList();
+            Set<String> ids = new HashSet<>();
+            if (options.stream().anyMatch(option -> !ids.add(option.getId()))) throw validation("Cada extra debe tener un identificador único.");
+            listing.setExtraOptions(options);
+        }
+        CancellationPolicyInput policy = input.cancellationPolicy();
+        if (policy != null) {
+            if (policy.freeRefundDays() < policy.partialRefundDays()) {
+                throw validation("Los días para el reembolso completo deben ser mayores o iguales al umbral parcial.");
+            }
+            listing.setCancellationPolicy(policy.freeRefundDays(), policy.partialRefundDays(),
+                    policy.partialRefundPercentage().setScale(2, java.math.RoundingMode.HALF_UP));
+        }
+    }
+
     public record ListingInput(@NotBlank @Size(max=160) String title, @NotBlank @Size(max=4000) String description,
             @NotBlank @Size(max=120) String city, @NotBlank @Size(max=240) String location,
             @NotBlank @Size(max=50) String type, @Min(1) int capacity,
             @NotNull @DecimalMin(value="0.01") BigDecimal pricePerNight, Set<String> amenityIds,
-            @Size(max=2000) String rules, Set<String> imageReferences) {
+            @Size(max=2000) String rules, Set<String> imageReferences,
+            @Valid List<ExtraInput> extraOptions, @Valid CancellationPolicyInput cancellationPolicy) {
+        public ListingInput(String title, String description, String city, String location, String type, int capacity,
+                BigDecimal pricePerNight, Set<String> amenityIds, String rules, Set<String> imageReferences) {
+            this(title, description, city, location, type, capacity, pricePerNight, amenityIds, rules,
+                    imageReferences, null, null);
+        }
+
         ListingData toData() {
             return new ListingData(title, description, city, location, type, capacity, pricePerNight,
                     amenityIds, rules, imageReferences);
         }
     }
+    public record ExtraInput(@Size(max=36) String id, @NotBlank @Size(max=80) String name,
+            @NotNull @DecimalMin(value="0.01") BigDecimal unitPrice) { }
+    public record CancellationPolicyInput(@Min(0) int freeRefundDays, @Min(0) int partialRefundDays,
+            @NotNull @DecimalMin(value="0.00") @DecimalMax(value="100.00") BigDecimal partialRefundPercentage) { }
     public record AvailabilityInput(@NotNull LocalDate startDate, @NotNull LocalDate endDate, @NotNull AvailabilityType type) { }
     private record SearchFilters(String city, LocalDate checkIn, LocalDate checkOut, Integer guests, String type,
             BigDecimal minPrice, BigDecimal maxPrice, Set<String> amenityIds) { }

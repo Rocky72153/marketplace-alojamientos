@@ -83,13 +83,23 @@ public class ListingController {
     public record SearchResponse(List<ListingView> items, int total) { }
     public record ListingView(UUID id, UUID hostId, String hostName, String title, String description, String city,
             String location, String type, int capacity, BigDecimal pricePerNight, Set<String> amenityIds,
-            String rules, Set<String> imageReferences, ListingStatus status) {
+            String rules, Set<String> imageReferences, ListingStatus status, List<ExtraOptionView> extraOptions,
+            CancellationPolicyView cancellationPolicy) {
         static ListingView from(Listing listing) {
             return new ListingView(listing.getId(), listing.getHost().getId(), listing.getHost().getName(), listing.getTitle(),
                     listing.getDescription(), listing.getCity(), listing.getLocation(), listing.getType(), listing.getCapacity(),
-                    listing.getPricePerNight(), listing.getAmenityIds(), listing.getRules(), listing.getImageReferences(), listing.getStatus());
+                    listing.getPricePerNight(), listing.getAmenityIds(), listing.getRules(), listing.getImageReferences(),
+                    listing.getStatus(), listing.getExtraOptions().stream().map(ExtraOptionView::from).toList(),
+                    new CancellationPolicyView(listing.getCancellationFreeRefundDays(), listing.getCancellationPartialRefundDays(),
+                            listing.getCancellationPartialRefundPercentage()));
         }
     }
+    public record ExtraOptionView(String id, String name, BigDecimal unitPrice) {
+        static ExtraOptionView from(ListingExtraOption option) {
+            return new ExtraOptionView(option.getId(), option.getName(), option.getUnitPrice());
+        }
+    }
+    public record CancellationPolicyView(int freeRefundDays, int partialRefundDays, BigDecimal partialRefundPercentage) { }
     public record AvailabilityView(UUID id, LocalDate startDate, LocalDate endDate, AvailabilityType type) {
         static AvailabilityView from(AvailabilityPeriod period) {
             return new AvailabilityView(period.getId(), period.getStartDate(), period.getEndDate(), period.getType());

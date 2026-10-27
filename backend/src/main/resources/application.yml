@@ -20,3 +20,10 @@ app:
     admin-bootstrap-key: ${ADMIN_BOOTSTRAP_KEY:}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4173,http://127.0.0.1:4173}
+marketplace:
+  pricing:
+    cleaning-fee-cop: ${CLEANING_FEE_COP:35000.00}
+    service-fee-rate: ${SERVICE_FEE_RATE:0.10}
+    discount-rate: ${STAY_DISCOUNT_RATE:0.00}
+  payment:
+    mode: ${PAYMENT_MODE:SIMULATED_TEST}
