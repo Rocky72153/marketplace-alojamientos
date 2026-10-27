@@ -192,6 +192,49 @@ class MarketplaceAcceptanceTest {
     }
 
     @Test
+    void activeListingDetailIsPublicAndInactiveDirectUrlIsHidden() throws Exception {
+        String email = "detail-host-" + UUID.randomUUID() + "@example.test";
+        MvcResult registered = mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Detail Host\",\"email\":\"" + email + "\",\"password\":\"safe-password-123\",\"role\":\"HOST\"}"))
+                .andExpect(status().isOk()).andReturn();
+        String token = mapper.readTree(registered.getResponse().getContentAsString()).get("accessToken").asText();
+        String body = "{\"title\":\"Casa con terraza\",\"description\":\"Alojamiento amplio y luminoso.\",\"city\":\"Bogotá\",\"location\":\"Chapinero Alto\",\"type\":\"APARTMENT\",\"capacity\":4,\"pricePerNight\":180000,\"amenityIds\":[\"WIFI\",\"PARKING\"],\"rules\":\"No fumar.\",\"imageReferences\":[\"/images/casa-terraza.jpg\"]}";
+        MvcResult created = mockMvc.perform(post("/api/listings").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk()).andReturn();
+        String id = mapper.readTree(created.getResponse().getContentAsString()).get("id").asText();
+
+        mockMvc.perform(get("/api/listings/" + id))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/listings/" + id).header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.description").value("Alojamiento amplio y luminoso."));
+
+        mockMvc.perform(patch("/api/listings/" + id + "/state").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"ACTIVE\"}"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/listings/" + id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Casa con terraza"))
+                .andExpect(jsonPath("$.description").value("Alojamiento amplio y luminoso."))
+                .andExpect(jsonPath("$.location").value("Chapinero Alto"))
+                .andExpect(jsonPath("$.city").value("Bogotá"))
+                .andExpect(jsonPath("$.type").value("APARTMENT"))
+                .andExpect(jsonPath("$.capacity").value(4))
+                .andExpect(jsonPath("$.pricePerNight").value(180000))
+                .andExpect(jsonPath("$.amenityIds").value(org.hamcrest.Matchers.containsInAnyOrder("WIFI", "PARKING")))
+                .andExpect(jsonPath("$.rules").value("No fumar."))
+                .andExpect(jsonPath("$.imageReferences[0]").value("/images/casa-terraza.jpg"));
+
+        mockMvc.perform(patch("/api/listings/" + id + "/state").header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"PAUSED\"}"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/listings/" + id))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/listings/" + id).header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("PAUSED"));
+    }
+
+    @Test
     void publicRegistrationCannotAssignAdminAndGuestCannotCreateListing() throws Exception {
         String adminEmail = "admin-" + UUID.randomUUID() + "@example.test";
         mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
