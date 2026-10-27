@@ -1,10 +1,30 @@
 import { searchListings, validateSearch } from './search.js';
+import { buildListingDetailUrl, fetchListingDetail, renderListingDetail, renderListingDetailError } from './detail.js';
 
 if (typeof document !== 'undefined') {
   const searchForm = document.querySelector('#search-form');
   const feedback = document.querySelector('#search-feedback');
   const results = document.querySelector('#search-results');
+  const detailSection = document.querySelector('#listing-detail');
+  const detailFeedback = document.querySelector('#detail-feedback');
+  const detailContent = document.querySelector('#detail-content');
   const apiBase = document.querySelector('meta[name="api-base-url"]')?.content || 'http://localhost:8080';
+
+  const requestedListingId = typeof window === 'undefined'
+    ? null
+    : new URLSearchParams(window.location.search).get('listing');
+  if (requestedListingId && detailSection && detailFeedback && detailContent) {
+    detailSection.hidden = false;
+    detailFeedback.textContent = 'Cargando alojamiento…';
+    fetchListingDetail(requestedListingId, apiBase).then((listing) => {
+      renderListingDetail(detailContent, listing);
+      detailFeedback.textContent = '';
+    }).catch((error) => {
+      const message = error.message || 'No fue posible consultar este alojamiento.';
+      renderListingDetailError(detailContent, message);
+      detailFeedback.textContent = '';
+    });
+  }
 
   if (searchForm && feedback) {
     const today = new Date().toISOString().slice(0, 10);
@@ -40,7 +60,11 @@ if (typeof document !== 'undefined') {
           const price = document.createElement('p');
           price.className = 'listing-price';
           price.textContent = `$${Number(listing.pricePerNight).toLocaleString('es-CO')} por noche`;
-          card.append(title, location, price);
+          const detailLink = document.createElement('a');
+          detailLink.className = 'listing-detail-link';
+          detailLink.href = buildListingDetailUrl(listing.id);
+          detailLink.textContent = 'Ver alojamiento';
+          card.append(title, location, price, detailLink);
           results?.append(card);
         }
         const noun = total === 1 ? 'alojamiento' : 'alojamientos';

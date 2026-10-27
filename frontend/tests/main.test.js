@@ -42,7 +42,7 @@ test('conecta validación, búsqueda y mensajes de error de la interfaz', async 
     if (formValues.city === 'Sin resultados') {
       return { ok: true, async json() { return { total: 0, items: [] }; } };
     }
-    return { ok: true, async json() { return { total: 1, items: [{ title: 'Casa segura', city: 'Bogotá', type: 'APARTMENT', capacity: 4, pricePerNight: 180000 }] }; } };
+    return { ok: true, async json() { return { total: 1, items: [{ id: 'a4887b19-653a-4c03-b2d8-7717ebcd3205', title: 'Casa segura', city: 'Bogotá', type: 'APARTMENT', capacity: 4, pricePerNight: 180000 }] }; } };
   };
 
   try {
@@ -62,6 +62,8 @@ test('conecta validación, búsqueda y mensajes de error de la interfaz', async 
     await new Promise(setImmediate);
     assert.match(feedback.textContent, /1 alojamiento encontrado/i);
     assert.equal(cards[0].children[0].textContent, 'Casa segura');
+    assert.equal(cards[0].children[3].href, '/?listing=a4887b19-653a-4c03-b2d8-7717ebcd3205');
+    assert.equal(cards[0].children[3].textContent, 'Ver alojamiento');
 
     formValues.city = 'Sin resultados';
     handlers.submit({ preventDefault() {} });
