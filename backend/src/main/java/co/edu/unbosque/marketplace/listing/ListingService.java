@@ -5,6 +5,7 @@ import co.edu.unbosque.marketplace.audit.AuditService;
 import co.edu.unbosque.marketplace.security.AccountRole;
 import co.edu.unbosque.marketplace.security.MarketplaceUser;
 import java.math.BigDecimal;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -84,6 +85,27 @@ public class ListingService {
         return listings.findByStatus(ListingStatus.ACTIVE).stream()
                 .filter(listing -> matchesFilters(listing, filters))
                 .sorted(Comparator.comparing(Listing::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> citySuggestions(String query) {
+        List<String> cities = listings.findDistinctCitiesByStatus(ListingStatus.ACTIVE);
+        if (query == null || query.isBlank()) {
+            List<String> preferred = List.of("Bogotá D.C., Bogotá D.C.", "Medellín, Antioquia", "Cartagena de Indias, Bolívar",
+                    "Santa Marta, Magdalena", "Cali, Valle del Cauca", "San Andrés, Archipiélago de San Andrés, Providencia y Santa Catalina",
+                    "Villa de Leyva, Boyacá", "Salento, Quindío", "Bucaramanga, Santander", "Pereira, Risaralda");
+            return preferred.stream().map(name -> cities.stream()
+                            .filter(city -> normalizeCity(city).equals(normalizeCity(name))).findFirst().orElse(null))
+                    .filter(java.util.Objects::nonNull).limit(10).toList();
+        }
+        String normalizedQuery = normalizeCity(query);
+        if (normalizedQuery.isBlank()) return List.of();
+        return cities.stream()
+                .filter(city -> normalizeCity(city).contains(normalizedQuery))
+                .sorted(Comparator.comparing((String city) -> !normalizeCity(city).startsWith(normalizedQuery))
+                        .thenComparing(String.CASE_INSENSITIVE_ORDER))
+                .limit(10)
                 .toList();
     }
 
@@ -181,6 +203,10 @@ public class ListingService {
 
     private boolean matchesCity(Listing listing, String city) {
         return city == null || listing.getCity().toLowerCase(Locale.ROOT).contains(city.trim().toLowerCase(Locale.ROOT));
+    }
+
+    private String normalizeCity(String city) {
+        return Normalizer.normalize(city, Normalizer.Form.NFD).replaceAll("\\p{M}+", "").trim().toLowerCase(Locale.ROOT);
     }
 
     private boolean matchesType(Listing listing, String type) {

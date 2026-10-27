@@ -137,6 +137,8 @@ class MarketplaceAcceptanceTest {
         mockMvc.perform(get("/api/listings").param("city", "bogotá").param("guests", "2").param("amenityIds", "WIFI"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(1))
                 .andExpect(jsonPath("$.items[0].id").value(id));
+        mockMvc.perform(get("/api/listings/cities").param("query", "bogota"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0]").value("Bogotá"));
         mockMvc.perform(get("/api/listings").param("city", "bogotá").param("checkIn", "2026-12-03")
                         .param("checkOut", "2026-12-05").param("guests", "2"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(1));

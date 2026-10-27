@@ -1,4 +1,4 @@
-import { searchListings, validateSearch } from './search.js';
+import { fetchCitySuggestions, searchListings, validateSearch } from './search.js';
 import { buildListingDetailUrl, fetchListingDetail, renderListingDetail, renderListingDetailError } from './detail.js';
 
 if (typeof document !== 'undefined') {
@@ -9,6 +9,88 @@ if (typeof document !== 'undefined') {
   const detailFeedback = document.querySelector('#detail-feedback');
   const detailContent = document.querySelector('#detail-content');
   const apiBase = document.querySelector('meta[name="api-base-url"]')?.content || 'http://localhost:8080';
+  const cityInput = document.querySelector('#city');
+  const citySuggestions = document.querySelector('#city-suggestions');
+
+  if (cityInput && citySuggestions) {
+    let suggestionTimer;
+    let requestNumber = 0;
+    let activeSuggestion = -1;
+
+    const closeSuggestions = () => {
+      requestNumber += 1;
+      citySuggestions.hidden = true;
+      cityInput.setAttribute('aria-expanded', 'false');
+      cityInput.removeAttribute('aria-activedescendant');
+      activeSuggestion = -1;
+    };
+
+    const chooseSuggestion = (city) => {
+      cityInput.value = city;
+      closeSuggestions();
+    };
+
+    const loadSuggestions = async () => {
+      const currentRequest = ++requestNumber;
+      try {
+        const cities = await fetchCitySuggestions(cityInput.value, apiBase);
+        if (currentRequest !== requestNumber) return;
+        citySuggestions.replaceChildren();
+        for (const [index, city] of cities.slice(0, 10).entries()) {
+          const option = document.createElement('li');
+          option.id = `city-option-${index}`;
+          option.setAttribute('role', 'option');
+          option.setAttribute('aria-selected', 'false');
+          option.textContent = city;
+          option.addEventListener('mousedown', (event) => event.preventDefault());
+          option.addEventListener('click', () => chooseSuggestion(city));
+          citySuggestions.append(option);
+        }
+        citySuggestions.hidden = cities.length === 0;
+        cityInput.setAttribute('aria-expanded', String(cities.length > 0));
+        activeSuggestion = -1;
+        cityInput.removeAttribute('aria-activedescendant');
+      } catch {
+        if (currentRequest === requestNumber) closeSuggestions();
+      }
+    };
+
+    const setActiveSuggestion = (index) => {
+      const options = [...citySuggestions.children];
+      if (!options.length) return;
+      activeSuggestion = (index + options.length) % options.length;
+      options.forEach((option, optionIndex) => option.setAttribute('aria-selected', String(optionIndex === activeSuggestion)));
+      cityInput.setAttribute('aria-activedescendant', options[activeSuggestion].id);
+    };
+
+    cityInput.setAttribute('role', 'combobox');
+    cityInput.setAttribute('aria-autocomplete', 'list');
+    cityInput.setAttribute('aria-controls', 'city-suggestions');
+    cityInput.setAttribute('aria-expanded', 'false');
+    cityInput.setAttribute('autocomplete', 'off');
+    cityInput.addEventListener('focus', loadSuggestions);
+    cityInput.addEventListener('input', () => {
+      requestNumber += 1;
+      clearTimeout(suggestionTimer);
+      suggestionTimer = setTimeout(loadSuggestions, 180);
+    });
+    cityInput.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowDown' && !citySuggestions.hidden) {
+        event.preventDefault();
+        setActiveSuggestion(activeSuggestion + 1);
+      } else if (event.key === 'ArrowUp' && !citySuggestions.hidden) {
+        event.preventDefault();
+        setActiveSuggestion(activeSuggestion < 0 ? citySuggestions.children.length - 1 : activeSuggestion - 1);
+      } else if (event.key === 'Enter' && activeSuggestion >= 0) {
+        event.preventDefault();
+        chooseSuggestion(citySuggestions.children[activeSuggestion].textContent);
+      } else if (event.key === 'Escape') {
+        closeSuggestions();
+      }
+    });
+    cityInput.addEventListener('blur', () => setTimeout(closeSuggestions, 120));
+    void loadSuggestions();
+  }
 
   const requestedListingId = typeof window === 'undefined'
     ? null
