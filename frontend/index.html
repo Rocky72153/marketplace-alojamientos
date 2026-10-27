@@ -31,7 +31,7 @@
         <h1>Encuentra un lugar<br />para sentirte en casa.</h1>
         <p class="hero-copy">Descubre alojamientos, compara opciones y planea tu próxima estancia.</p>
         <form id="search-form" class="search-card" aria-label="Buscar alojamientos">
-          <label>Ciudad<input id="city" name="city" placeholder="¿A dónde vas?" /></label>
+          <div class="city-field"><label for="city">Ciudad</label><input id="city" name="city" placeholder="¿A dónde vas?" /><ul id="city-suggestions" class="city-suggestions" role="listbox" aria-label="Ciudades sugeridas" hidden></ul></div>
           <label>Llegada<input id="checkin" name="checkin" type="date" /></label>
           <label>Salida<input id="checkout" name="checkout" type="date" /></label>
           <label>Huéspedes<input id="guests" name="guests" type="number" min="1" value="2" /></label>
@@ -54,7 +54,7 @@
       <section class="intro" id="buscar">
         <p class="eyebrow">UN SOLO LUGAR PARA PLANEAR</p>
         <h2>Tu próxima estancia empieza aquí.</h2>
-        <p>Consulta alojamientos activos y encuentra opciones según tu ciudad, fechas y número de huéspedes.</p>
+        <p>Consulta alojamientos activos y encuentra opciones según tu ciudad, fechas y número de huéspedes. El catálogo inicial contiene registros ficticios para demostración; no representan espacios reales.</p>
       </section>
       <section class="host-banner" id="anfitriones">
         <div><p class="eyebrow">PARA ANFITRIONES</p><h2>Tu espacio puede ser el lugar favorito de alguien.</h2><p>Administra publicaciones, precios y disponibilidad desde una plataforma centralizada.</p></div>
