@@ -50,6 +50,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/listings/*/quotes").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/listings", "/api/listings/*", "/api/listings/*/availability").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -68,7 +69,8 @@ public class SecurityConfiguration {
         configuration.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim).filter(origin -> !origin.isEmpty()).toList());
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", CORRELATION_ID_HEADER, "X-Admin-Bootstrap"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", CORRELATION_ID_HEADER,
+                "X-Admin-Bootstrap", "Idempotency-Key"));
         configuration.setExposedHeaders(Arrays.asList(CORRELATION_ID_HEADER));
         configuration.setAllowCredentials(false);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
