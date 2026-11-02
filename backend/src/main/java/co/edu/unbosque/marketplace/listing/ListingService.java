@@ -155,7 +155,7 @@ public class ListingService {
 
     @Transactional(readOnly = true)
     public boolean hasAvailableRange(UUID listingId, LocalDate startDate, LocalDate endDate) {
-        Listing listing = get(listingId);
+        get(listingId);
         List<AvailabilityPeriod> current = availability.findByListing_IdOrderByStartDateAsc(listingId);
         boolean conflicts = current.stream().anyMatch(period -> period.getType() != AvailabilityType.AVAILABLE
                 && period.overlaps(startDate, endDate));
@@ -323,8 +323,7 @@ public class ListingService {
     private void applyCommercialTerms(Listing listing, ListingInput input, boolean creating) {
         if (creating || input.extraOptions() != null) {
             List<ListingExtraOption> options = input.extraOptions() == null ? List.of() : input.extraOptions().stream()
-                    .map(option -> new ListingExtraOption(option.id() == null || option.id().isBlank()
-                            ? UUID.randomUUID().toString() : option.id(), option.name().trim(),
+                    .map(option -> new ListingExtraOption(extraOptionId(option), option.name().trim(),
                             option.unitPrice().setScale(2, java.math.RoundingMode.HALF_UP)))
                     .toList();
             Set<String> ids = new HashSet<>();
@@ -339,6 +338,10 @@ public class ListingService {
             listing.setCancellationPolicy(policy.freeRefundDays(), policy.partialRefundDays(),
                     policy.partialRefundPercentage().setScale(2, java.math.RoundingMode.HALF_UP));
         }
+    }
+
+    private String extraOptionId(ExtraInput option) {
+        return option.id() == null || option.id().isBlank() ? UUID.randomUUID().toString() : option.id();
     }
 
     public record ListingInput(@NotBlank @Size(max=160) String title, @NotBlank @Size(max=4000) String description,

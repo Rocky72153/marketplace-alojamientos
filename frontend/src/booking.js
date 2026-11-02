@@ -26,7 +26,13 @@ function laterDate(days) {
 }
 
 function makeIdempotencyKey() {
-  return globalThis.crypto?.randomUUID?.() || `booking-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const cryptoApi = globalThis.crypto;
+  if (typeof cryptoApi?.randomUUID === 'function') return cryptoApi.randomUUID();
+  if (typeof cryptoApi?.getRandomValues === 'function') {
+    const values = cryptoApi.getRandomValues(new Uint32Array(4));
+    return `booking-${Array.from(values, (value) => value.toString(16).padStart(8, '0')).join('')}`;
+  }
+  throw new Error('Tu navegador no puede generar una clave segura para la reserva.');
 }
 
 export function initBooking(container, listing, apiBase, getToken, onReservationChanged = () => {},
@@ -196,7 +202,7 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
       current.payload = null; current.idempotencyKey = null;
       reserveButton.hidden = true;
       feedback.textContent = `Reserva confirmada. Código ${result.id}. Pago simulado aprobado; no se realizó ningún cobro real.`;
-      await onReservationChanged();
+      await Promise.resolve(onReservationChanged());
     } catch (error) {
       feedback.textContent = error.message || 'No fue posible confirmar la reserva.';
       reserveButton.disabled = false;
