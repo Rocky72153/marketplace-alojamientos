@@ -36,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReservationService {
     private static final ZoneId BUSINESS_ZONE = ZoneId.of("America/Bogota");
     private static final BigDecimal ZERO = new BigDecimal("0.00");
+    private static final String RESERVATION_ENTITY = "RESERVATION";
+    private static final String AUDIT_SUCCESS = "SUCCESS";
     private final ListingService listings;
     private final ReservationRepository reservations;
     private final BookingPricePolicy pricing;
@@ -74,16 +76,13 @@ public class ReservationService {
         Quote quote = calculateQuote(listing, request.toQuoteRequest());
         String paymentReference = payments.authorize();
         Reservation reservation = new Reservation(guest, listing, idempotencyKey, fingerprint,
-                quote.checkIn(), quote.checkOut(), quote.nights(), quote.guests(), quote.pricePerNight(),
-                quote.nightlySubtotal(), quote.cleaningFee(), quote.serviceFee(), quote.discountAmount(),
-                quote.extrasTotal(), quote.total(), "COP", paymentReference, listing.getCancellationFreeRefundDays(),
-                listing.getCancellationPartialRefundDays(), listing.getCancellationPartialRefundPercentage(),
+                reservationDetails(quote, listing, paymentReference),
                 quote.extras().stream().map(ExtraLine::toReservationExtra).toList());
         reservation = reservations.saveAndFlush(reservation);
 
         listings.confirmReservation(listing.getId(), quote.checkIn(), quote.checkOut(), reservation.getId().toString());
-        audit.recordEvent("PAYMENT_TEST_APPROVED", guest.getId(), "RESERVATION", reservation.getId(), "SUCCESS", paymentReference);
-        audit.recordEvent("RESERVATION_CONFIRMED", guest.getId(), "RESERVATION", reservation.getId(), "SUCCESS", null);
+        audit.recordEvent("PAYMENT_TEST_APPROVED", guest.getId(), RESERVATION_ENTITY, reservation.getId(), AUDIT_SUCCESS, paymentReference);
+        audit.recordEvent("RESERVATION_CONFIRMED", guest.getId(), RESERVATION_ENTITY, reservation.getId(), AUDIT_SUCCESS, null);
         return ReservationView.from(reservation);
     }
 
@@ -129,7 +128,7 @@ public class ReservationService {
         reservation.cancel(request.reason().trim(), Instant.now(), refundPercentage, refundAmount);
         Reservation saved = reservations.save(reservation);
         String auditReason = request.reason().trim() + " | Reembolso de prueba: " + refundPercentage + "% / " + refundAmount + " COP";
-        audit.recordEvent("RESERVATION_CANCELLED", guest.getId(), "RESERVATION", reservationId, "SUCCESS", auditReason);
+        audit.recordEvent("RESERVATION_CANCELLED", guest.getId(), RESERVATION_ENTITY, reservationId, AUDIT_SUCCESS, auditReason);
         return ReservationView.from(saved);
     }
 
@@ -189,6 +188,14 @@ public class ReservationService {
         } catch (NoSuchAlgorithmException exception) {
             throw new IllegalStateException("No fue posible validar la idempotencia.", exception);
         }
+    }
+
+    private Reservation.ReservationDetails reservationDetails(Quote quote, Listing listing, String paymentReference) {
+        return new Reservation.ReservationDetails(quote.checkIn(), quote.checkOut(), quote.nights(), quote.guests(),
+                quote.pricePerNight(), quote.nightlySubtotal(), quote.cleaningFee(), quote.serviceFee(),
+                quote.discountAmount(), quote.extrasTotal(), quote.total(), "COP", paymentReference,
+                listing.getCancellationFreeRefundDays(), listing.getCancellationPartialRefundDays(),
+                listing.getCancellationPartialRefundPercentage());
     }
 
     private ReservationView returnIdempotent(Reservation reservation, String fingerprint) {
