@@ -121,35 +121,31 @@ public class Reservation {
 
     protected Reservation() { }
 
-    public Reservation(MarketplaceUser guest, Listing listing, String idempotencyKey, String requestFingerprint, LocalDate checkIn,
-            LocalDate checkOut, int nights, int guests, BigDecimal pricePerNight, BigDecimal nightlySubtotal,
-            BigDecimal cleaningFee, BigDecimal serviceFee, BigDecimal discountAmount, BigDecimal extrasTotal,
-            BigDecimal total, String currency, String paymentReference, int policyFreeRefundDays,
-            int policyPartialRefundDays, BigDecimal policyPartialRefundPercentage,
-            List<ReservationExtra> extras) {
+    public Reservation(MarketplaceUser guest, Listing listing, String idempotencyKey, String requestFingerprint,
+            ReservationDetails details, List<ReservationExtra> extras) {
         this.id = UUID.randomUUID();
         this.guest = guest;
         this.listing = listing;
         this.idempotencyKey = idempotencyKey;
         this.requestFingerprint = requestFingerprint;
-        this.checkIn = checkIn;
-        this.checkOut = checkOut;
-        this.nights = nights;
-        this.guests = guests;
-        this.pricePerNight = pricePerNight;
-        this.nightlySubtotal = nightlySubtotal;
-        this.cleaningFee = cleaningFee;
-        this.serviceFee = serviceFee;
-        this.discountAmount = discountAmount;
-        this.extrasTotal = extrasTotal;
-        this.total = total;
-        this.currency = currency;
+        this.checkIn = details.checkIn();
+        this.checkOut = details.checkOut();
+        this.nights = details.nights();
+        this.guests = details.guests();
+        this.pricePerNight = details.pricePerNight();
+        this.nightlySubtotal = details.nightlySubtotal();
+        this.cleaningFee = details.cleaningFee();
+        this.serviceFee = details.serviceFee();
+        this.discountAmount = details.discountAmount();
+        this.extrasTotal = details.extrasTotal();
+        this.total = details.total();
+        this.currency = details.currency();
         this.paymentStatus = "TEST_APPROVED";
-        this.paymentReference = paymentReference;
+        this.paymentReference = details.paymentReference();
         this.status = ReservationStatus.CONFIRMED;
-        this.policyFreeRefundDays = policyFreeRefundDays;
-        this.policyPartialRefundDays = policyPartialRefundDays;
-        this.policyPartialRefundPercentage = policyPartialRefundPercentage;
+        this.policyFreeRefundDays = details.policyFreeRefundDays();
+        this.policyPartialRefundDays = details.policyPartialRefundDays();
+        this.policyPartialRefundPercentage = details.policyPartialRefundPercentage();
         this.extras = new ArrayList<>(extras);
     }
 
@@ -194,4 +190,10 @@ public class Reservation {
     public BigDecimal getPolicyPartialRefundPercentage() { return policyPartialRefundPercentage; }
     public Instant getCreatedAt() { return createdAt; }
     public List<ReservationExtra> getExtras() { return List.copyOf(extras); }
+
+    public record ReservationDetails(LocalDate checkIn, LocalDate checkOut, int nights, int guests,
+            BigDecimal pricePerNight, BigDecimal nightlySubtotal, BigDecimal cleaningFee, BigDecimal serviceFee,
+            BigDecimal discountAmount, BigDecimal extrasTotal, BigDecimal total, String currency,
+            String paymentReference, int policyFreeRefundDays, int policyPartialRefundDays,
+            BigDecimal policyPartialRefundPercentage) { }
 }
