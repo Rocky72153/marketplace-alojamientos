@@ -58,7 +58,7 @@ WON'T en Entrega 1: procesar pagos reales o usar credenciales de producción. La
 
 ## Requerimientos del proyecto
 
-- El equipo propone Scrum + Lean, con épicas, historias y sprints registrados en Jira. La metodología, los roles operativos, la duración de los sprints y la capacidad requieren ratificación del equipo y del docente cuando aplique.
+- El equipo propone Scrum, con épicas, historias y sprints registrados en Jira. La metodología, los roles operativos, la duración de los sprints y la capacidad requieren ratificación del equipo y del docente cuando aplique.
 - La visión, el alcance, los interesados, los procesos, los requerimientos y el diseño se documentarán en Confluence.
 - El código se gestionará en GitHub con ramas y Pull Requests. El flujo del repositorio propone integrar cambios en develop por Pull Request y promover versiones estables a main; la revisión por otro integrante y los checks configurados deben verificarse en cada cambio.
 - GitHub Actions ejecutará compilación y pruebas. El análisis de SonarCloud queda condicionado a la configuración de la organización, el proyecto y sus credenciales.
