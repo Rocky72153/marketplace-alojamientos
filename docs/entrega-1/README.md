@@ -35,7 +35,7 @@ Las fechas oficiales del cronograma, la aprobación del acta y las firmas están
 16. [Ciclo de vida del software](16-ciclo-vida-software.md)
 17. [Diseño de casos de prueba](17-casos-de-prueba.md)
 18. [Desglose de subtareas y planificación Jira](18-plan-subtareas-jira.md)
-19. [Metodología Scrum + Lean](19-metodologia-scrum-lean.md)
+19. [Metodología Scrum](19-metodologia-scrum.md)
 
 ## Fuentes de diagramas y material complementario
 
@@ -50,7 +50,7 @@ Las fechas oficiales del cronograma, la aprobación del acta y las firmas están
 
 ## Cómo interpretar este material
 
-Los artefactos se construyeron a partir de la guía oficial del curso compartida en el proyecto. Las decisiones que el enunciado deja abiertas —por ejemplo, tecnologías, límites físicos de servicios, tarifas y política concreta de cancelación— se marcan como propuestas o pendientes de validación. Scrum + Lean, los roles operativos y la cadencia semanal quedaron registrados y fueron incluidos en la ratificación del paquete del 14/10/2026; esto no acredita que las ceremonias se hayan realizado.
+Los artefactos se construyeron a partir de la guía oficial del curso compartida en el proyecto. Las decisiones que el enunciado deja abiertas —por ejemplo, tecnologías, límites físicos de servicios, tarifas y política concreta de cancelación— se marcan como propuestas o pendientes de validación. Scrum, los roles operativos y la cadencia semanal quedaron registrados y fueron incluidos en la ratificación del paquete del 14/10/2026; esto no acredita que las ceremonias se hayan realizado.
 
 Los identificadores se mantienen consistentes: ACT, INT, RBN, RN, RF, RNF, EP, HU, CU, CP y ADR. Las historias tienen criterios que empiezan con **El sistema debe**, conservan el escenario **Dado que / Cuando / Entonces** y declaran dependencias. El catálogo prioriza 11 historias MUST, 7 SHOULD y 1 COULD para Entrega 1; prioridad no equivale a implementación. La matriz CSV registra también prioridad MoSCoW y fuente de levantamiento, además de enlazar Jira, commits, PR, casos y evidencia parcial ejecutada; la trazabilidad de implementación completa y releases se ampliará cuando el MVP exista.
 
