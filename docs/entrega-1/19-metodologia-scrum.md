@@ -1,29 +1,28 @@
-# 19. Metodología de trabajo: Scrum + Lean
+# 19. Metodología de trabajo: Scrum
 
 **Proyecto:** Marketplace de Alojamientos  
-**Fecha de registro:** 2026-10-14  
+**Fecha de registro:** 2026-10-14 (actualizado el 2026-11-04: el equipo trabaja solo con Scrum)  
 **Cadencia de planificación en Jira:** sprints de una semana, desde el 19 de octubre de 2026  
 **Estado:** propuesta de trabajo documentada y reflejada parcialmente en Jira; el equipo debe ratificarla explícitamente antes de tratar roles, cadencia y capacidad como acuerdos vigentes.
 
 ## 19.1 Decisión metodológica
 
-El proyecto utilizará un enfoque combinado:
+El proyecto utiliza **Scrum** como marco de trabajo: Product Backlog priorizado, objetivo por sprint, Sprint Planning, Daily Scrum, Sprint Review y Sprint Retrospective. Scrum se apoya en tres pilares:
 
-- **Scrum** será el marco de organización: backlog priorizado, objetivo por sprint, planificación, seguimiento, revisión del incremento y retrospectiva.
-- **Lean** aportará principios de flujo y mejora: maximizar valor, eliminar trabajo que no aporta valor, limitar trabajo en curso (WIP), reducir tiempos de espera y retrabajo, incorporar calidad desde el principio y mejorar continuamente.
-
-Lean no se adopta como sinónimo de “trabajar más rápido” ni como justificación para reducir pruebas. Se busca entregar valor de forma más predecible, con menos bloqueos, cambios innecesarios y defectos.
+- **Transparencia:** el estado del backlog, del sprint y del incremento se mantiene visible en Jira y GitHub.
+- **Inspección:** en la Daily Scrum, la Sprint Review y la Sprint Retrospective se revisa el avance contra el objetivo del sprint y los criterios de aceptación.
+- **Adaptación:** cuando algo se desvía, se ajusta el plan del sprint o el Product Backlog y se registra la decisión.
 
 ## 19.2 Roles y responsabilidades
 
 | Rol | Responsable | Responsabilidades |
 |---|---|---|
 | Product Owner / analista de requisitos | Julián David Aguilera Párraga | Aclarar necesidades y reglas de negocio; mantener criterios de aceptación verificables; apoyar la priorización y revisar si el incremento satisface esos criterios. |
-| Scrum Master / gerente del proyecto | Juan Sebastián Morales Forero | Facilitar la aplicación de Scrum; hacer visibles bloqueos y dependencias; promover acciones de mejora Lean; coordinar que acuerdos, revisiones y retrospectivas queden registrados. No actúa como jefe del equipo. |
+| Scrum Master / gerente del proyecto | Juan Sebastián Morales Forero | Facilitar la aplicación de Scrum; hacer visibles bloqueos y dependencias; promover las acciones de mejora acordadas en la retrospectiva; coordinar que acuerdos, revisiones y retrospectivas queden registrados. No actúa como jefe del equipo. |
 | Developers | Juan Sebastián Morales Forero y Julián David Aguilera Párraga | Diseñar, implementar, probar, revisar código, mantener documentación y trazabilidad, estimar trabajo y producir un incremento que cumpla la Definition of Done. |
+| Interesado / representante de negocio | Representante de Inversiones LR simulado en el contexto académico | Aclarar necesidades y revisar prototipos o incrementos cuando esté disponible. El feedback debe registrarse solo cuando realmente ocurra; no se presume validación del cliente. |
 
 La asignación propuesta en esta tabla sigue la información del acta de constitución; su ratificación conjunta sigue pendiente. Los responsables de historias o subtareas en Jira no se toman por sí solos como evidencia de que el equipo haya aprobado los roles.
-| Interesado / representante de negocio | Representante de Inversiones LR simulado en el contexto académico | Aclarar necesidades y revisar prototipos o incrementos cuando esté disponible. El feedback debe registrarse solo cuando realmente ocurra; no se presume validación del cliente. |
 
 Los dos integrantes participan en desarrollo y pruebas. Para fomentar calidad y revisión cruzada, la subtarea de pruebas se asigna al integrante distinto de quien implementa la historia, conforme a la distribución registrada en Jira. La asignación y disponibilidad deben revisarse si hay ausencias o bloqueos.
 
@@ -45,28 +44,32 @@ Los sprints están configurados en Jira con inicio y fin los lunes a las 09:00, 
 
 La capacidad conocida es de aproximadamente 4–6 horas semanales por integrante (8–12 horas combinadas). Como no existe aún una velocidad histórica, no puede afirmarse que 106 puntos sean alcanzables en ocho semanas. Antes de comprometer cada sprint, el equipo revisará disponibilidad, dependencias y tamaño de historias; después del primer sprint calibrará el plan según trabajo realmente terminado. Los sprints con 16 puntos son especialmente sensibles a esa validación. HU-10 tiene 13 puntos iniciales y debe refinarse para verificar que sea terminable dentro del sprint; las subtareas por sí solas no sustituyen dividir una historia excesivamente grande.
 
-## 19.4 Ceremonias ligeras y salidas obligatorias
+## 19.4 Eventos de Scrum
 
-| Actividad | Cadencia propuesta | Salida que se registra |
+| Evento | Cadencia propuesta | Salida que se registra |
 |---|---|---|
-| Sprint Planning | Al inicio de cada semana; 45–60 min | Objetivo, historias seleccionadas según capacidad, riesgos, dependencias y compromiso revisado en Jira. |
-| Seguimiento de flujo | Asíncrono al menos 3 veces por semana; breve reunión solo cuando ayude | Estado actualizado, próximo paso, impedimentos, responsable de resolverlos y fecha de seguimiento en Jira. No afirmar que se celebró una reunión si solo hubo actualización asíncrona. |
-| Backlog Refinement | Una sesión semanal de 30 min, antes de la siguiente planificación | Historias entendibles, criterios verificables, preguntas resueltas y estimaciones revisadas. |
-| Sprint Review | Al cierre de la semana; 30 min | Demostración real frente a criterios de aceptación; historias aceptadas/devueltas y feedback real registrado. |
-| Sprint Retrospective | Al cierre, después de Review; 20–30 min | Una o dos acciones concretas, con responsable y fecha objetivo para el siguiente sprint. |
-| Revisión de PR e integración | Durante el sprint | Revisor distinto del autor cuando sea posible; CI y pruebas pertinentes verificadas; trazabilidad actualizada antes del merge. |
+| Sprint | Una semana, de lunes a lunes | Contiene los demás eventos y produce un incremento que cumple la Definition of Done. |
+| Sprint Planning | Al inicio de cada semana; 45-60 min | Objetivo del sprint, historias seleccionadas según capacidad, riesgos, dependencias y compromiso revisado en Jira. |
+| Daily Scrum | Asíncrona al menos 3 veces por semana en Jira; reunión breve solo cuando ayude | Qué se avanzó, qué sigue e impedimentos, con responsable de resolverlos. No afirmar que se celebró una reunión si solo hubo actualización asíncrona. |
+| Sprint Review | Al cierre de la semana; 30 min | Demostración real frente a criterios de aceptación; historias aceptadas o devueltas y feedback real registrado. |
+| Sprint Retrospective | Al cierre, después de la Review; 20-30 min | Una o dos acciones concretas de mejora, con responsable y fecha objetivo para el siguiente sprint. |
 
-Las duraciones son una propuesta compatible con la dedicación semanal reducida. El equipo puede ajustarlas, pero debe conservar la finalidad de cada actividad y documentar los acuerdos reales.
+Además del ciclo de eventos, el equipo realiza dos actividades continuas:
 
-## 19.5 Prácticas Lean concretas
+- **Refinamiento del Product Backlog:** una sesión semanal de 30 min antes de la siguiente planificación, para dejar historias entendibles, criterios verificables, preguntas resueltas y estimaciones revisadas.
+- **Revisión de PR e integración:** durante el sprint, con revisor distinto del autor cuando sea posible, CI y pruebas pertinentes verificadas y trazabilidad actualizada antes del merge.
 
-1. **Priorizar valor y riesgo:** trabajar primero en dependencias de registro/permisos, publicaciones, disponibilidad, cotización y reserva; no comenzar funcionalidades opcionales que desplacen los flujos centrales.
-2. **Limitar WIP:** con dos Developers, mantener como máximo dos historias activas de implementación en el equipo; las historias bloqueadas o pendientes de revisión se hacen visibles y se atienden antes de abrir trabajo adicional.
-3. **Reducir espera y handoffs:** abrir PR pequeños y coherentes; pedir revisión tan pronto el cambio sea revisable; hacer visible quién debe responder y cuál es el siguiente paso.
-4. **Evitar retrabajo:** aclarar reglas y criterios antes de codificar; enlazar las decisiones a las historias y actualizar los documentos afectados dentro del mismo cambio.
-5. **Calidad integrada:** escribir y ejecutar pruebas pertinentes, revisar criterios de aceptación y mantener CI en verde; no retrasar pruebas para ganar velocidad aparente.
-6. **Mejora continua:** elegir una o dos acciones realistas en cada retrospectiva, asignar responsable y comprobar la semana siguiente si mejoraron el flujo.
-7. **Evitar trabajo innecesario:** no duplicar documentación en varios lugares sin una fuente de verdad; enlazar artefactos y conservar trazabilidad útil para la entrega.
+Las duraciones son una propuesta compatible con la dedicación semanal reducida. El equipo puede ajustarlas, pero debe conservar la finalidad de cada evento y documentar los acuerdos reales.
+
+## 19.5 Artefactos de Scrum y compromisos
+
+| Artefacto | Compromiso | Dónde se gestiona |
+|---|---|---|
+| Product Backlog | Objetivo del producto: un MVP que permita publicar un alojamiento, buscarlo, consultar su disponibilidad, cotizarlo y reservarlo de forma inmediata. | Jira MARKET: épicas e historias ordenadas por prioridad MoSCoW. |
+| Sprint Backlog | Objetivo del sprint definido en la Sprint Planning. | Sprint activo en Jira, con historias y subtareas. |
+| Incremento | Definition of Done (sección 19.6). | Rama `develop` y releases en GitHub, con CI en verde. |
+
+El Product Owner ordena el Product Backlog por valor y riesgo: primero registro y permisos, publicaciones, disponibilidad, cotización y reserva; las funcionalidades opcionales no desplazan los flujos centrales. Las decisiones de cambio de alcance se enlazan a las historias afectadas.
 
 ## 19.6 Definition of Ready y Definition of Done
 
@@ -82,19 +85,19 @@ Las duraciones son una propuesta compatible con la dedicación semanal reducida.
 
 La creación de una historia, subtarea, PR o caso de prueba no equivale a trabajo terminado ni a prueba aprobada.
 
-## 19.7 Métricas de flujo y revisión semanal
+## 19.7 Seguimiento del sprint
 
 Al cierre de cada sprint, registrar con datos del tablero y del repositorio:
 
-| Métrica | Cómo observarla | Para qué se utiliza |
+| Medida | Cómo observarla | Para qué se utiliza |
 |---|---|---|
-| Trabajo terminado | Historias aceptadas y puntos realmente terminados; reportar también lo no terminado | Comparar con lo planificado sin convertir la estimación inicial en promesa. |
-| Cycle time | Tiempo transcurrido entre empezar una historia y terminarla | Encontrar colas o historias demasiado grandes; comparar tendencias, no evaluar personas. |
-| WIP y bloqueos | Historias activas, bloqueadas o esperando revisión; anotar duración y causa | Resolver impedimentos y evitar empezar más trabajo del que se puede terminar. |
-| Calidad / retrabajo | Pruebas ejecutadas y resultado, defectos encontrados después de review, correcciones repetidas | Reducir defectos y validar que velocidad no se gane a costa de calidad. |
-| Cumplimiento del objetivo | Objetivo de sprint alcanzado total/parcial/no alcanzado, con causa documentada | Ajustar alcance, capacidad y dependencias para la siguiente semana. |
+| Trabajo terminado (velocidad) | Historias aceptadas y puntos realmente terminados; reportar también lo no terminado | Comparar con lo planificado sin convertir la estimación inicial en promesa. |
+| Burndown del sprint | Gráfico de trabajo restante del sprint en Jira | Detectar a tiempo si el objetivo del sprint está en riesgo. |
+| Impedimentos | Bloqueos registrados en la Daily Scrum, con duración y causa | Resolverlos y llevar los recurrentes a la retrospectiva. |
+| Calidad / retrabajo | Pruebas ejecutadas y resultado, defectos encontrados después de la review, correcciones repetidas | Reducir defectos y validar que la velocidad no se gane a costa de la calidad. |
+| Cumplimiento del objetivo | Objetivo del sprint alcanzado total, parcial o no alcanzado, con causa documentada | Ajustar alcance, capacidad y dependencias para la siguiente semana. |
 
-En el primer sprint se establece una línea base. No se fijan objetivos numéricos de velocidad o cycle time antes de observar datos reales. Los Story Points sirven para planificación de equipo; no son horas ni una métrica individual de productividad.
+En el primer sprint se establece una línea base. No se fijan objetivos numéricos de velocidad antes de observar datos reales. Los Story Points sirven para planificación de equipo; no son horas ni una métrica individual de productividad.
 
 ## 19.8 Registro y mejora del proceso
 
