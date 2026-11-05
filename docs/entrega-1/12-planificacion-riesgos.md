@@ -2,9 +2,9 @@
 
 **Cautela:** no se ha aportado la fecha oficial de entrega académica. La planificación del producto sí está distribuida en ocho sprints semanales en Jira; los Story Points siguen siendo iniciales y la capacidad debe validarse con el equipo antes de cada compromiso.
 
-## 12.1 Enfoque ágil adoptado: Scrum + Lean
+## 12.1 Enfoque ágil adoptado: Scrum
 
-El proyecto se organiza con **Scrum como marco de trabajo** y **Lean como principios de flujo y mejora continua**. Scrum estructura backlog, objetivos semanales, seguimiento, review y retrospectiva; Lean orienta a priorizar valor, limitar el trabajo en curso, reducir esperas/retrabajo y asegurar calidad desde el inicio. La descripción normativa está en [19. Metodología Scrum + Lean](19-metodologia-scrum-lean.md).
+El proyecto se organiza con **Scrum como marco de trabajo**. Scrum estructura el Product Backlog, el objetivo de cada sprint semanal, la Daily Scrum, la Sprint Review y la Sprint Retrospective. La descripción normativa está en [19. Metodología Scrum](19-metodologia-scrum.md).
 
 ## 12.1.1 Roles operativos
 
@@ -35,15 +35,15 @@ Jira contiene ocho sprints semanales desde el 19 de octubre hasta el 14 de dicie
 
 El backlog completo de 19 historias es una propuesta de planificación: HU-01, HU-04–HU-12 y HU-19 son MUST; HU-02, HU-03 y HU-13–HU-17 son SHOULD; HU-18 es COULD. Si la capacidad no alcanza, SHOULD/COULD se replanifican después de completar MUST; las ocho semanas y los puntos son estimaciones, no un compromiso de entrega de todas las historias. La disponibilidad estimada es de 4–6 horas por semana por integrante (8–12 horas combinadas). La velocidad real todavía no se conoce y los Story Points son estimaciones iniciales; por tanto, 106 puntos en ocho semanas no se considera capacidad validada. En la planificación se revisarán horas disponibles, dependencias y tamaño, y al terminar el primer sprint se recalibrará el plan usando trabajo realmente terminado. Los sprints con 16 puntos requieren especial revisión y HU-10 (13 puntos) debe refinarse para confirmar que sea terminable en una semana.
 
-## 12.1.3 Cadencia, calidad y mejora Lean
+## 12.1.3 Cadencia, calidad y mejora continua
 
-Las ceremonias y prácticas se detallan en [19. Metodología Scrum + Lean](19-metodologia-scrum-lean.md). Como mínimo, cada semana se debe registrar planificación y objetivo, seguimiento/bloqueos, review con criterios realmente demostrados y retrospectiva con una o dos acciones de mejora con responsable y fecha. Para reducir desperdicio, se limitará el WIP del equipo a un máximo inicial de dos historias activas de implementación, se harán visibles los tiempos de espera de revisión y se priorizará terminar/revisar trabajo en curso antes de empezar más trabajo.
+Los eventos y artefactos de Scrum se detallan en [19. Metodología Scrum](19-metodologia-scrum.md). Como mínimo, cada semana se debe registrar la planificación y el objetivo del sprint, el seguimiento y los impedimentos de la Daily Scrum, la review con criterios realmente demostrados y la retrospectiva con una o dos acciones de mejora con responsable y fecha. Una historia solo se da por terminada cuando cumple la Definition of Done.
 
 ## 12.2 WBS/EDT — Entrega 1
 
 | Código | Paquete de trabajo | Actividades | Resultado verificable |
 |---|---|---|---|
-| 1.0 | Inicio y planeación | Formalizar Scrum + Lean, roles, Definition of Ready/Done, repositorio y calendario de sprints. | Acuerdos, cronograma y organización Jira. |
+| 1.0 | Inicio y planeación | Formalizar Scrum, roles, Definition of Ready/Done, repositorio y calendario de sprints. | Acuerdos, cronograma y organización Jira. |
 | 1.1 | Visión y alcance | Entender contexto, objetivos de negocio, actores y límites del MVP. | Documento de visión/alcance revisado. |
 | 1.2 | Actores e interesados | Identificar actores directos/interesados, objetivos, preocupaciones, responsabilidades y afectaciones. | Matriz de actores con justificación. |
 | 1.3 | Procesos de negocio | Modelar publicación, búsqueda/reserva, cancelación, moderación/auditoría/reportes; revisar decisiones. | Modelos BPMN y relación con requisitos. |
