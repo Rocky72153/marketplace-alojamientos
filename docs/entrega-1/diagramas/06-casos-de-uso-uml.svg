@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="820" viewBox="0 0 1180 820" font-family="Arial, Helvetica, sans-serif">
+<rect width="1180" height="820" fill="#ffffff"/>
+<rect x="340" y="60" width="500" height="724" fill="#f7f9fc" stroke="#333" stroke-width="2"/>
+<text x="590" y="90" text-anchor="middle" font-size="18" font-weight="bold">Marketplace de Alojamientos</text>
+<line x1="138" y1="400" x2="400" y2="130" stroke="#555" stroke-width="1.6"/>
+<line x1="138" y1="400" x2="400" y2="376" stroke="#555" stroke-width="1.6"/>
+<line x1="138" y1="400" x2="400" y2="458" stroke="#555" stroke-width="1.6"/>
+<line x1="138" y1="400" x2="400" y2="540" stroke="#555" stroke-width="1.6"/>
+<line x1="138" y1="400" x2="400" y2="622" stroke="#555" stroke-width="1.6"/>
+<line x1="1042" y1="190" x2="780" y2="130" stroke="#555" stroke-width="1.6"/>
+<line x1="1042" y1="190" x2="780" y2="212" stroke="#555" stroke-width="1.6"/>
+<line x1="1042" y1="190" x2="780" y2="294" stroke="#555" stroke-width="1.6"/>
+<line x1="1042" y1="430" x2="780" y2="458" stroke="#555" stroke-width="1.6"/>
+<line x1="1042" y1="650" x2="780" y2="130" stroke="#555" stroke-width="1.6"/>
+<line x1="1042" y1="650" x2="780" y2="622" stroke="#555" stroke-width="1.6"/>
+<line x1="1042" y1="650" x2="780" y2="704" stroke="#555" stroke-width="1.6"/>
+<ellipse cx="590" cy="130" rx="190" ry="30" fill="#e8f0fe" stroke="#1a3e72" stroke-width="2"/>
+<text x="590" y="135" text-anchor="middle" font-size="15">CU-01 Registrarse e iniciar sesión</text>
+<ellipse cx="590" cy="212" rx="190" ry="30" fill="#e8f0fe" stroke="#1a3e72" stroke-width="2"/>
+<text x="590" y="217" text-anchor="middle" font-size="15">CU-02 Crear y publicar alojamiento</text>
+<ellipse cx="590" cy="294" rx="190" ry="30" fill="#e8f0fe" stroke="#1a3e72" stroke-width="2"/>
+<text x="590" y="299" text-anchor="middle" font-size="15">CU-03 Mantener disponibilidad</text>
+<ellipse cx="590" cy="376" rx="190" ry="30" fill="#e8f0fe" stroke="#1a3e72" stroke-width="2"/>
+<text x="590" y="381" text-anchor="middle" font-size="15">CU-04 Buscar, comparar y cotizar</text>
+<ellipse cx="590" cy="458" rx="190" ry="30" fill="#e8f0fe" stroke="#1a3e72" stroke-width="2"/>
+<text x="590" y="463" text-anchor="middle" font-size="15">CU-05 Confirmar reserva inmediata</text>
+<ellipse cx="590" cy="540" rx="190" ry="30" fill="#e8f0fe" stroke="#1a3e72" stroke-width="2"/>
+<text x="590" y="545" text-anchor="middle" font-size="15">CU-06 Cancelar reserva</text>
+<ellipse cx="590" cy="622" rx="190" ry="30" fill="#e8f0fe" stroke="#1a3e72" stroke-width="2"/>
+<text x="590" y="627" text-anchor="middle" font-size="15">CU-07 Reseñar y moderar estancia</text>
+<ellipse cx="590" cy="704" rx="190" ry="30" fill="#e8f0fe" stroke="#1a3e72" stroke-width="2"/>
+<text x="590" y="709" text-anchor="middle" font-size="15">CU-08 Administrar operación y exportar informe</text>
+<circle cx="110" cy="360" r="14" fill="#fff" stroke="#333" stroke-width="2"/>
+<line x1="110" y1="374" x2="110" y2="410" stroke="#333" stroke-width="2"/>
+<line x1="88" y1="388" x2="132" y2="388" stroke="#333" stroke-width="2"/>
+<line x1="110" y1="410" x2="92" y2="438" stroke="#333" stroke-width="2"/>
+<line x1="110" y1="410" x2="128" y2="438" stroke="#333" stroke-width="2"/>
+<text x="110" y="460" text-anchor="middle" font-size="16" font-weight="bold">Huésped</text>
+<circle cx="1070" cy="150" r="14" fill="#fff" stroke="#333" stroke-width="2"/>
+<line x1="1070" y1="164" x2="1070" y2="200" stroke="#333" stroke-width="2"/>
+<line x1="1048" y1="178" x2="1092" y2="178" stroke="#333" stroke-width="2"/>
+<line x1="1070" y1="200" x2="1052" y2="228" stroke="#333" stroke-width="2"/>
+<line x1="1070" y1="200" x2="1088" y2="228" stroke="#333" stroke-width="2"/>
+<text x="1070" y="250" text-anchor="middle" font-size="16" font-weight="bold">Anfitrión</text>
+<rect x="1040" y="396" width="60" height="44" fill="#fff" stroke="#333" stroke-width="2"/>
+<text x="1070" y="423" text-anchor="middle" font-size="12">«sistema»</text>
+<text x="1070" y="460" text-anchor="middle" font-size="16" font-weight="bold">Proveedor de pagos</text>
+<text x="1070" y="478" text-anchor="middle" font-size="16" font-weight="bold">(modo de pruebas)</text>
+<circle cx="1070" cy="610" r="14" fill="#fff" stroke="#333" stroke-width="2"/>
+<line x1="1070" y1="624" x2="1070" y2="660" stroke="#333" stroke-width="2"/>
+<line x1="1048" y1="638" x2="1092" y2="638" stroke="#333" stroke-width="2"/>
+<line x1="1070" y1="660" x2="1052" y2="688" stroke="#333" stroke-width="2"/>
+<line x1="1070" y1="660" x2="1088" y2="688" stroke="#333" stroke-width="2"/>
+<text x="1070" y="710" text-anchor="middle" font-size="16" font-weight="bold">Administrador</text>
+<text x="590" y="800" text-anchor="middle" font-size="13" fill="#555">Diagrama de casos de uso (UML) - actores principales y caso de uso que inicia cada uno</text>
+</svg>
