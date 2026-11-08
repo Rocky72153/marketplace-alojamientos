@@ -3,7 +3,7 @@
 ## Marketplace de Alojamientos
 
 **Fecha de elaboración:** 14/10/2026  
-**Estado:** Borrador para validación y aprobación. Las fechas de entrega, aprobaciones y firmas siguen pendientes.
+**Estado:** Borrador para validación y aprobación. La entrega final (Entrega 2) es el 26/11/2026; las aprobaciones y firmas siguen pendientes.
 
 ## Historial de versiones
 
@@ -11,6 +11,7 @@
 |---|---|---|---|---|
 | 14/10/2026 | 1.0 | Julián Aguilera y Juan Sebastián Morales | Universidad El Bosque | Versión inicial del acta de constitución |
 | 08/11/2026 | 1.1 | Julián Aguilera | Universidad El Bosque | Roles unificados con el plan del proyecto: Juan Sebastián Morales como Product Owner y Julián Aguilera como Scrum Master y gerente del proyecto |
+| 08/11/2026 | 1.2 | Julián Aguilera | Universidad El Bosque | Fecha de entrega final (26/11/2026) y cronograma actualizado con los sprints registrados en Jira |
 
 ## Información del proyecto
 
@@ -104,7 +105,7 @@ Los grupos de procesos se relacionan con estos entregables: iniciación (acta), 
 
 **Restricciones**
 
-- El docente define las fechas oficiales de entrega. Todas las fechas del cronograma de esta acta están pendientes de confirmación.
+- El docente define las fechas oficiales de entrega. La entrega final (Entrega 2) es el 26/11/2026; las fechas que dicen "Por confirmar" las define el docente.
 - Los pagos se simularán con Stripe en modo de pruebas; no se realizarán cobros reales.
 - El backend expondrá servicios REST consumidos por el frontend.
 - El equipo usará Pull Requests y revisión de otro integrante según el flujo documentado en el repositorio; las reglas y checks deben verificarse.
@@ -113,19 +114,22 @@ Los grupos de procesos se relacionan con estos entregables: iniciación (acta), 
 
 ## Cronograma
 
-La tabla conserva las actividades previstas en el acta fuente. El docente debe confirmar las fechas oficiales; los sprints, responsables y calendario definitivo también requieren acuerdo del equipo.
+Los sprints son los registrados en Jira y terminan con la entrega final del 26/11/2026.
 
 | Actividad | Fecha de entrega |
 |---|---|
-| Inicio y planeación: acta, backlog inicial, cronograma y riesgos | Pendiente |
-| Ingeniería de requerimientos: actores, procesos BPMN e historias con criterios | Pendiente |
-| Diseño orientado a servicios: casos de uso, modelos, OpenAPI y prototipo | Pendiente |
-| Entrega 1: análisis de requerimientos y diseño | Pendiente |
-| Sprint 1: identidad, perfil, publicaciones y disponibilidad (EP-01 a EP-03) | Pendiente |
-| Sprint 2: búsqueda, cotización, reserva, cancelación y notificaciones (EP-04 a EP-07) | Pendiente |
-| Sprint 3: reseñas, administración, panel, reportes y logs (EP-08 a EP-10) | Pendiente |
-| Validación y cierre: pruebas, Quality Gate e informe final | Pendiente |
-| Entrega 2: producto funcional, pruebas, integración continua y sustentación | Pendiente |
+| Inicio y planeación: acta, backlog inicial, cronograma y riesgos | 14/10/2026 |
+| Ingeniería de requerimientos: actores, procesos BPMN e historias con criterios | Por confirmar |
+| Diseño orientado a servicios: casos de uso, modelos, OpenAPI y prototipo | Por confirmar |
+| Entrega 1: análisis de requerimientos y diseño | Por confirmar |
+| Sprint 1: identidad, publicaciones, disponibilidad y búsqueda (HU-01 a HU-07) | 19/10/2026 al 26/10/2026 |
+| Sprint 2: detalle de alojamiento (HU-08) | 26/10/2026 al 02/11/2026 |
+| Sprint 3: cotización, reserva, historial y cancelación en revisión (HU-09 a HU-12) | 02/11/2026 al 09/11/2026 |
+| Sprint 4: integrar y validar cotización, reserva, historial y cancelación (HU-09 a HU-12) | 09/11/2026 al 16/11/2026 |
+| Sprint 5: notificaciones, reseñas, moderación, administración, dashboard y trazas (HU-13 a HU-17 y HU-19) | 16/11/2026 al 23/11/2026 |
+| Sprint 6: exportación de reportes (HU-18), integración final y release | 23/11/2026 al 26/11/2026 |
+| Validación y cierre: pruebas, Quality Gate e informe final | 23/11/2026 al 26/11/2026 |
+| Entrega 2: producto funcional, pruebas, integración continua y sustentación | 26/11/2026 |
 
 ## Riesgos
 
