@@ -15,7 +15,7 @@ El proyecto se organiza con **Scrum como marco de trabajo**. Scrum estructura el
 | Developers | Juan Sebastián Morales Forero y Julián David Aguilera Párraga | Diseño, implementación, pruebas, revisión de código, documentación y trazabilidad. Ambos siguen participando en desarrollo y validación cruzada. |
 | Interesado de negocio | Representante de Inversiones LR simulado para el curso | Aportar o revisar necesidades cuando esté disponible. No se presume feedback ni aprobación sin registro real. |
 
-Esta asignación refleja la decisión operativa de planificación registrada para el proyecto. Debe quedar ratificada explícitamente por ambos integrantes y ajustarse si el curso o el representante de negocio define restricciones adicionales.
+Esta asignación es la misma del acta de constitución y del documento 19 (unificada el 08/11/2026). Se ajusta si el curso o el representante de negocio define restricciones adicionales.
 
 ## 12.1.2 Sprints semanales configurados en Jira
 
@@ -98,7 +98,7 @@ Escala inicial cualitativa (probabilidad/impacto): baja, media, alta. Reevaluar 
 
 ## 12.6 Recursos y responsabilidades (RACI operativo inicial)
 
-La asignación operativa se documenta abajo y debe ratificarse por ambos integrantes. Los responsables detallados por historia y subtarea están en [18. Desglose de subtareas y planificación Jira](18-plan-subtareas-jira.md).
+La asignación operativa se documenta abajo. Los responsables detallados por historia y subtarea están en [18. Desglose de subtareas y planificación Jira](18-plan-subtareas-jira.md).
 
 | Actividad | Responsable de ejecución (R) | Aprobador (A) | Consultados (C) | Informados (I) |
 |---|---|---|---|---|
