@@ -19,7 +19,7 @@ Esta asignación es la misma del acta de constitución y del documento 19 (unifi
 
 ## 12.1.2 Sprints semanales configurados en Jira
 
-Jira contiene ocho sprints semanales desde el 19 de octubre hasta el 14 de diciembre de 2026. Sus límites están configurados para iniciar y terminar los lunes a las 09:00, hora de Bogotá.
+Jira contiene ocho sprints semanales desde el 19 de octubre hasta el 14 de diciembre de 2026. Sus límites están configurados para iniciar y terminar los lunes a las 09:00, hora de Bogotá. La tabla muestra el plan inicial; la ejecución real (sprints 1 a 3 cerrados y Sprint 4 activo desde el 9/11) se registra en Jira y en Confluence, página 4.3 Sprints.
 
 | Sprint | Fechas locales | Objetivo resumido | Historias | Puntos iniciales |
 |---|---|---|---|---:|
