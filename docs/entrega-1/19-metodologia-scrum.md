@@ -2,7 +2,7 @@
 
 **Proyecto:** Marketplace de Alojamientos  
 **Fecha de registro:** 2026-10-14 (actualizado el 2026-11-04: el equipo trabaja solo con Scrum)  
-**Cadencia de planificación en Jira:** sprints de una semana, desde el 19 de octubre de 2026  
+**Cadencia de planificación en Jira:** sprints de una semana, del 19 de octubre al 26 de noviembre de 2026 (entrega final); el último sprint es corto  
 **Estado:** marco documentado y reflejado parcialmente en Jira. Los roles quedaron definidos el 08/11/2026; la cadencia y la capacidad se confirman con la ejecución de los sprints.
 
 ## 19.1 Decisión metodológica
@@ -28,7 +28,21 @@ Los dos integrantes participan en desarrollo y pruebas. Para fomentar calidad y 
 
 ## 19.3 Cadencia de trabajo
 
-Los sprints están configurados en Jira con inicio y fin los lunes a las 09:00, hora de Bogotá. El final de uno coincide con el inicio del siguiente. La tabla es el plan inicial del 14/10/2026; los Story Points son estimaciones iniciales, no una velocidad comprobada. La ejecución real se registra en Jira y en Confluence (página 4.3 Sprints): los sprints 1 a 3 quedaron cerrados con 37, 3 y 0 puntos terminados, y HU-09 a HU-12 pasaron al Sprint 4.
+Los sprints están configurados en Jira con inicio y fin los lunes a las 09:00, hora de Bogotá. El final de uno coincide con el inicio del siguiente. La entrega final es el 26/11/2026, así que el Sprint 6 va del lunes 23 al jueves 26 de noviembre. Los sprints 1 a 3 quedaron cerrados con 37, 3 y 0 puntos terminados, y HU-09 a HU-12 pasaron al Sprint 4. El detalle de cada sprint está en Jira y en Confluence (página 4.3 Sprints).
+
+**Plan vigente (08/11/2026)**
+
+| Sprint | Fechas | Objetivo | Historias | Puntos | Estado en Jira |
+|---|---|---|---|---:|---|
+| MARKET Sprint 1 | 19 al 26 oct 2026 | Identidad, publicaciones, disponibilidad y búsqueda | HU-01 a HU-07 | 37 terminados | Cerrado |
+| MARKET Sprint 2 | 26 oct al 2 nov 2026 | Detalle de alojamiento | HU-08 | 3 terminados | Cerrado |
+| MARKET Sprint 3 | 2 al 9 nov 2026 | Terminar e integrar HU-09 a HU-12 | Ninguna terminada (PR #15 sin revisar) | 0 | Cerrado |
+| MARKET Sprint 4 | 9 al 16 nov 2026 | Revisar, integrar y validar cotización, reserva, historial y cancelación | HU-09 a HU-12 | 29 | Activo |
+| MARKET Sprint 5 | 16 al 23 nov 2026 | Notificaciones, reseñas, moderación, administración, dashboard y trazas | HU-13 a HU-17 y HU-19 | 29 | Futuro |
+| MARKET Sprint 6 | 23 al 26 nov 2026 | Exportación de reportes, integración final, pruebas, release y entrega | HU-18 | 8 | Futuro |
+| **Total** | **19 oct al 26 nov 2026** | **Backlog completo para la entrega final** | **19 historias** | **106 (40 terminados)** | |
+
+**Plan inicial (14/10/2026, reemplazado el 08/11/2026)**
 
 | Sprint en Jira | Fechas locales de referencia | Objetivo | Historias | Puntos iniciales |
 |---|---|---|---|---:|
@@ -42,7 +56,7 @@ Los sprints están configurados en Jira con inicio y fin los lunes a las 09:00, 
 | MARKET Sprint 8 | 7–14 dic 2026 | Exportación de reportes y trazabilidad técnica | HU-18 a HU-19 | 13 |
 | **Total** | **8 semanas** | **Backlog completo propuesto; MVP obligatorio definido por MoSCoW** | **HU-01 a HU-19** | **106** |
 
-La capacidad conocida es de aproximadamente 4–6 horas semanales por integrante (8–12 horas combinadas). Como no existe aún una velocidad histórica, no puede afirmarse que 106 puntos sean alcanzables en ocho semanas. Antes de comprometer cada sprint, el equipo revisará disponibilidad, dependencias y tamaño de historias; después del primer sprint calibrará el plan según trabajo realmente terminado. Los sprints con 16 puntos son especialmente sensibles a esa validación. HU-10 tiene 13 puntos iniciales y debe refinarse para verificar que sea terminable dentro del sprint; las subtareas por sí solas no sustituyen dividir una historia excesivamente grande.
+La capacidad conocida es de aproximadamente 4 a 6 horas semanales por integrante (8 a 12 horas combinadas) y la velocidad promedio de los sprints 1 a 3 es de 13,3 puntos. Los sprints 4 y 5 piden 29 puntos cada uno, más del doble, por eso el riesgo R-12 del documento 12 queda en probabilidad alta. Antes de comprometer cada sprint, el equipo revisa disponibilidad, dependencias y tamaño de historias. Si el trabajo no alcanza, se recorta primero HU-18 (COULD) y después las SHOULD, sin bajar la Definition of Done.
 
 ## 19.4 Eventos de Scrum
 
