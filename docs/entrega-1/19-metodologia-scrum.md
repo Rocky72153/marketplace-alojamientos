@@ -28,7 +28,7 @@ Los dos integrantes participan en desarrollo y pruebas. Para fomentar calidad y 
 
 ## 19.3 Cadencia de trabajo
 
-Los sprints están configurados en Jira con inicio y fin los lunes a las 09:00, hora de Bogotá. El final de uno coincide con el inicio del siguiente. La tabla resume la distribución vigente en el tablero; los Story Points son estimaciones iniciales, no una velocidad comprobada.
+Los sprints están configurados en Jira con inicio y fin los lunes a las 09:00, hora de Bogotá. El final de uno coincide con el inicio del siguiente. La tabla es el plan inicial del 14/10/2026; los Story Points son estimaciones iniciales, no una velocidad comprobada. La ejecución real se registra en Jira y en Confluence (página 4.3 Sprints): los sprints 1 a 3 quedaron cerrados con 37, 3 y 0 puntos terminados, y HU-09 a HU-12 pasaron al Sprint 4.
 
 | Sprint en Jira | Fechas locales de referencia | Objetivo | Historias | Puntos iniciales |
 |---|---|---|---|---:|

@@ -56,6 +56,15 @@ Base de datos local: docker compose up -d db
 
 Consulta CONTRIBUTING.md y docs/entrega-1/13-checklist-entrega.md antes de preparar la entrega.
 
-Links: 
-https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/753665/Entrega+1+estado+evidencia+y+ratificaci+n+del+equipo
-https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog
+## Enlaces del proyecto
+
+| Herramienta | Enlace |
+|---|---|
+| Confluence (documentación por fases) | https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/overview |
+| Jira: sprint activo | https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2 |
+| Jira: backlog | https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/backlog |
+| Jira: reportes (burndown y velocidad) | https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2/reports |
+| Estado de la Entrega 1 en Confluence | https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/753665 |
+| SonarCloud | https://sonarcloud.io/dashboard?id=Rocky72153_marketplace-alojamientos |
+
+Cada historia de Jira tiene un enlace a su Pull Request y a su página de Confluence.
