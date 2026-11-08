@@ -10,6 +10,7 @@
 | Fecha | Versión | Autores | Organización | Descripción |
 |---|---|---|---|---|
 | 14/10/2026 | 1.0 | Julián Aguilera y Juan Sebastián Morales | Universidad El Bosque | Versión inicial del acta de constitución |
+| 08/11/2026 | 1.1 | Julián Aguilera | Universidad El Bosque | Roles unificados con el plan del proyecto: Juan Sebastián Morales como Product Owner y Julián Aguilera como Scrum Master y gerente del proyecto |
 
 ## Información del proyecto
 
@@ -19,7 +20,7 @@
 | Nombre del proyecto | Marketplace de Alojamientos |
 | Cliente | Inversiones LR |
 | Patrocinador principal | Ing. David Esteban Rodríguez Gómez, docente de Ingeniería de Software I |
-| Gerente del proyecto | Juan Sebastián Morales; rol de Scrum Master propuesto y pendiente de ratificación |
+| Gerente del proyecto | Julián Aguilera, que también es el Scrum Master |
 | Estado del acta | Borrador para validación y aprobación; no cuenta con firmas |
 
 ## Propósito y justificación
@@ -30,7 +31,7 @@ El crecimiento de huéspedes y propietarios que confían la gestión de sus inmu
 
 ## Requerimientos del producto
 
-El backlog de Entrega 1 documenta 19 historias del producto, pero no todas bloquean el MVP. El corte propuesto es 11 MUST (HU-01, HU-04–HU-12 y HU-19), 7 SHOULD (HU-02, HU-03, HU-13–HU-17) y 1 COULD (HU-18). Las prioridades identifican alcance planificado, no implementación actual. El levantamiento disponible es análisis documental de la guía oficial del proyecto y de sus artefactos; no se registran entrevistas ni aprobación del cliente. La relación conserva la cobertura funcional:
+El backlog de Entrega 1 documenta 19 historias del producto, pero no todas bloquean el MVP. El corte propuesto es 11 MUST (HU-01, HU-04 a HU-12 y HU-19), 7 SHOULD (HU-02, HU-03, HU-13 a HU-17) y 1 COULD (HU-18). Las prioridades identifican alcance planificado, no implementación actual. El levantamiento disponible es análisis documental de la guía oficial del proyecto y de sus artefactos; no se registran entrevistas ni aprobación del cliente. La relación conserva la cobertura funcional:
 
 | Historia | Prioridad | Alcance |
 |---|---|---|
@@ -58,7 +59,7 @@ WON'T en Entrega 1: procesar pagos reales o usar credenciales de producción. La
 
 ## Requerimientos del proyecto
 
-- El equipo propone Scrum, con épicas, historias y sprints registrados en Jira. La metodología, los roles operativos, la duración de los sprints y la capacidad requieren ratificación del equipo y del docente cuando aplique.
+- El equipo propone Scrum, con épicas, historias y sprints registrados en Jira. Los roles están definidos (Product Owner: Juan Sebastián Morales; Scrum Master: Julián Aguilera). La duración de los sprints y la capacidad se confirman en la ejecución y con el docente cuando aplique.
 - La visión, el alcance, los interesados, los procesos, los requerimientos y el diseño se documentarán en Confluence.
 - El código se gestionará en GitHub con ramas y Pull Requests. El flujo del repositorio propone integrar cambios en develop por Pull Request y promover versiones estables a main; la revisión por otro integrante y los checks configurados deben verificarse en cada cambio.
 - GitHub Actions ejecutará compilación y pruebas. El análisis de SonarCloud queda condicionado a la configuración de la organización, el proyecto y sus credenciales.
@@ -72,7 +73,7 @@ La solución propuesta es un frontend web en HTML, CSS y JavaScript que consumir
 
 | Etapa | Entregables | Criterio de aceptación |
 |---|---|---|
-| Análisis | Catálogo de requerimientos y reglas, actores e interesados, procesos BPMN y backlog de épicas e historias | El sistema debe contar con historias identificables, prioridad MoSCoW y trazabilidad; cada criterio empieza con «El sistema debe» y conserva Dado que / Cuando / Entonces |
+| Análisis | Catálogo de requerimientos y reglas, actores e interesados, procesos BPMN y backlog de épicas e historias | El sistema debe contar con historias identificables, prioridad MoSCoW y trazabilidad; cada criterio empieza con "El sistema debe" y conserva Dado que / Cuando / Entonces |
 | Diseño | Casos de uso, modelos de dominio y datos, arquitectura orientada a servicios, contrato OpenAPI, secuencias y prototipo | El sistema debe tener diagramas coherentes con requerimientos priorizados y servicios relacionados con las historias que atienden |
 | Construcción | Código de backend y frontend versionado en GitHub | El sistema debe integrarse mediante Pull Request revisado y cumplir el Quality Gate de SonarCloud cuando el servicio esté configurado |
 | Prueba | Pruebas automatizadas y evidencias de validación | El sistema debe superar la ejecución de pruebas en GitHub Actions y demostrar el flujo de publicación, búsqueda, disponibilidad, cotización y reserva inmediata |
@@ -145,10 +146,10 @@ Estimación inicial del proyecto en pesos colombianos (COP), pendiente de revisi
 
 | Descripción | Costos directos | Costos indirectos | Reservas |
 |---|---:|---:|---:|
-| Trabajo del equipo: 2 integrantes × aprox. 60 horas × $10.000/h | $1.200.000 | — | — |
-| GitHub, GitHub Actions, Jira, Confluence, SonarCloud y Stripe de pruebas | $0 (planes gratuitos) | — | — |
-| Computador, internet y energía: 2 integrantes × $150.000 | — | $300.000 | — |
-| Reserva para imprevistos (10 %) | — | — | $150.000 |
+| Trabajo del equipo: 2 integrantes x aprox. 60 horas x $10.000/h | $1.200.000 | - | - |
+| GitHub, GitHub Actions, Jira, Confluence, SonarCloud y Stripe de pruebas | $0 (planes gratuitos) | - | - |
+| Computador, internet y energía: 2 integrantes x $150.000 | - | $300.000 | - |
+| Reserva para imprevistos (10 %) | - | - | $150.000 |
 | **Total estimado** | **$1.200.000** | **$300.000** | **$150.000** |
 
 **Presupuesto total estimado: COP $1.650.000.**
@@ -170,8 +171,8 @@ Estimación inicial del proyecto en pesos colombianos (COP), pendiente de revisi
 
 | Integrante | Rol |
 |---|---|
-| Julián Aguilera | Product Owner y analista (rol propuesto, pendiente de ratificación): backlog de Jira, requerimientos, documentación y casos de prueba |
-| Juan Sebastián Morales | Scrum Master y gerente del proyecto (roles propuestos, pendientes de ratificación); backend, frontend, repositorio e integración continua |
+| Julián Aguilera | Scrum Master y gerente del proyecto: seguimiento en Jira, requerimientos, documentación y casos de prueba |
+| Juan Sebastián Morales | Product Owner: prioriza el Product Backlog; backend, frontend, repositorio e integración continua |
 
 ## Aprobación y firmas
 
