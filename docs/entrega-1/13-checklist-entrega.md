@@ -4,7 +4,7 @@ Esta lista se cruza con los productos esperados y las exigencias de la guía del
 
 | Ítem de la guía | Evidencia en el repositorio | Estado para revisión |
 |---|---|---|
-| Acta de constitución del proyecto | [Word](acta-constitucion-marketplace.docx) y [Markdown](acta-constitucion-marketplace.md) | Adaptada y agregada; fechas oficiales, aprobación y firmas pendientes |
+| Acta de constitución del proyecto | [Word](acta-constitucion-marketplace.docx) y [Markdown](acta-constitucion-marketplace.md) | Adaptada y agregada (versión 1.2); entrega final el 26/11/2026; fechas de la Entrega 1, aprobación y firmas pendientes |
 | Visión, alcance y objetivos del negocio | `01-vision-alcance.md` | Revisado y ratificado como parte del paquete documental por Juan Sebastián Morales y Julián Aguilera el 14/10/2026; aprobación docente no acreditada |
 | Actores/interesados con descripción, relación, necesidades, preocupaciones, responsabilidades y afectación | `02-actores-interesados.md` | Preparado; validar y completar nombres/responsables |
 | Procesos relevantes con límites, participantes, entradas/salidas, reglas, eventos/resultados y relación a requerimientos | `03-procesos-negocio.md` + `bpmn/*.bpmn` | Borrador; validar visualmente BPMN y acordar excepciones |
