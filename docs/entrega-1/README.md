@@ -13,7 +13,7 @@ La guía define Entrega 1 como **análisis de requerimientos y diseño** y Entre
 - [Acta de constitución del proyecto en Word](acta-constitucion-marketplace.docx).
 - [Acta de constitución del proyecto en Markdown](acta-constitucion-marketplace.md).
 
-Las fechas oficiales del cronograma, la aprobación del acta y las firmas están pendientes.
+La entrega final (Entrega 2) es el 26/11/2026. Las demás fechas del cronograma, la aprobación del acta y las firmas están pendientes.
 
 ## Navegación de artefactos
 
