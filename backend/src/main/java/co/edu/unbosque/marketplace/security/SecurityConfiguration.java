@@ -52,7 +52,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/listings/cities").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/listings/*/quotes").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/listings", "/api/listings/*", "/api/listings/*/availability").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/listings", "/api/listings/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
