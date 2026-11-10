@@ -6,7 +6,11 @@ function el(documentRef, tag, className, text) {
 }
 
 function formatMoney(value) {
-  return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(Number(value || 0));
+  const amount = Number(value || 0);
+  const minimumFractionDigits = Number.isInteger(amount) ? 0 : 2;
+  return new Intl.NumberFormat('es-CO', {
+    style: 'currency', currency: 'COP', minimumFractionDigits, maximumFractionDigits: 2,
+  }).format(amount);
 }
 
 function bogotaToday() {

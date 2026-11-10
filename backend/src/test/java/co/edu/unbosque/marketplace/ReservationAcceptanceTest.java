@@ -1,12 +1,12 @@
 package co.edu.unbosque.marketplace;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
@@ -14,6 +14,12 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -136,7 +142,7 @@ class ReservationAcceptanceTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.refundPercentage").value(50))
                 .andExpect(jsonPath("$.refundAmount").value(127500));
 
-        DateRange noRefundRange = range(1);
+        DateRange noRefundRange = range(2);
         setAvailability(hostToken, listingId, noRefundRange, false);
         String noRefundId = reserve(guestToken, listingId, noRefundRange, List.of()).get("id").asText();
         mockMvc.perform(post("/api/reservations/" + noRefundId + "/cancel")
@@ -144,6 +150,45 @@ class ReservationAcceptanceTest {
                         .content("{\"reason\":\"Prueba sin reembolso\"}"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.refundPercentage").value(0))
                 .andExpect(jsonPath("$.refundAmount").value(0)).andExpect(jsonPath("$.paymentStatus").value("TEST_NO_REFUND"));
+    }
+
+    @Test
+    void concurrentBookingsCannotReserveTheSameDatesTwice() throws Exception {
+        String hostToken = register("Host", "HOST").get("accessToken").asText();
+        JsonNode listing = createActiveListing(hostToken);
+        String listingId = listing.get("id").asText();
+        DateRange range = range(18);
+        setAvailability(hostToken, listingId, range, false);
+        String firstGuest = register("GuestA", "GUEST").get("accessToken").asText();
+        String secondGuest = register("GuestB", "GUEST").get("accessToken").asText();
+
+        List<Integer> statuses = runTogether(
+                () -> reserveStatus(firstGuest, listingId, range, UUID.randomUUID().toString()),
+                () -> reserveStatus(secondGuest, listingId, range, UUID.randomUUID().toString()));
+
+        assertEquals(1, statuses.stream().filter(code -> code == 200).count());
+        assertEquals(1, statuses.stream().filter(code -> code == 409).count());
+    }
+
+    @Test
+    void concurrentReuseOfAnIdempotencyKeyAcrossListingsReturnsConflict() throws Exception {
+        String hostToken = register("Host", "HOST").get("accessToken").asText();
+        String firstListingId = createActiveListing(hostToken).get("id").asText();
+        String secondListingId = createActiveListing(hostToken).get("id").asText();
+        DateRange range = range(22);
+        setAvailability(hostToken, firstListingId, range, false);
+        setAvailability(hostToken, secondListingId, range, false);
+        String guestToken = register("Guest", "GUEST").get("accessToken").asText();
+        String key = UUID.randomUUID().toString();
+
+        List<Integer> statuses = runTogether(
+                () -> reserveStatus(guestToken, firstListingId, range, key),
+                () -> reserveStatus(guestToken, secondListingId, range, key));
+
+        assertEquals(1, statuses.stream().filter(code -> code == 200).count());
+        assertEquals(1, statuses.stream().filter(code -> code == 409).count());
+        mockMvc.perform(get("/api/reservations").header("Authorization", "Bearer " + guestToken))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1));
     }
 
     private JsonNode register(String name, String role) throws Exception {
@@ -194,6 +239,41 @@ class ReservationAcceptanceTest {
                         .content(mapper.writeValueAsString(body)))
                 .andExpect(status().isOk()).andReturn();
         return mapper.readTree(result.getResponse().getContentAsString());
+    }
+
+    private int reserveStatus(String guestToken, String listingId, DateRange range, String idempotencyKey) throws Exception {
+        Map<String, Object> body = Map.of("listingId", listingId, "checkIn", range.start().toString(),
+                "checkOut", range.end().toString(), "guests", 2, "extras", List.of());
+        return mockMvc.perform(post("/api/reservations").header("Authorization", "Bearer " + guestToken)
+                        .header("Idempotency-Key", idempotencyKey).contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(body)))
+                .andReturn().getResponse().getStatus();
+    }
+
+    private List<Integer> runTogether(Callable<Integer> first, Callable<Integer> second) throws Exception {
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        CountDownLatch ready = new CountDownLatch(2);
+        CountDownLatch start = new CountDownLatch(1);
+        Callable<Integer> gatedFirst = gated(ready, start, first);
+        Callable<Integer> gatedSecond = gated(ready, start, second);
+        try {
+            Future<Integer> firstResult = executor.submit(gatedFirst);
+            Future<Integer> secondResult = executor.submit(gatedSecond);
+            if (!ready.await(5, TimeUnit.SECONDS)) throw new IllegalStateException("Las solicitudes no quedaron listas a tiempo.");
+            start.countDown();
+            return List.of(firstResult.get(15, TimeUnit.SECONDS), secondResult.get(15, TimeUnit.SECONDS));
+        } finally {
+            start.countDown();
+            executor.shutdownNow();
+        }
+    }
+
+    private Callable<Integer> gated(CountDownLatch ready, CountDownLatch start, Callable<Integer> request) {
+        return () -> {
+            ready.countDown();
+            if (!start.await(5, TimeUnit.SECONDS)) throw new IllegalStateException("La prueba concurrente no inició.");
+            return request.call();
+        };
     }
 
     private DateRange range(int daysFromToday) {
