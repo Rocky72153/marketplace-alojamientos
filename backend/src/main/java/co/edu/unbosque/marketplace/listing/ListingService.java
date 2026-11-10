@@ -85,25 +85,13 @@ public class ListingService {
     @Transactional(readOnly = true)
     public List<Listing> search(String city, LocalDate checkIn, LocalDate checkOut, Integer guests, String type,
             BigDecimal minPrice, BigDecimal maxPrice, Set<String> amenityIds) {
-        if ((checkIn == null) != (checkOut == null)) throw validation("Debes indicar llegada y salida.");
-        if (checkIn != null && !checkOut.isAfter(checkIn)) throw validation("La salida debe ser posterior a la llegada.");
-        if (guests != null && guests < 1) throw validation("El número de huéspedes debe ser al menos 1.");
-        if ((minPrice != null && minPrice.signum() < 0) || (maxPrice != null && maxPrice.signum() < 0)
-                || minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) throw validation("El rango de precios no es válido.");
+        validateSearchCriteria(checkIn, checkOut, guests, minPrice, maxPrice);
         boolean restrictCity = city != null && !city.isBlank();
-        String normalizedQuery = restrictCity ? normalizeCity(city) : "";
-        List<String> matchingCities = restrictCity
-                ? listings.findDistinctCitiesByStatus(ListingStatus.ACTIVE).stream()
-                        .filter(candidate -> normalizeCity(candidate).contains(normalizedQuery)).toList()
-                : List.of("");
+        List<String> matchingCities = matchingCities(city, restrictCity);
         if (restrictCity && matchingCities.isEmpty()) return List.of();
 
-        Set<String> requiredAmenities = amenityIds == null ? Set.of() : amenityIds;
-        boolean restrictType = type != null;
-        String normalizedType = restrictType ? type.trim().toUpperCase(Locale.ROOT) : "";
-        List<Listing> candidates = listings.searchCandidates(ListingStatus.ACTIVE, restrictCity, matchingCities,
-                guests, restrictType, normalizedType, minPrice, maxPrice, requiredAmenities.size(),
-                requiredAmenities.isEmpty() ? Set.of("") : requiredAmenities);
+        List<Listing> candidates = searchCandidates(matchingCities, restrictCity, guests, type,
+                minPrice, maxPrice, amenityIds);
         if (checkIn == null || candidates.isEmpty()) return candidates;
 
         Map<UUID, List<AvailabilityPeriod>> periodsByListing = new HashMap<>();
@@ -112,6 +100,32 @@ public class ListingService {
                         .add(period));
         return candidates.stream().filter(listing -> isAvailable(
                 periodsByListing.getOrDefault(listing.getId(), List.of()), checkIn, checkOut)).toList();
+    }
+
+    private void validateSearchCriteria(LocalDate checkIn, LocalDate checkOut, Integer guests,
+            BigDecimal minPrice, BigDecimal maxPrice) {
+        if ((checkIn == null) != (checkOut == null)) throw validation("Debes indicar llegada y salida.");
+        if (checkIn != null && !checkOut.isAfter(checkIn)) throw validation("La salida debe ser posterior a la llegada.");
+        if (guests != null && guests < 1) throw validation("El número de huéspedes debe ser al menos 1.");
+        if ((minPrice != null && minPrice.signum() < 0) || (maxPrice != null && maxPrice.signum() < 0)
+                || minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) throw validation("El rango de precios no es válido.");
+    }
+
+    private List<String> matchingCities(String city, boolean restrictCity) {
+        if (!restrictCity) return List.of("");
+        String normalizedQuery = normalizeCity(city);
+        return listings.findDistinctCitiesByStatus(ListingStatus.ACTIVE).stream()
+                .filter(candidate -> normalizeCity(candidate).contains(normalizedQuery)).toList();
+    }
+
+    private List<Listing> searchCandidates(List<String> matchingCities, boolean restrictCity,
+            Integer guests, String type, BigDecimal minPrice, BigDecimal maxPrice, Set<String> amenityIds) {
+        Set<String> requiredAmenities = amenityIds == null ? Set.of() : amenityIds;
+        boolean restrictType = type != null;
+        String normalizedType = restrictType ? type.trim().toUpperCase(Locale.ROOT) : "";
+        return listings.searchCandidates(ListingStatus.ACTIVE, restrictCity, matchingCities,
+                guests, restrictType, normalizedType, minPrice, maxPrice, requiredAmenities.size(),
+                requiredAmenities.isEmpty() ? Set.of("") : requiredAmenities);
     }
 
     @Transactional(readOnly = true)
