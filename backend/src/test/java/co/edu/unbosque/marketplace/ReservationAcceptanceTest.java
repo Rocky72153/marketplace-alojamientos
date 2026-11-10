@@ -142,7 +142,7 @@ class ReservationAcceptanceTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.refundPercentage").value(50))
                 .andExpect(jsonPath("$.refundAmount").value(127500));
 
-        DateRange noRefundRange = range(1);
+        DateRange noRefundRange = range(2);
         setAvailability(hostToken, listingId, noRefundRange, false);
         String noRefundId = reserve(guestToken, listingId, noRefundRange, List.of()).get("id").asText();
         mockMvc.perform(post("/api/reservations/" + noRefundId + "/cancel")
