@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -41,6 +42,7 @@ public class DemoDataSeeder implements CommandLineRunner {
     private static final String[] TYPES = { "APARTMENT", "HOUSE", "ROOM", "CABIN" };
     private static final String[] PLACES = { "Centro histórico", "Zona residencial", "Sector turístico", "Cerca del parque", "Zona campestre" };
     private static final String[] TYPE_NAMES = { "Apartamento", "Casa", "Habitación", "Cabaña" };
+    private static final Set<String> LOWERCASE_ARTICLES = Set.of("de", "del", "la", "las", "los", "y", "el");
     private final EntityManager entityManager;
     private final MarketplaceUserRepository users;
     private final PasswordEncoder passwordEncoder;
@@ -82,7 +84,7 @@ public class DemoDataSeeder implements CommandLineRunner {
         entityManager.flush();
         entityManager.clear();
 
-        LocalDate availabilityStart = LocalDate.now();
+        LocalDate availabilityStart = LocalDate.now(ZoneId.of("America/Bogota"));
         LocalDate availabilityEnd = availabilityStart.plusYears(2);
         String demoNotice = "Registro ficticio para demostración académica. Los datos son ilustrativos y no corresponden a una oferta real.";
         for (int i = 0; i < LISTING_COUNT; i++) {
@@ -128,8 +130,8 @@ public class DemoDataSeeder implements CommandLineRunner {
         if (value.equalsIgnoreCase("BOGOTÁ, D.C.")) return "Bogotá D.C.";
         String[] words = value.toLowerCase(Locale.ROOT).split(" ");
         for (int i = 0; i < words.length; i++) {
-            if (i == 0 || !Set.of("de", "del", "la", "las", "los", "y", "el").contains(words[i])) {
-                if (!words[i].isBlank()) words[i] = words[i].substring(0, 1).toUpperCase(Locale.ROOT) + words[i].substring(1);
+            if (!words[i].isBlank() && (i == 0 || !LOWERCASE_ARTICLES.contains(words[i]))) {
+                words[i] = words[i].substring(0, 1).toUpperCase(Locale.ROOT) + words[i].substring(1);
             }
         }
         String displayName = String.join(" ", words);

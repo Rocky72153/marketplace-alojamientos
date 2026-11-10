@@ -33,7 +33,8 @@ export function buildCitySuggestionsUrl(query = '', apiBase = 'http://localhost:
   const params = new URLSearchParams();
   if (query.trim()) params.set('query', query.trim());
   const queryString = params.toString();
-  return `${apiBase.replace(/\/$/, '')}/api/listings/cities${queryString ? `?${queryString}` : ''}`;
+  const baseUrl = `${apiBase.replace(/\/$/, '')}/api/listings/cities`;
+  return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 }
 
 export async function fetchCitySuggestions(query, apiBase) {
