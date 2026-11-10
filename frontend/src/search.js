@@ -28,3 +28,16 @@ export async function searchListings(filters, apiBase) {
   if (!response.ok) throw new Error('No fue posible consultar los alojamientos. Intenta de nuevo.');
   return response.json();
 }
+
+export function buildCitySuggestionsUrl(query = '', apiBase = 'http://localhost:8080') {
+  const params = new URLSearchParams();
+  if (query.trim()) params.set('query', query.trim());
+  const queryString = params.toString();
+  return `${apiBase.replace(/\/$/, '')}/api/listings/cities${queryString ? `?${queryString}` : ''}`;
+}
+
+export async function fetchCitySuggestions(query, apiBase) {
+  const response = await fetch(buildCitySuggestionsUrl(query, apiBase), { headers: { Accept: 'application/json' } });
+  if (!response.ok) throw new Error('No fue posible consultar las ciudades.');
+  return response.json();
+}
