@@ -7,6 +7,7 @@ import co.edu.unbosque.marketplace.listing.ListingExtraOption;
 import co.edu.unbosque.marketplace.listing.ListingService;
 import co.edu.unbosque.marketplace.security.AccountRole;
 import co.edu.unbosque.marketplace.security.MarketplaceUser;
+import co.edu.unbosque.marketplace.security.MarketplaceUserRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -43,14 +44,16 @@ public class ReservationService {
     private final BookingPricePolicy pricing;
     private final TestPaymentSimulator payments;
     private final AuditService audit;
+    private final MarketplaceUserRepository users;
 
     public ReservationService(ListingService listings, ReservationRepository reservations, BookingPricePolicy pricing,
-            TestPaymentSimulator payments, AuditService audit) {
+            TestPaymentSimulator payments, AuditService audit, MarketplaceUserRepository users) {
         this.listings = listings;
         this.reservations = reservations;
         this.pricing = pricing;
         this.payments = payments;
         this.audit = audit;
+        this.users = users;
     }
 
     @Transactional(readOnly = true)
@@ -66,6 +69,8 @@ public class ReservationService {
         if (idempotencyKey.isBlank() || idempotencyKey.length() > 100) {
             throw validation("Debes enviar una clave de idempotencia válida.");
         }
+        users.lockForReservationById(guest.getId())
+                .orElseThrow(() -> new DomainException(HttpStatus.UNAUTHORIZED, "AUTHENTICATION_REQUIRED", "La sesión ya no es válida."));
         String fingerprint = fingerprint(request);
         Reservation previous = reservations.findByGuest_IdAndIdempotencyKey(guest.getId(), idempotencyKey).orElse(null);
         if (previous != null) return returnIdempotent(previous, fingerprint);
