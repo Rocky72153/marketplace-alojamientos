@@ -5,7 +5,9 @@ on:
     branches: [main, develop]
     types: [opened, synchronize, reopened]
   push:
-    branches: [main, develop]
+    # SonarCloud analysis is available for the default branch and pull requests;
+    # this organization does not permit analysis of non-main branches on push.
+    branches: [main]
   workflow_dispatch:
 
 permissions:
