@@ -9,6 +9,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OrderColumn;
@@ -24,7 +25,8 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "listings")
+@Table(name = "listings", indexes = @Index(name = "idx_listings_status_city_created",
+        columnList = "status,city,created_at"))
 public class Listing {
     @Id private UUID id;
     @ManyToOne(optional = false)

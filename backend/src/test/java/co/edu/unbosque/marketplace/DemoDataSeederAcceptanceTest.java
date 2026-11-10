@@ -1,6 +1,7 @@
 package co.edu.unbosque.marketplace;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -8,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import co.edu.unbosque.marketplace.listing.AvailabilityRepository;
 import co.edu.unbosque.marketplace.listing.ListingRepository;
+import co.edu.unbosque.marketplace.listing.ListingService;
 import co.edu.unbosque.marketplace.listing.ListingStatus;
 import co.edu.unbosque.marketplace.security.AccountRole;
 import co.edu.unbosque.marketplace.security.MarketplaceUserRepository;
@@ -19,6 +21,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import java.util.Set;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -30,6 +33,7 @@ class DemoDataSeederAcceptanceTest {
     @Autowired ListingRepository listings;
     @Autowired AvailabilityRepository availability;
     @Autowired MarketplaceUserRepository users;
+    @Autowired ListingService listingService;
 
     @Test
     void seedsColombianCatalogAndEveryAccountRoleOnlyForDemo() throws Exception {
@@ -40,7 +44,12 @@ class DemoDataSeederAcceptanceTest {
         assertEquals(500, users.findAll().stream().filter(user -> user.getRole() == AccountRole.GUEST).count());
         assertEquals(500, users.findAll().stream().filter(user -> user.getRole() == AccountRole.HOST).count());
         assertEquals(1, users.findAll().stream().filter(user -> user.getRole() == AccountRole.ADMIN).count());
+        var medellinResults = listingService.search("medellin", null, null, null, null, null, null, Set.of());
+        assertEquals(5, medellinResults.size());
+        assertTrue(medellinResults.stream().allMatch(listing -> listing.getCity().startsWith("Medellín")));
 
+        mockMvc.perform(get("/api/listings").param("city", "medellin"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(5));
         mockMvc.perform(get("/api/listings/cities"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(10));
         mockMvc.perform(get("/api/listings/cities").param("query", "bogota"))

@@ -9,9 +9,11 @@ import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import jakarta.validation.constraints.DecimalMin;
@@ -88,11 +90,28 @@ public class ListingService {
         if (guests != null && guests < 1) throw validation("El número de huéspedes debe ser al menos 1.");
         if ((minPrice != null && minPrice.signum() < 0) || (maxPrice != null && maxPrice.signum() < 0)
                 || minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) throw validation("El rango de precios no es válido.");
-        SearchFilters filters = new SearchFilters(city, checkIn, checkOut, guests, type, minPrice, maxPrice, amenityIds);
-        return listings.findByStatus(ListingStatus.ACTIVE).stream()
-                .filter(listing -> matchesFilters(listing, filters))
-                .sorted(Comparator.comparing(Listing::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
-                .toList();
+        boolean restrictCity = city != null && !city.isBlank();
+        String normalizedQuery = restrictCity ? normalizeCity(city) : "";
+        List<String> matchingCities = restrictCity
+                ? listings.findDistinctCitiesByStatus(ListingStatus.ACTIVE).stream()
+                        .filter(candidate -> normalizeCity(candidate).contains(normalizedQuery)).toList()
+                : List.of("");
+        if (restrictCity && matchingCities.isEmpty()) return List.of();
+
+        Set<String> requiredAmenities = amenityIds == null ? Set.of() : amenityIds;
+        boolean restrictType = type != null;
+        String normalizedType = restrictType ? type.trim().toUpperCase(Locale.ROOT) : "";
+        List<Listing> candidates = listings.searchCandidates(ListingStatus.ACTIVE, restrictCity, matchingCities,
+                guests, restrictType, normalizedType, minPrice, maxPrice, requiredAmenities.size(),
+                requiredAmenities.isEmpty() ? Set.of("") : requiredAmenities);
+        if (checkIn == null || candidates.isEmpty()) return candidates;
+
+        Map<UUID, List<AvailabilityPeriod>> periodsByListing = new HashMap<>();
+        availability.findSearchPeriods(candidates.stream().map(Listing::getId).toList(), checkOut, checkIn)
+                .forEach(period -> periodsByListing.computeIfAbsent(period.getListing().getId(), ignored -> new ArrayList<>())
+                        .add(period));
+        return candidates.stream().filter(listing -> isAvailable(
+                periodsByListing.getOrDefault(listing.getId(), List.of()), checkIn, checkOut)).toList();
     }
 
     @Transactional(readOnly = true)
@@ -259,8 +278,7 @@ public class ListingService {
         audit.recordEvent("AVAILABILITY_RELEASED", null, LISTING_ENTITY, listingId, SUCCESS, reservationId.toString());
     }
 
-    private boolean isAvailable(Listing listing, LocalDate checkIn, LocalDate checkOut) {
-        List<AvailabilityPeriod> periods = availability.findByListing_IdOrderByStartDateAsc(listing.getId());
+    private boolean isAvailable(List<AvailabilityPeriod> periods, LocalDate checkIn, LocalDate checkOut) {
         boolean covered = coversAvailability(periods, checkIn, checkOut);
         return covered && periods.stream().noneMatch(period -> period.getType() != AvailabilityType.AVAILABLE && period.overlaps(checkIn, checkOut));
     }
@@ -277,35 +295,8 @@ public class ListingService {
         return false;
     }
 
-    private boolean matchesFilters(Listing listing, SearchFilters filters) {
-        return matchesCity(listing, filters.city()) && matchesType(listing, filters.type()) && hasCapacity(listing, filters.guests())
-                && withinPriceRange(listing, filters.minPrice(), filters.maxPrice()) && hasAmenities(listing, filters.amenityIds())
-                && (filters.checkIn() == null || isAvailable(listing, filters.checkIn(), filters.checkOut()));
-    }
-
-    private boolean matchesCity(Listing listing, String city) {
-        return city == null || listing.getCity().toLowerCase(Locale.ROOT).contains(city.trim().toLowerCase(Locale.ROOT));
-    }
-
     private String normalizeCity(String city) {
         return Normalizer.normalize(city, Normalizer.Form.NFD).replaceAll("\\p{M}+", "").trim().toLowerCase(Locale.ROOT);
-    }
-
-    private boolean matchesType(Listing listing, String type) {
-        return type == null || listing.getType().equalsIgnoreCase(type.trim());
-    }
-
-    private boolean hasCapacity(Listing listing, Integer guests) {
-        return guests == null || listing.getCapacity() >= guests;
-    }
-
-    private boolean withinPriceRange(Listing listing, BigDecimal minPrice, BigDecimal maxPrice) {
-        return (minPrice == null || listing.getPricePerNight().compareTo(minPrice) >= 0)
-                && (maxPrice == null || listing.getPricePerNight().compareTo(maxPrice) <= 0);
-    }
-
-    private boolean hasAmenities(Listing listing, Set<String> amenityIds) {
-        return amenityIds == null || amenityIds.isEmpty() || listing.getAmenityIds().containsAll(amenityIds);
     }
 
     private Listing get(UUID id) { return listings.findById(id).orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "NOT_FOUND", "No se encontró la publicación.")); }
@@ -366,6 +357,4 @@ public class ListingService {
     public record CancellationPolicyInput(@Min(0) int freeRefundDays, @Min(0) int partialRefundDays,
             @NotNull @DecimalMin(value="0.00") @DecimalMax(value="100.00") BigDecimal partialRefundPercentage) { }
     public record AvailabilityInput(@NotNull LocalDate startDate, @NotNull LocalDate endDate, @NotNull AvailabilityType type) { }
-    private record SearchFilters(String city, LocalDate checkIn, LocalDate checkOut, Integer guests, String type,
-            BigDecimal minPrice, BigDecimal maxPrice, Set<String> amenityIds) { }
 }
