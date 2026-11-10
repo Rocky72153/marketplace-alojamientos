@@ -119,10 +119,12 @@ public class ReservationService {
         }
 
         long daysBeforeCheckIn = ChronoUnit.DAYS.between(today, reservation.getCheckIn());
+        long hoursBeforeCheckIn = ChronoUnit.HOURS.between(Instant.now(),
+                reservation.getCheckIn().atStartOfDay(BUSINESS_ZONE).toInstant());
         BigDecimal refundPercentage;
         if (daysBeforeCheckIn >= reservation.getPolicyFreeRefundDays()) {
             refundPercentage = new BigDecimal("100.00");
-        } else if (daysBeforeCheckIn >= reservation.getPolicyPartialRefundDays()) {
+        } else if (hoursBeforeCheckIn >= reservation.getPolicyPartialRefundDays() * 24L) {
             refundPercentage = reservation.getPolicyPartialRefundPercentage();
         } else {
             refundPercentage = ZERO;

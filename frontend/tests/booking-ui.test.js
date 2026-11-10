@@ -51,7 +51,7 @@ test('cotiza extras del alojamiento y confirma con una clave idempotente de pago
       return { ok: true, async json() {
         return { nights: 2, pricePerNight: 100000, nightlySubtotal: 200000, cleaningFee: 35000,
           serviceFee: 20000, discountAmount: 0, extras: [{ name: 'Desayuno', quantity: 2, lineTotal: 40000 }],
-          total: 295000, freeRefundDays: 7, partialRefundDays: 2, partialRefundPercentage: 50 };
+          total: 295000.5, freeRefundDays: 7, partialRefundDays: 2, partialRefundPercentage: 50 };
       } };
     }
     return { ok: true, async json() { return { id: 'reservation-123', paymentStatus: 'TEST_APPROVED' }; } };
@@ -83,4 +83,6 @@ test('cotiza extras del alojamiento y confirma con una clave idempotente de pago
   assert.deepEqual(JSON.parse(requests[1].options.body).extras, [{ extraId: 'extra-1', quantity: 2 }]);
   assert.equal(historyRefreshes, 1);
   assert.match(find(flow.section, (node) => node.className === 'booking-feedback').textContent, /no se realizó ningún cobro real/i);
+  assert.match(find(flow.section, (node) => node.tagName === 'strong' && /295\.000,50/.test(node.textContent)).textContent,
+    /295\.000,50/);
 });
