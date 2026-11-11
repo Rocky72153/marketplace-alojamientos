@@ -1,8 +1,8 @@
 package co.edu.unbosque.marketplace.security;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -45,7 +45,7 @@ public class JwtService {
             String content = HEADER + "." + encodedPayload;
             String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(sign(content));
             return new IssuedToken(content + "." + signature, expiresAt);
-        } catch (JsonProcessingException exception) {
+        } catch (JacksonException exception) {
             throw new IllegalStateException("Could not create access token", exception);
         }
     }
@@ -66,7 +66,7 @@ public class JwtService {
                 return null;
             }
             return UUID.fromString(claims.get("sub").asText());
-        } catch (IllegalArgumentException | java.io.IOException exception) {
+        } catch (IllegalArgumentException | JacksonException exception) {
             return null;
         }
     }
