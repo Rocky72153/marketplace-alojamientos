@@ -1,10 +1,10 @@
 # 12. Planificación, WBS/EDT y riesgos
 
-**Cautela:** no se ha aportado la fecha oficial de entrega académica. La planificación del producto sí está distribuida en ocho sprints semanales en Jira; los Story Points siguen siendo iniciales y la capacidad debe validarse con el equipo antes de cada compromiso.
+**Fecha de entrega final:** 26 de noviembre de 2026 (Entrega 2). El 08/11/2026 el plan se ajustó a esa fecha: seis sprints en Jira, del 19 de octubre al 26 de noviembre, con todo el backlog. Los Story Points siguen siendo iniciales y la capacidad se revisa en cada Sprint Planning.
 
-## 12.1 Enfoque ágil adoptado: Scrum + Lean
+## 12.1 Enfoque ágil adoptado: Scrum
 
-El proyecto se organiza con **Scrum como marco de trabajo** y **Lean como principios de flujo y mejora continua**. Scrum estructura backlog, objetivos semanales, seguimiento, review y retrospectiva; Lean orienta a priorizar valor, limitar el trabajo en curso, reducir esperas/retrabajo y asegurar calidad desde el inicio. La descripción normativa está en [19. Metodología Scrum + Lean](19-metodologia-scrum-lean.md).
+El proyecto se organiza con **Scrum como marco de trabajo**. Scrum estructura el Product Backlog, el objetivo de cada sprint semanal, la Daily Scrum, la Sprint Review y la Sprint Retrospective. La descripción normativa está en [19. Metodología Scrum](19-metodologia-scrum.md).
 
 ## 12.1.1 Roles operativos
 
@@ -15,11 +15,25 @@ El proyecto se organiza con **Scrum como marco de trabajo** y **Lean como princi
 | Developers | Juan Sebastián Morales Forero y Julián David Aguilera Párraga | Diseño, implementación, pruebas, revisión de código, documentación y trazabilidad. Ambos siguen participando en desarrollo y validación cruzada. |
 | Interesado de negocio | Representante de Inversiones LR simulado para el curso | Aportar o revisar necesidades cuando esté disponible. No se presume feedback ni aprobación sin registro real. |
 
-Esta asignación refleja la decisión operativa de planificación registrada para el proyecto. Debe quedar ratificada explícitamente por ambos integrantes y ajustarse si el curso o el representante de negocio define restricciones adicionales.
+Esta asignación es la misma del acta de constitución y del documento 19 (unificada el 08/11/2026). Se ajusta si el curso o el representante de negocio define restricciones adicionales.
 
-## 12.1.2 Sprints semanales configurados en Jira
+## 12.1.2 Sprints configurados en Jira
 
-Jira contiene ocho sprints semanales desde el 19 de octubre hasta el 14 de diciembre de 2026. Sus límites están configurados para iniciar y terminar los lunes a las 09:00, hora de Bogotá.
+Jira contiene seis sprints, del 19 de octubre al 26 de noviembre de 2026, fecha de la entrega final. Los sprints 1 a 5 duran una semana y van de lunes a lunes a las 09:00, hora de Bogotá. El Sprint 6 es corto (23 al 26 de noviembre) y termina con la entrega. Los sprints 7 y 8 del plan inicial quedaron sin uso porque caían después de la entrega.
+
+**Plan vigente (08/11/2026)**
+
+| Sprint | Fechas | Objetivo | Historias | Puntos | Estado en Jira |
+|---|---|---|---|---:|---|
+| MARKET Sprint 1 | 19 al 26 oct 2026 | Identidad, publicaciones, disponibilidad y búsqueda | HU-01 a HU-07 | 37 terminados | Cerrado |
+| MARKET Sprint 2 | 26 oct al 2 nov 2026 | Detalle de alojamiento | HU-08 | 3 terminados | Cerrado |
+| MARKET Sprint 3 | 2 al 9 nov 2026 | Terminar e integrar HU-09 a HU-12 | Ninguna terminada (PR #15 sin revisar) | 0 | Cerrado |
+| MARKET Sprint 4 | 9 al 16 nov 2026 | Revisar, integrar y validar cotización, reserva, historial y cancelación | HU-09 a HU-12 | 29 | Activo |
+| MARKET Sprint 5 | 16 al 23 nov 2026 | Notificaciones, reseñas, moderación, administración, dashboard y trazas | HU-13 a HU-17 y HU-19 | 29 | Futuro |
+| MARKET Sprint 6 | 23 al 26 nov 2026 | Exportación de reportes, integración final, pruebas, release y entrega | HU-18 | 8 | Futuro |
+| **Total** | **19 oct al 26 nov 2026** | **Backlog completo para la entrega final** | **19 historias** | **106 (40 terminados)** | |
+
+**Plan inicial (14/10/2026, reemplazado el 08/11/2026)**
 
 | Sprint | Fechas locales | Objetivo resumido | Historias | Puntos iniciales |
 |---|---|---|---|---:|
@@ -33,17 +47,17 @@ Jira contiene ocho sprints semanales desde el 19 de octubre hasta el 14 de dicie
 | MARKET Sprint 8 | 7–14 dic 2026 | Reportes y trazabilidad técnica | HU-18–HU-19 | 13 |
 | **Total** | **8 semanas** | **Backlog total propuesto; no equivale al MVP MUST** | **19 historias** | **106** |
 
-El backlog completo de 19 historias es una propuesta de planificación: HU-01, HU-04–HU-12 y HU-19 son MUST; HU-02, HU-03 y HU-13–HU-17 son SHOULD; HU-18 es COULD. Si la capacidad no alcanza, SHOULD/COULD se replanifican después de completar MUST; las ocho semanas y los puntos son estimaciones, no un compromiso de entrega de todas las historias. La disponibilidad estimada es de 4–6 horas por semana por integrante (8–12 horas combinadas). La velocidad real todavía no se conoce y los Story Points son estimaciones iniciales; por tanto, 106 puntos en ocho semanas no se considera capacidad validada. En la planificación se revisarán horas disponibles, dependencias y tamaño, y al terminar el primer sprint se recalibrará el plan usando trabajo realmente terminado. Los sprints con 16 puntos requieren especial revisión y HU-10 (13 puntos) debe refinarse para confirmar que sea terminable en una semana.
+El 08/11/2026 se decidió mantener las 19 historias para la entrega del 26/11: HU-01, HU-04 a HU-12 y HU-19 son MUST; HU-02, HU-03 y HU-13 a HU-17 son SHOULD; HU-18 es COULD. La velocidad real de los sprints 1 a 3 fue de 37, 3 y 0 puntos (promedio de 13,3 puntos por sprint). Los sprints 4 y 5 piden 29 puntos cada uno, más del doble de ese promedio, así que el plan solo se cumple si el PR #15 (HU-09 a HU-12, ya programado) se revisa e integra al inicio del Sprint 4 y los PR se revisan sin esperas largas. Si en la Sprint Review del Sprint 5 el trabajo no alcanza, se recorta primero HU-18 (COULD) y después las SHOULD; las MUST no se recortan. La disponibilidad estimada es de 4 a 6 horas por semana por integrante (8 a 12 horas combinadas).
 
-## 12.1.3 Cadencia, calidad y mejora Lean
+## 12.1.3 Cadencia, calidad y mejora continua
 
-Las ceremonias y prácticas se detallan en [19. Metodología Scrum + Lean](19-metodologia-scrum-lean.md). Como mínimo, cada semana se debe registrar planificación y objetivo, seguimiento/bloqueos, review con criterios realmente demostrados y retrospectiva con una o dos acciones de mejora con responsable y fecha. Para reducir desperdicio, se limitará el WIP del equipo a un máximo inicial de dos historias activas de implementación, se harán visibles los tiempos de espera de revisión y se priorizará terminar/revisar trabajo en curso antes de empezar más trabajo.
+Los eventos y artefactos de Scrum se detallan en [19. Metodología Scrum](19-metodologia-scrum.md). Como mínimo, cada semana se debe registrar la planificación y el objetivo del sprint, el seguimiento y los impedimentos de la Daily Scrum, la review con criterios realmente demostrados y la retrospectiva con una o dos acciones de mejora con responsable y fecha. Una historia solo se da por terminada cuando cumple la Definition of Done.
 
 ## 12.2 WBS/EDT — Entrega 1
 
 | Código | Paquete de trabajo | Actividades | Resultado verificable |
 |---|---|---|---|
-| 1.0 | Inicio y planeación | Formalizar Scrum + Lean, roles, Definition of Ready/Done, repositorio y calendario de sprints. | Acuerdos, cronograma y organización Jira. |
+| 1.0 | Inicio y planeación | Formalizar Scrum, roles, Definition of Ready/Done, repositorio y calendario de sprints. | Acuerdos, cronograma y organización Jira. |
 | 1.1 | Visión y alcance | Entender contexto, objetivos de negocio, actores y límites del MVP. | Documento de visión/alcance revisado. |
 | 1.2 | Actores e interesados | Identificar actores directos/interesados, objetivos, preocupaciones, responsabilidades y afectaciones. | Matriz de actores con justificación. |
 | 1.3 | Procesos de negocio | Modelar publicación, búsqueda/reserva, cancelación, moderación/auditoría/reportes; revisar decisiones. | Modelos BPMN y relación con requisitos. |
@@ -65,7 +79,7 @@ Las ceremonias y prácticas se detallan en [19. Metodología Scrum + Lean](19-me
 | Semana 4 | Dominio/datos, arquitectura de servicios, diagramas de secuencia y contratos OpenAPI. | Reglas y límites de servicios suficientemente estables. |
 | Semana 5 | Revisión integral, corrección de inconsistencias, Confluence/evidencia, sustentación. | Checklist de entrega aprobado por el equipo y fechas ajustadas al cronograma docente. |
 
-Este calendario es un ejemplo de planificación, no las fechas oficiales del curso. Si la entrega real vence antes, comprimir actividades manteniendo validación y trazabilidad.
+Este calendario relativo fue el ejemplo inicial. La fecha oficial de la entrega final es el 26/11/2026 y el calendario real es el de la sección 12.1.2.
 
 ## 12.4 Dependencias críticas
 
@@ -94,11 +108,11 @@ Escala inicial cualitativa (probabilidad/impacto): baja, media, alta. Reevaluar 
 | R-09 | La documentación no refleja el código o estado real. | Media | Alta | Revisar trazabilidad por PR; documentar decisiones de cambio y versiones. | OpenAPI/diagramas no concuerdan con endpoints/campos implementados. | Equipo |
 | R-10 | El repositorio queda visible públicamente sin decisión consciente. | Media | Media | Acordar visibilidad con el equipo/docente; revisar configuración y secretos antes de publicar. | Repositorio expone información interna o credenciales. | Propietario repositorio |
 | R-11 | Ausencia de feedback real de usuarios/interesados invalida supuestos del prototipo. | Alta | Media | Registrar quién revisó qué y observaciones reales; no fabricar evidencia. | Se afirma validación sin registro de revisión. | Responsable UX/requerimientos por asignar |
-| R-12 | Fechas académicas reales no encajan con cronograma relativo. | Media | Alta | Sustituir semanas relativas por fechas oficiales y replanificar semanalmente. | Hitos vencidos sin entregables revisados. | Equipo |
+| R-12 | La entrega final del 26/11/2026 deja 2,5 semanas para 66 puntos, más del doble de la velocidad promedio. | Alta | Alta | Integrar el PR #15 al inicio del Sprint 4, revisar cada PR en menos de 48 horas, seguir el burndown en Jira y, si no alcanza, recortar primero HU-18 y después las SHOULD. | El burndown del Sprint 4 o del Sprint 5 va por encima de la línea ideal a mitad del sprint. | Julián (Scrum Master) / Juan (Product Owner) |
 
 ## 12.6 Recursos y responsabilidades (RACI operativo inicial)
 
-La asignación operativa se documenta abajo y debe ratificarse por ambos integrantes. Los responsables detallados por historia y subtarea están en [18. Desglose de subtareas y planificación Jira](18-plan-subtareas-jira.md).
+La asignación operativa se documenta abajo. Los responsables detallados por historia y subtarea están en [18. Desglose de subtareas y planificación Jira](18-plan-subtareas-jira.md).
 
 | Actividad | Responsable de ejecución (R) | Aprobador (A) | Consultados (C) | Informados (I) |
 |---|---|---|---|---|
