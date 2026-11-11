@@ -1,0 +1,12 @@
+app:
+  demo-seed:
+    enabled: ${DEMO_SEED_ENABLED:true}
+    password: ${DEMO_SEED_PASSWORD:}
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100
+        order_inserts: true

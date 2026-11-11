@@ -5,7 +5,9 @@ on:
     branches: [main, develop]
     types: [opened, synchronize, reopened]
   push:
-    branches: [main, develop]
+    # SonarCloud analysis is available for the default branch and pull requests;
+    # this organization does not permit analysis of non-main branches on push.
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -44,6 +46,17 @@ jobs:
       - name: Compilar y verificar backend
         run: mvn -B -ntp -f backend/pom.xml verify
 
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar frontend y ejecutar pruebas
+        working-directory: frontend
+        run: npm ci && npm test && npm run build
+
       - name: Analizar y esperar Quality Gate de SonarCloud
         uses: SonarSource/sonarqube-scan-action@v8.3.0
         env:
@@ -52,5 +65,6 @@ jobs:
           args: >-
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+            -Dsonar.projectName=Marketplace-Alojamientos
             -Dsonar.qualitygate.wait=true
             -Dsonar.qualitygate.timeout=600
