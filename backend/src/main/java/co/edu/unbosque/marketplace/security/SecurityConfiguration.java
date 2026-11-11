@@ -1,7 +1,7 @@
 package co.edu.unbosque.marketplace.security;
 
 import co.edu.unbosque.marketplace.api.ApiError;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
