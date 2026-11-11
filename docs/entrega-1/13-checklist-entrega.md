@@ -4,7 +4,7 @@ Esta lista se cruza con los productos esperados y las exigencias de la guía del
 
 | Ítem de la guía | Evidencia en el repositorio | Estado para revisión |
 |---|---|---|
-| Acta de constitución del proyecto | [Word](acta-constitucion-marketplace.docx) y [Markdown](acta-constitucion-marketplace.md) | Adaptada y agregada; fechas oficiales, aprobación y firmas pendientes |
+| Acta de constitución del proyecto | [Word](acta-constitucion-marketplace.docx) y [Markdown](acta-constitucion-marketplace.md) | Adaptada y agregada (versión 1.2); entrega final el 26/11/2026; fechas de la Entrega 1, aprobación y firmas pendientes |
 | Visión, alcance y objetivos del negocio | `01-vision-alcance.md` | Revisado y ratificado como parte del paquete documental por Juan Sebastián Morales y Julián Aguilera el 14/10/2026; aprobación docente no acreditada |
 | Actores/interesados con descripción, relación, necesidades, preocupaciones, responsabilidades y afectación | `02-actores-interesados.md` | Preparado; validar y completar nombres/responsables |
 | Procesos relevantes con límites, participantes, entradas/salidas, reglas, eventos/resultados y relación a requerimientos | `03-procesos-negocio.md` + `bpmn/*.bpmn` | Borrador; validar visualmente BPMN y acordar excepciones |
@@ -16,9 +16,9 @@ Esta lista se cruza con los productos esperados y las exigencias de la guía del
 | Contexto, solución orientada a servicios, responsabilidades, interacciones y despliegue | `09-arquitectura-servicios.md` y `14-secuencias.md` | Propuesta y diagrama de despliegue lógico agregados; proveedor/URL de hosting por definir y límites modulares por aprobar |
 | Contratos de API OpenAPI | `10-openapi.yaml` | Borrador; validar sintaxis, seguridad, códigos y relación con servicios |
 | Prototipo y plan de validación | `frontend/` y `11-prototipo-validacion.md` | Inspección técnica parcial registrada; feedback de participantes reales pendiente |
-| Cronograma, WBS/EDT, riesgos y responsabilidades | `12-planificacion-riesgos.md` y `19-metodologia-scrum-lean.md` | Scrum + Lean, roles operativos y ocho sprints semanales documentados; paquete ratificado el 14/10/2026; capacidad real no consta |
+| Cronograma, WBS/EDT, riesgos y responsabilidades | `12-planificacion-riesgos.md` y `19-metodologia-scrum.md` | Scrum, roles operativos y seis sprints hasta la entrega final del 26/11/2026 documentados; paquete ratificado el 14/10/2026; capacidad real no consta |
 | Manual de ejecución/despliegue | `docs/LOCAL_SETUP.md` | Guía local incluida; no equivale a despliegue de producción |
-| Metodología ágil y mejora de flujo | `19-metodologia-scrum-lean.md`, Jira MARKET | Scrum + Lean y roles operativos documentados; paquete ratificado el 14/10/2026; ceremonias reales y métricas de ejecución no acreditadas |
+| Metodología ágil (Scrum) | `19-metodologia-scrum.md`, Jira MARKET | Scrum y roles operativos documentados; paquete ratificado el 14/10/2026; ceremonias reales y métricas de ejecución no acreditadas |
 | Matriz de trazabilidad requisito ↔ Jira ↔ AC ↔ branch/commit ↔ PR ↔ pruebas/evidencia ↔ release | `docs/TRACEABILITY_TEMPLATE.csv` y `docs/evidencias/validacion-prototipo-y-pruebas-2026-10-14.md` | Enlaces a Jira/PR/casos y resultados reales parciales de UI; el resto se mantiene pendiente/no implementado |
 | Registro de decisiones y preguntas abiertas | `docs/DECISIONS.md` | Preguntas y propuestas registradas; decisiones requieren aprobación real |
 | Requisitos del negocio explícitos derivados de objetivos del enunciado | `15-requisitos-negocio.md` | Catálogo RBN-001 a RBN-009 preparado; validar indicadores y trazabilidad con el equipo |
