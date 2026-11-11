@@ -21,7 +21,7 @@ La guía del curso exige un documento con capturas del uso de IA donde sean visi
 
 ## Evidencias académicas
 
-- Captura real de épicas, 19 historias y sus criterios en Jira. Las estimaciones iniciales, responsables y distribución en ocho sprints semanales (19 oct.–14 dic. 2026) están registradas. Jira muestra MARKET-68 asignada a Julián David Aguilera Párraga y MARKET-69 a Juan Sebastián Morales Forero; ambas siguen sin sprint. El equipo debe ratificar puntos, capacidad y asignación temporal.
+- Captura real de épicas, 19 historias y sus criterios en Jira. Las estimaciones iniciales y los responsables están registrados. La distribución actual es de seis sprints (19 oct. al 26 nov. 2026, fecha de la entrega final); una captura tomada antes del 08/11/2026 muestra el plan inicial de ocho sprints. Jira muestra MARKET-68 asignada a Julián David Aguilera Párraga y MARKET-69 a Juan Sebastián Morales Forero; ambas siguen sin sprint. El equipo debe ratificar puntos, capacidad y asignación temporal.
 - Enlace/captura a páginas Confluence con visión, actores, BPMN, requerimientos, historias, casos de uso, modelos, arquitectura, API y manual de despliegue.
 - Registro de inspección técnica: [validacion-prototipo-y-pruebas-2026-10-14.md](validacion-prototipo-y-pruebas-2026-10-14.md). La retroalimentación de huéspedes, anfitriones, administradores o cliente sigue pendiente.
 - Validación del catálogo y de preguntas abiertas por el equipo; acuerdos/observaciones y responsable.
