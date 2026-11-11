@@ -54,3 +54,9 @@ Son mediciones locales de esta ejecución. Jira MARKET-69 sigue pendiente porque
 - Se añadieron correcciones para idempotencia concurrente, el umbral de 48 horas y precisión monetaria. También se atendieron observaciones de Sonar sobre complejidad y formato del código. El análisis de código para `develop` terminó correctamente; la organización de SonarCloud no permite consultar un Quality Gate de esa rama. La configuración ya evita ese control inválido y mantiene análisis de PR y `main`.
 
 La evidencia respalda el cierre de EP-05 y EP-06: PR integrados en `develop`, CI y análisis de código aprobados, y pruebas de aceptación ejecutadas. La limitación de rama de SonarCloud queda documentada. MARKET-69 permanece abierto hasta que el equipo acuerde sus objetivos de rendimiento; no se declara completado por las mediciones locales.
+
+## Actualización de dependencias
+
+La migración de Spring Boot 3.5.7 a 4.1.2 actualiza los usos de Jackson y las pruebas de Spring MVC. El 11 de noviembre, `mvn -B -ntp -f backend/pom.xml clean verify` pasó con 15 pruebas, incluidas tres que verifican un token con el formato anterior, el rechazo de un contenido JSON inválido firmado y el manejo de errores al crear un token.
+
+En PostgreSQL 17 aislado se verificaron registro, cotización, reserva idempotente, cancelación y disponibilidad. Además, se creó una cuenta y una reserva con Spring Boot 3 y se inició Spring Boot 4 sobre esa misma base: la sesión anterior, el inicio de sesión, la consulta y la cancelación de la reserva siguieron funcionando. La prueba utilizó datos ficticios y no sustituye una validación con todos los datos de un entorno real.
