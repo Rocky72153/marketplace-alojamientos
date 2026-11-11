@@ -19,7 +19,7 @@ cat > "$TMP" <<'JSON'
 {
   "required_status_checks": {
     "strict": true,
-    "contexts": ["Backend CI", "Frontend CI", "SonarCloud Quality Gate"]
+    "contexts": ["Backend CI", "Frontend CI", "Documentation CI"]
   },
   "enforce_admins": true,
   "required_pull_request_reviews": {
@@ -47,4 +47,4 @@ for BRANCH in main develop; do
   echo "Protección configurada: $BRANCH"
 done
 
-echo "Hecho. Confirma en Settings que los tres checks requeridos coincidan con los nombres reales mostrados en Actions."
+echo "Protección base aplicada. Confirma los nombres de los checks y añade SonarCloud como obligatorio solo después de configurar token/variables y ver un análisis exitoso."
