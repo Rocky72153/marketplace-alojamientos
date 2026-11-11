@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Marketplace de alojamientos temporales de Inversiones LR." />
+    <meta name="api-base-url" content="http://localhost:8080" />
     <title>Marketplace de Alojamientos</title>
     <link rel="stylesheet" href="/src/styles.css" />
     <script type="module" src="/src/main.js"></script>
@@ -14,27 +15,81 @@
       <nav aria-label="Navegación principal">
         <a href="#buscar">Descubrir</a>
         <a href="#anfitriones">Soy anfitrión</a>
-        <a class="nav-login" href="#iniciar-sesion">Iniciar sesión</a>
+        <a id="account-link" class="nav-login" href="#mi-cuenta">Iniciar sesión</a>
+        <a id="reservation-link" href="#reservation-history">Mis reservas</a>
       </nav>
     </header>
     <main>
+      <section id="account-panel" class="account-panel" aria-labelledby="account-title" hidden>
+        <div class="account-shell">
+          <p class="eyebrow">TU CUENTA</p>
+          <h2 id="account-title">Inicia sesión para reservar</h2>
+          <div id="account-forms" class="account-forms">
+            <form id="login-form" class="account-form">
+              <h3>Ya tengo una cuenta</h3>
+              <label>Correo<input name="email" type="email" autocomplete="email" required /></label>
+              <label>Contraseña<input name="password" type="password" autocomplete="current-password" required /></label>
+              <button type="submit">Iniciar sesión</button>
+            </form>
+            <form id="register-form" class="account-form">
+              <h3>Crear cuenta de huésped</h3>
+              <label>Nombre<input name="name" autocomplete="name" required maxlength="120" /></label>
+              <label>Correo<input name="email" type="email" autocomplete="email" required /></label>
+              <label>Contraseña<input name="password" type="password" autocomplete="new-password" required minlength="8" /></label>
+              <button type="submit">Crear cuenta</button>
+            </form>
+          </div>
+          <div id="session-panel" class="session-panel" hidden>
+            <p id="session-summary"></p>
+            <button id="logout-button" type="button" class="secondary-button">Cerrar sesión</button>
+          </div>
+          <p id="account-feedback" class="feedback" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+      <section id="listing-detail" class="detail-section" aria-labelledby="detail-title" hidden>
+        <div class="detail-shell">
+          <a class="back-link" href="/">← Volver a buscar</a>
+          <p id="detail-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <div id="detail-content"></div>
+        </div>
+      </section>
+      <section id="reservation-history" class="reservation-history" aria-labelledby="reservation-history-title" hidden>
+        <div class="reservation-history-shell">
+          <p class="eyebrow">SEGUIMIENTO</p>
+          <h2 id="reservation-history-title">Mis reservas</h2>
+          <p id="reservation-history-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <div id="reservation-history-items" class="reservation-history-items"></div>
+        </div>
+      </section>
       <section class="hero">
         <p class="eyebrow">INVERSIONES LR · ALOJAMIENTOS TEMPORALES</p>
         <h1>Encuentra un lugar<br />para sentirte en casa.</h1>
         <p class="hero-copy">Descubre alojamientos, compara opciones y planea tu próxima estancia.</p>
         <form id="search-form" class="search-card" aria-label="Buscar alojamientos">
-          <label>Ciudad<input id="city" name="city" placeholder="¿A dónde vas?" /></label>
+          <div class="city-field"><label for="city">Ciudad</label><input id="city" name="city" placeholder="¿A dónde vas?" /><ul id="city-suggestions" class="city-suggestions" role="listbox" aria-label="Ciudades sugeridas" hidden></ul></div>
           <label>Llegada<input id="checkin" name="checkin" type="date" /></label>
           <label>Salida<input id="checkout" name="checkout" type="date" /></label>
           <label>Huéspedes<input id="guests" name="guests" type="number" min="1" value="2" /></label>
           <button type="submit">Buscar</button>
+          <div class="search-filters">
+            <label>Tipo<select name="type"><option value="">Cualquier tipo</option><option value="APARTMENT">Apartamento</option><option value="HOUSE">Casa</option><option value="ROOM">Habitación</option><option value="CABIN">Cabaña</option></select></label>
+            <label>Precio mínimo<input name="minPrice" type="number" min="0" placeholder="COP" /></label>
+            <label>Precio máximo<input name="maxPrice" type="number" min="0" placeholder="COP" /></label>
+            <fieldset><legend>Servicios</legend>
+              <label><input name="amenityIds" type="checkbox" value="WIFI" /> Wi-Fi</label>
+              <label><input name="amenityIds" type="checkbox" value="PARKING" /> Parqueadero</label>
+              <label><input name="amenityIds" type="checkbox" value="POOL" /> Piscina</label>
+              <label><input name="amenityIds" type="checkbox" value="AIR_CONDITIONING" /> Aire acondicionado</label>
+            </fieldset>
+          </div>
         </form>
         <p id="search-feedback" class="feedback" role="status" aria-live="polite"></p>
+        <div id="search-results" class="listing-results" aria-live="polite"></div>
       </section>
       <section class="intro" id="buscar">
         <p class="eyebrow">UN SOLO LUGAR PARA PLANEAR</p>
         <h2>Tu próxima estancia empieza aquí.</h2>
-        <p>Muy pronto podrás consultar publicaciones activas, verificar disponibilidad y cotizar tu reserva desde la plataforma.</p>
+        <p>Consulta alojamientos activos y encuentra opciones según tu ciudad, fechas y número de huéspedes. El catálogo inicial contiene registros ficticios para demostración; no representan espacios reales.</p>
       </section>
       <section class="host-banner" id="anfitriones">
         <div><p class="eyebrow">PARA ANFITRIONES</p><h2>Tu espacio puede ser el lugar favorito de alguien.</h2><p>Administra publicaciones, precios y disponibilidad desde una plataforma centralizada.</p></div>
