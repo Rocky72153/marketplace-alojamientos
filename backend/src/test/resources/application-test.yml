@@ -7,3 +7,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+app:
+  security:
+    jwt-secret: test-only-secret-key-that-is-long-enough-for-hmac-sha256
+    admin-bootstrap-key: bootstrap-key-for-tests
