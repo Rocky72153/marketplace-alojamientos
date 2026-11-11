@@ -22,7 +22,7 @@ jobs:
       - name: Obtener código
         uses: actions/checkout@v7
       - name: Configurar Java 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '21'
@@ -37,7 +37,7 @@ jobs:
       - name: Obtener código
         uses: actions/checkout@v7
       - name: Configurar Node.js 22
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
@@ -54,3 +54,18 @@ jobs:
       - name: Construir frontend
         working-directory: frontend
         run: npm run build
+
+  documentation-checks:
+    name: Documentation CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v7
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Instalar validador YAML
+        run: python -m pip install --disable-pip-version-check PyYAML
+      - name: Validar documentación, BPMN, OpenAPI, trazabilidad y enlaces
+        run: python scripts/validate_delivery_docs.py
