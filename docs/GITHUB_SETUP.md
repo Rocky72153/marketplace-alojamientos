@@ -19,15 +19,14 @@ Selecciona los status checks después de que los workflows hayan corrido al meno
 
 ## 3. SonarQube Cloud (SonarCloud)
 
-1. Entra a https://sonarcloud.io/ e inicia sesión con GitHub.
-2. Importa `marketplace-alojamientos` y crea el proyecto.
-3. Copia la clave de organización y la clave del proyecto.
-4. En GitHub abre `Settings > Secrets and variables > Actions > Variables` y crea `SONAR_ORGANIZATION` y `SONAR_PROJECT_KEY` con esos valores.
-5. En la pestaña `Secrets`, crea `SONAR_TOKEN` con un token generado desde SonarQube Cloud.
-6. El workflow utiliza esas variables para construir el análisis; no introduzcas el token en archivos, issues, commits ni capturas compartidas.
-7. Abre un PR de prueba y confirma que el análisis y el Quality Gate aparezcan en GitHub.
+1. Inicia sesión en [SonarQube Cloud](https://sonarcloud.io/) con GitHub y crea/importa el proyecto del repositorio `Rocky72153/marketplace-alojamientos`. Si la integración solicita acceso al repositorio, verifica que la cuenta y el permiso correspondan antes de autorizarla.
+2. Copia la clave de organización y la clave del proyecto que muestra SonarQube Cloud.
+3. En GitHub abre `Settings > Secrets and variables > Actions > Variables` y crea `SONAR_ORGANIZATION` y `SONAR_PROJECT_KEY` con esos valores.
+4. En `Settings > Secrets and variables > Actions > Secrets`, crea `SONAR_TOKEN` con un token generado desde SonarQube Cloud. Mantén el token solo en GitHub; no lo compartas en archivos, issues, commits ni en el chat.
+5. El workflow `.github/workflows/sonarcloud.yml` analiza los Pull Requests dirigidos a `main` o `develop`, los pushes a esas ramas y permite ejecución manual desde `Actions`. Compila el backend para que Sonar pueda analizar las clases Java y espera el resultado del Quality Gate.
+6. Después de guardar las dos variables y el secreto, ejecuta el workflow manualmente o actualiza el PR para confirmar que aparezca el análisis y su Quality Gate.
 
-Hasta que existan ambas variables, el job de SonarCloud se omite intencionalmente. Cuando ya existan, también se necesita el secreto `SONAR_TOKEN` para que el análisis se ejecute correctamente. No marques el check como obligatorio antes de comprobarlo.
+Mientras falte alguna de las variables de organización o proyecto, GitHub omite intencionalmente el job de SonarCloud. Si las variables ya existen pero falta `SONAR_TOKEN`, el job falla al inicio con un mensaje que identifica el secreto pendiente. No marques el check como obligatorio hasta completar una ejecución correcta.
 
 ## 4. Colaboradores y visibilidad
 
