@@ -3,13 +3,15 @@
 ## Marketplace de Alojamientos
 
 **Fecha de elaboración:** 14/10/2026  
-**Estado:** Borrador para validación y aprobación. Las fechas de entrega, aprobaciones y firmas siguen pendientes.
+**Estado:** Borrador para validación y aprobación. La entrega final (Entrega 2) es el 26/11/2026; las aprobaciones y firmas siguen pendientes.
 
 ## Historial de versiones
 
 | Fecha | Versión | Autores | Organización | Descripción |
 |---|---|---|---|---|
 | 14/10/2026 | 1.0 | Julián Aguilera y Juan Sebastián Morales | Universidad El Bosque | Versión inicial del acta de constitución |
+| 08/11/2026 | 1.1 | Julián Aguilera | Universidad El Bosque | Roles unificados con el plan del proyecto: Juan Sebastián Morales como Product Owner y Julián Aguilera como Scrum Master y gerente del proyecto |
+| 08/11/2026 | 1.2 | Julián Aguilera | Universidad El Bosque | Fecha de entrega final (26/11/2026) y cronograma actualizado con los sprints registrados en Jira |
 
 ## Información del proyecto
 
@@ -19,7 +21,7 @@
 | Nombre del proyecto | Marketplace de Alojamientos |
 | Cliente | Inversiones LR |
 | Patrocinador principal | Ing. David Esteban Rodríguez Gómez, docente de Ingeniería de Software I |
-| Gerente del proyecto | Juan Sebastián Morales; rol de Scrum Master propuesto y pendiente de ratificación |
+| Gerente del proyecto | Julián Aguilera, que también es el Scrum Master |
 | Estado del acta | Borrador para validación y aprobación; no cuenta con firmas |
 
 ## Propósito y justificación
@@ -30,7 +32,7 @@ El crecimiento de huéspedes y propietarios que confían la gestión de sus inmu
 
 ## Requerimientos del producto
 
-El backlog de Entrega 1 documenta 19 historias del producto, pero no todas bloquean el MVP. El corte propuesto es 11 MUST (HU-01, HU-04–HU-12 y HU-19), 7 SHOULD (HU-02, HU-03, HU-13–HU-17) y 1 COULD (HU-18). Las prioridades identifican alcance planificado, no implementación actual. El levantamiento disponible es análisis documental de la guía oficial del proyecto y de sus artefactos; no se registran entrevistas ni aprobación del cliente. La relación conserva la cobertura funcional:
+El backlog de Entrega 1 documenta 19 historias del producto, pero no todas bloquean el MVP. El corte propuesto es 11 MUST (HU-01, HU-04 a HU-12 y HU-19), 7 SHOULD (HU-02, HU-03, HU-13 a HU-17) y 1 COULD (HU-18). Las prioridades identifican alcance planificado, no implementación actual. El levantamiento disponible es análisis documental de la guía oficial del proyecto y de sus artefactos; no se registran entrevistas ni aprobación del cliente. La relación conserva la cobertura funcional:
 
 | Historia | Prioridad | Alcance |
 |---|---|---|
@@ -58,7 +60,7 @@ WON'T en Entrega 1: procesar pagos reales o usar credenciales de producción. La
 
 ## Requerimientos del proyecto
 
-- El equipo propone Scrum + Lean, con épicas, historias y sprints registrados en Jira. La metodología, los roles operativos, la duración de los sprints y la capacidad requieren ratificación del equipo y del docente cuando aplique.
+- El equipo propone Scrum, con épicas, historias y sprints registrados en Jira. Los roles están definidos (Product Owner: Juan Sebastián Morales; Scrum Master: Julián Aguilera). La duración de los sprints y la capacidad se confirman en la ejecución y con el docente cuando aplique.
 - La visión, el alcance, los interesados, los procesos, los requerimientos y el diseño se documentarán en Confluence.
 - El código se gestionará en GitHub con ramas y Pull Requests. El flujo del repositorio propone integrar cambios en develop por Pull Request y promover versiones estables a main; la revisión por otro integrante y los checks configurados deben verificarse en cada cambio.
 - GitHub Actions ejecutará compilación y pruebas. El análisis de SonarCloud queda condicionado a la configuración de la organización, el proyecto y sus credenciales.
@@ -72,7 +74,7 @@ La solución propuesta es un frontend web en HTML, CSS y JavaScript que consumir
 
 | Etapa | Entregables | Criterio de aceptación |
 |---|---|---|
-| Análisis | Catálogo de requerimientos y reglas, actores e interesados, procesos BPMN y backlog de épicas e historias | El sistema debe contar con historias identificables, prioridad MoSCoW y trazabilidad; cada criterio empieza con «El sistema debe» y conserva Dado que / Cuando / Entonces |
+| Análisis | Catálogo de requerimientos y reglas, actores e interesados, procesos BPMN y backlog de épicas e historias | El sistema debe contar con historias identificables, prioridad MoSCoW y trazabilidad; cada criterio empieza con "El sistema debe" y conserva Dado que / Cuando / Entonces |
 | Diseño | Casos de uso, modelos de dominio y datos, arquitectura orientada a servicios, contrato OpenAPI, secuencias y prototipo | El sistema debe tener diagramas coherentes con requerimientos priorizados y servicios relacionados con las historias que atienden |
 | Construcción | Código de backend y frontend versionado en GitHub | El sistema debe integrarse mediante Pull Request revisado y cumplir el Quality Gate de SonarCloud cuando el servicio esté configurado |
 | Prueba | Pruebas automatizadas y evidencias de validación | El sistema debe superar la ejecución de pruebas en GitHub Actions y demostrar el flujo de publicación, búsqueda, disponibilidad, cotización y reserva inmediata |
@@ -103,7 +105,7 @@ Los grupos de procesos se relacionan con estos entregables: iniciación (acta), 
 
 **Restricciones**
 
-- El docente define las fechas oficiales de entrega. Todas las fechas del cronograma de esta acta están pendientes de confirmación.
+- El docente define las fechas oficiales de entrega. La entrega final (Entrega 2) es el 26/11/2026; las fechas que dicen "Por confirmar" las define el docente.
 - Los pagos se simularán con Stripe en modo de pruebas; no se realizarán cobros reales.
 - El backend expondrá servicios REST consumidos por el frontend.
 - El equipo usará Pull Requests y revisión de otro integrante según el flujo documentado en el repositorio; las reglas y checks deben verificarse.
@@ -112,19 +114,22 @@ Los grupos de procesos se relacionan con estos entregables: iniciación (acta), 
 
 ## Cronograma
 
-La tabla conserva las actividades previstas en el acta fuente. El docente debe confirmar las fechas oficiales; los sprints, responsables y calendario definitivo también requieren acuerdo del equipo.
+Los sprints son los registrados en Jira y terminan con la entrega final del 26/11/2026.
 
 | Actividad | Fecha de entrega |
 |---|---|
-| Inicio y planeación: acta, backlog inicial, cronograma y riesgos | Pendiente |
-| Ingeniería de requerimientos: actores, procesos BPMN e historias con criterios | Pendiente |
-| Diseño orientado a servicios: casos de uso, modelos, OpenAPI y prototipo | Pendiente |
-| Entrega 1: análisis de requerimientos y diseño | Pendiente |
-| Sprint 1: identidad, perfil, publicaciones y disponibilidad (EP-01 a EP-03) | Pendiente |
-| Sprint 2: búsqueda, cotización, reserva, cancelación y notificaciones (EP-04 a EP-07) | Pendiente |
-| Sprint 3: reseñas, administración, panel, reportes y logs (EP-08 a EP-10) | Pendiente |
-| Validación y cierre: pruebas, Quality Gate e informe final | Pendiente |
-| Entrega 2: producto funcional, pruebas, integración continua y sustentación | Pendiente |
+| Inicio y planeación: acta, backlog inicial, cronograma y riesgos | 14/10/2026 |
+| Ingeniería de requerimientos: actores, procesos BPMN e historias con criterios | Por confirmar |
+| Diseño orientado a servicios: casos de uso, modelos, OpenAPI y prototipo | Por confirmar |
+| Entrega 1: análisis de requerimientos y diseño | Por confirmar |
+| Sprint 1: identidad, publicaciones, disponibilidad y búsqueda (HU-01 a HU-07) | 19/10/2026 al 26/10/2026 |
+| Sprint 2: detalle de alojamiento (HU-08) | 26/10/2026 al 02/11/2026 |
+| Sprint 3: cotización, reserva, historial y cancelación en revisión (HU-09 a HU-12) | 02/11/2026 al 09/11/2026 |
+| Sprint 4: integrar y validar cotización, reserva, historial y cancelación (HU-09 a HU-12) | 09/11/2026 al 16/11/2026 |
+| Sprint 5: notificaciones, reseñas, moderación, administración, dashboard y trazas (HU-13 a HU-17 y HU-19) | 16/11/2026 al 23/11/2026 |
+| Sprint 6: exportación de reportes (HU-18), integración final y release | 23/11/2026 al 26/11/2026 |
+| Validación y cierre: pruebas, Quality Gate e informe final | 23/11/2026 al 26/11/2026 |
+| Entrega 2: producto funcional, pruebas, integración continua y sustentación | 26/11/2026 |
 
 ## Riesgos
 
@@ -145,10 +150,10 @@ Estimación inicial del proyecto en pesos colombianos (COP), pendiente de revisi
 
 | Descripción | Costos directos | Costos indirectos | Reservas |
 |---|---:|---:|---:|
-| Trabajo del equipo: 2 integrantes × aprox. 60 horas × $10.000/h | $1.200.000 | — | — |
-| GitHub, GitHub Actions, Jira, Confluence, SonarCloud y Stripe de pruebas | $0 (planes gratuitos) | — | — |
-| Computador, internet y energía: 2 integrantes × $150.000 | — | $300.000 | — |
-| Reserva para imprevistos (10 %) | — | — | $150.000 |
+| Trabajo del equipo: 2 integrantes x aprox. 60 horas x $10.000/h | $1.200.000 | - | - |
+| GitHub, GitHub Actions, Jira, Confluence, SonarCloud y Stripe de pruebas | $0 (planes gratuitos) | - | - |
+| Computador, internet y energía: 2 integrantes x $150.000 | - | $300.000 | - |
+| Reserva para imprevistos (10 %) | - | - | $150.000 |
 | **Total estimado** | **$1.200.000** | **$300.000** | **$150.000** |
 
 **Presupuesto total estimado: COP $1.650.000.**
@@ -170,8 +175,8 @@ Estimación inicial del proyecto en pesos colombianos (COP), pendiente de revisi
 
 | Integrante | Rol |
 |---|---|
-| Julián Aguilera | Product Owner y analista (rol propuesto, pendiente de ratificación): backlog de Jira, requerimientos, documentación y casos de prueba |
-| Juan Sebastián Morales | Scrum Master y gerente del proyecto (roles propuestos, pendientes de ratificación); backend, frontend, repositorio e integración continua |
+| Julián Aguilera | Scrum Master y gerente del proyecto: seguimiento en Jira, requerimientos, documentación y casos de prueba |
+| Juan Sebastián Morales | Product Owner: prioriza el Product Backlog; backend, frontend, repositorio e integración continua |
 
 ## Aprobación y firmas
 
