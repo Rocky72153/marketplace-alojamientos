@@ -16,7 +16,7 @@ Las notificaciones se almacenan dentro de la aplicación; este alcance no incluy
 | Comprobación | Resultado observado |
 |---|---|
 | Backend: `mvn -B -ntp -f backend/pom.xml clean verify` | 20 pruebas aprobadas, sin fallos ni errores. Incluyen privacidad y eventos de notificación, elegibilidad y concurrencia de reseñas, moderación y límite de fecha de finalización. |
-| Frontend: `npm test` en `frontend/` | 31 pruebas aprobadas, incluida la visualización del historial de reservas ya reseñadas. |
+| Frontend: `npm test` en `frontend/` | 33 pruebas aprobadas, incluidas la visualización del historial de reservas ya reseñadas y la presentación de errores al cargar reseñas. |
 | Frontend: `npm run lint` y `npm run build` en `frontend/` | Ambas verificaciones finalizaron correctamente. |
 | Documentación: `python scripts/validate_delivery_docs.py` | Validación correcta del OpenAPI, BPMN, CSV y enlaces locales del paquete documental. |
 | Integración local con PostgreSQL 17 | Se ejecutaron solicitudes HTTP contra una base de datos de prueba desechable, con cuentas y alojamientos ficticios. Se verificaron avisos de confirmación y cancelación, privacidad y marcado de lectura; reserva idempotente; creación de reseñas; rechazo de duplicados y de usuarios no elegibles; y moderación con auditoría y exclusión de la vista pública. |
