@@ -117,10 +117,10 @@ public class ModerationService {
         }
     }
     public record AuditView(UUID id, String eventType, UUID actorId, String entityType, UUID entityId,
-            String result, String reason, Instant occurredAt) {
+            String result, String reason, Instant occurredAt, String correlationId) {
         static AuditView from(AuditEvent event) {
             return new AuditView(event.getId(), event.getEventType(), event.getActorId(), event.getEntityType(),
-                    event.getEntityId(), event.getResult(), event.getReason(), event.getOccurredAt());
+                    event.getEntityId(), event.getResult(), event.getReason(), event.getOccurredAt(), event.getCorrelationId());
         }
     }
     public record ManualReviewView(UUID id, UUID listingId, String listingTitle, UUID guestId,
