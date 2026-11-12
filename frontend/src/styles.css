@@ -99,3 +99,12 @@
 .review-form textarea,.review-hide-form textarea{resize:vertical}
 .review-form button,.review-hide-form button{justify-self:start;border:0;border-radius:10px;padding:10px 15px;background:#1e594b;color:#fff;font:inherit;font-weight:700;cursor:pointer}
 .review-form button:disabled,.review-hide-form button:disabled{opacity:.58;cursor:wait}
+
+.admin-workspace-panel{padding:34px clamp(20px,7vw,100px);background:#f2f5ef;border-bottom:1px solid #e3e8e1}
+.admin-workspace-shell{max-width:1040px;margin:0 auto}.admin-workspace h2{color:#173d35;font-size:clamp(1.7rem,3vw,2.4rem)}
+.admin-workspace h3,.admin-workspace h4{color:#234b40}.admin-workspace p{color:#52625b;line-height:1.5;overflow-wrap:anywhere}
+.admin-filters,.admin-actions{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:12px 0}.admin-filters label,.admin-moderation-form label{display:grid;gap:6px;color:#52625b;font-weight:700;font-size:.86rem}
+.admin-filters input,.admin-moderation-form textarea{padding:10px;border:1px solid #dce3dc;border-radius:9px;font:inherit}.admin-moderation-form textarea{width:100%;resize:vertical}
+.admin-workspace button{border:0;border-radius:10px;padding:10px 15px;background:#1e594b;color:white;font:inherit;font-weight:700;cursor:pointer}.admin-workspace button:disabled{opacity:.58;cursor:wait}
+.admin-dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.admin-metric,.admin-card,.admin-group{padding:16px;border:1px solid #e1e6df;border-radius:14px;background:#fff}.admin-metric h4,.admin-card h4{margin:0 0 8px}.admin-metric strong{font-size:1.3rem;color:#176b52}.admin-definitions{grid-column:1/-1;color:#52625b}
+.admin-group{margin-top:18px}.admin-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.admin-card{background:#f7f9f6}.admin-moderation-form{display:grid;gap:10px}.admin-moderation-form button{justify-self:start}.admin-feedback{min-height:1.2em;font-size:.88rem}
