@@ -1,83 +1,86 @@
-# Guía de ejecución local (base del proyecto)
+# Guía de ejecución local
 
-Esta guía permite ejecutar la base técnica incluida en el repositorio. No implica que las funcionalidades del marketplace estén completas: por ahora el backend expone el endpoint de salud y el frontend ofrece un prototipo de búsqueda.
+Esta guía describe el arranque de desarrollo en un equipo con Git, Java y Node.js. El backend usa PostgreSQL; el frontend sirve una interfaz que consulta ese backend. Los alojamientos del catálogo inicial son ficticios.
 
-## Requisitos
+## Herramientas
 
-- Git.
-- Java JDK 21.
-- Apache Maven 3.9 o compatible.
-- Node.js 22 y npm.
-- Docker con Docker Compose (solo si se desea levantar PostgreSQL localmente).
+Instala Git, JDK 21, Maven 3.9 o compatible, Node.js 22 con npm y Docker Desktop con Docker Compose. Comprueba que Docker esté iniciado y registra las versiones para la evidencia de tu equipo:
 
-Verifica versiones:
-
-```bash
+```powershell
 git --version
 java -version
 mvn -version
 node --version
 npm --version
+docker version
 docker compose version
 ```
 
-## Clonar y ejecutar backend
+El repositorio y Docker deben descargarse por primera vez con acceso a Internet. Los ejemplos siguientes usan PowerShell; en otros sistemas adapta la asignación de variables de entorno.
 
-```bash
+## 1. Clonar y arrancar PostgreSQL
+
+```powershell
 git clone https://github.com/Rocky72153/marketplace-alojamientos.git
 cd marketplace-alojamientos
-mvn -B -f backend/pom.xml verify
-mvn -f backend/pom.xml spring-boot:run
-```
-
-El backend usa el puerto 8080 por defecto y expone `GET http://localhost:8080/api/health`. Respuesta esperada de la base inicial: JSON con `status: UP` y `application: marketplace-alojamientos`.
-
-## Ejecutar base de datos local
-
-En otra terminal, desde la raíz:
-
-```bash
 docker compose up -d db
 docker compose ps
 ```
 
-La configuración local de Compose crea una base de desarrollo llamada `marketplace` con usuario `marketplace` y contraseña de ejemplo `marketplace_local`. Son credenciales solo para entorno local; cámbialas en entornos persistentes/desplegados y evita exponer PostgreSQL públicamente.
+Espera a que el servicio `db` figure como saludable. Compose conserva la información en el volumen `marketplace-postgres-data`, aun después de detener el contenedor. Su configuración predeterminada es PostgreSQL local en el puerto 5432, base y usuario `marketplace` y contraseña de ejemplo `marketplace_local`; corresponde solo a desarrollo.
 
-Variables opcionales para backend:
+## 2. Configurar y arrancar el backend
 
-- `DB_URL` — por defecto `jdbc:postgresql://localhost:5432/marketplace`.
-- `DB_USERNAME` — por defecto `marketplace`.
-- `DB_PASSWORD` — por defecto `marketplace_local` (solo desarrollo local).
-- `PORT` — por defecto `8080`.
+En otra terminal PowerShell, desde la raíz del clon, define una clave propia de al menos 32 bytes para mantener válidas las sesiones entre reinicios. Si deseas iniciar sesión con las cuentas de muestra, define también su contraseña propia de 8 a 72 caracteres antes del primer arranque. No copies los ejemplos literalmente ni guardes tus valores en Git:
 
-## Ejecutar frontend
+```powershell
+$env:AUTH_TOKEN_SECRET = "<tu-secreto-local-de-al-menos-32-bytes>"
+# Opcional; solo afecta a las cuentas demo al crearlas por primera vez.
+$env:DEMO_SEED_PASSWORD = "<tu-clave-local-de-demostracion>"
+mvn -f backend/pom.xml spring-boot:run
+```
 
-En otra terminal:
+Si no se define `AUTH_TOKEN_SECRET`, el backend genera un secreto temporal: las sesiones existentes dejan de ser válidas al reiniciar. Si se proporciona, debe tener al menos 32 bytes. La clave `ADMIN_BOOTSTRAP_KEY` es opcional y permite registrar un administrador mediante la API; sin ella el registro público admite huéspedes y anfitriones. Para un frontend en otro origen, configura `CORS_ALLOWED_ORIGINS`. La dirección de la base, el usuario, la contraseña y el puerto pueden ajustarse con `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` y `PORT`.
 
-```bash
+El perfil predeterminado `local` carga hasta 10.000 alojamientos ficticios en Colombia y 1.001 cuentas de muestra en PostgreSQL local. La primera carga puede tardar; espera a que finalice antes de comprobar el catálogo. Sin `DEMO_SEED_PASSWORD`, las cuentas demo reciben una contraseña aleatoria desconocida. Definirla después no cambia contraseñas ya creadas; puedes registrar tu propia cuenta de huésped. `DEMO_SEED_ENABLED=false` desactiva la carga y `DEMO_SEED_LISTING_COUNT` ajusta su tamaño. Una base con el catálogo anterior se amplía conservando los registros; las entradas antiguas editadas o eliminadas que no puedan identificarse se omiten. Si el catálogo es demasiado ambiguo, la carga se detiene sin modificarlo.
+
+Verifica en otra terminal:
+
+```powershell
+Invoke-RestMethod http://localhost:8080/api/health
+Invoke-RestMethod "http://localhost:8080/api/listings/cities?query=bogota"
+```
+
+La respuesta de salud incluye `status: UP` y `application: marketplace-alojamientos`. La segunda consulta debe devolver sugerencias de ciudad si el catálogo está cargado.
+
+## 3. Arrancar el frontend
+
+En otra terminal, desde la raíz:
+
+```powershell
 cd frontend
 npm ci
-npm run lint
-npm test
-npm run build
 npm run dev
 ```
 
-Abre `http://localhost:4173`. La búsqueda todavía no consulta el backend; valida campos y muestra una explicación de la funcionalidad pendiente.
+Abre [http://localhost:4173](http://localhost:4173). La búsqueda y las sugerencias consultan el backend; puedes explorar sin iniciar sesión. Las reservas requieren cuenta de huésped. Por defecto la página usa `http://localhost:8080`; si cambias la dirección del backend, ajusta la etiqueta `api-base-url` de `frontend/index.html` y la configuración CORS correspondiente.
 
-## Pruebas automatizadas
+## 4. Verificar las pruebas
 
-- Backend: `mvn -B -f backend/pom.xml verify`. Las pruebas usan H2 en perfil test, sin requerir PostgreSQL en ejecución.
-- Frontend: `cd frontend && npm ci && npm run lint && npm test && npm run build`.
+Desde la raíz del clon:
 
-## Detener servicios
-
-```bash
-docker compose down
+```powershell
+mvn -B -ntp -f backend/pom.xml verify
+cd frontend
+npm run lint
+npm test
+npm run build
 ```
 
-Para borrar también los datos locales de PostgreSQL (acción destructiva): `docker compose down -v`.
+Las pruebas del backend usan bases H2 aisladas con el perfil de pruebas. La comprobación anterior no reemplaza ejecutar el backend contra PostgreSQL ni verificar el flujo completo en el navegador.
 
-## Límite de esta guía
+## 5. Detener el entorno
 
-Este es un manual local, no un manual de despliegue de producción. Antes de desplegar fuera de desarrollo, definir secretos seguros, HTTPS, configuración de perfiles, migraciones de base de datos, backups, observabilidad, permisos, CORS y política de despliegue. La guía del curso pide documentar y evidenciar el despliegue del producto conforme evolucione.
+Finaliza el backend y el servidor del frontend con Ctrl+C en sus terminales. Desde la raíz, `docker compose stop db` detiene el contenedor y conserva el volumen con los datos. Después puedes cerrar Docker Desktop.
+
+Esta guía está preparada para ser comprobada desde un clon limpio; por sí sola no demuestra que esa comprobación se haya ejecutado. No es un manual de despliegue de producción.

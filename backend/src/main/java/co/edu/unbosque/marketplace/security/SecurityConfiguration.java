@@ -1,10 +1,11 @@
 package co.edu.unbosque.marketplace.security;
 
 import co.edu.unbosque.marketplace.api.ApiError;
+import co.edu.unbosque.marketplace.audit.CorrelationContext;
+import co.edu.unbosque.marketplace.audit.StructuredEventLogger;
 import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,15 +39,15 @@ public class SecurityConfiguration {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter,
-            ObjectMapper objectMapper) throws Exception {
+            ObjectMapper objectMapper, StructuredEventLogger logger) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> { })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, exception) -> writeError(
-                                response, objectMapper, 401, "UNAUTHORIZED", "Sesión ausente o inválida.", request.getHeader(CORRELATION_ID_HEADER)))
+                                response, objectMapper, logger, 401, "UNAUTHORIZED", "Sesión ausente o inválida.", request))
                         .accessDeniedHandler((request, response, exception) -> writeError(
-                                response, objectMapper, 403, "FORBIDDEN", "No tienes permiso para realizar esta operación.", request.getHeader(CORRELATION_ID_HEADER))))
+                                response, objectMapper, logger, 403, "FORBIDDEN", "No tienes permiso para realizar esta operación.", request)))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
@@ -80,9 +81,11 @@ public class SecurityConfiguration {
     }
 
     private void writeError(jakarta.servlet.http.HttpServletResponse response, ObjectMapper objectMapper,
-            int status, String code, String message, String requestedCorrelationId) throws IOException {
-        String correlationId = requestedCorrelationId == null || requestedCorrelationId.isBlank()
-                ? UUID.randomUUID().toString() : requestedCorrelationId;
+            StructuredEventLogger logger, int status, String code, String message,
+            jakarta.servlet.http.HttpServletRequest request) throws IOException {
+        Object attribute = request.getAttribute(CorrelationContext.ATTRIBUTE);
+        String correlationId = attribute instanceof String id ? id : CorrelationContext.currentOrCreate();
+        logger.httpError(status, correlationId);
         response.setStatus(status);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         objectMapper.writeValue(response.getOutputStream(), new ApiError(code, message, correlationId));
