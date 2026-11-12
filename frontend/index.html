@@ -17,6 +17,8 @@
         <a href="#anfitriones">Soy anfitrión</a>
         <a id="account-link" class="nav-login" href="#mi-cuenta">Iniciar sesión</a>
         <a id="reservation-link" href="#reservation-history">Mis reservas</a>
+        <a id="notifications-link" href="#notifications-panel">Notificaciones</a>
+        <a id="admin-reviews-link" href="#review-admin" hidden>Moderar reseñas</a>
       </nav>
     </header>
     <main>
@@ -45,6 +47,17 @@
           </div>
           <p id="account-feedback" class="feedback" role="status" aria-live="polite"></p>
         </div>
+      </section>
+      <section id="notifications-panel" class="notifications-panel" aria-labelledby="notifications-title" hidden>
+        <div class="notifications-shell">
+          <p class="eyebrow">ACTIVIDAD</p>
+          <h2 id="notifications-title">Mis notificaciones</h2>
+          <p id="notifications-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <div id="notifications-items" class="notifications-items"></div>
+        </div>
+      </section>
+      <section id="review-admin" class="review-admin" aria-label="Moderación de reseñas" hidden>
+        <div id="review-admin-content" class="review-admin-shell"></div>
       </section>
       <section id="listing-detail" class="detail-section" aria-labelledby="detail-title" hidden>
         <div class="detail-shell">
