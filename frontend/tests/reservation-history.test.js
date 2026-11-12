@@ -98,3 +98,49 @@ test('mantiene el formulario disponible y explica el error si la cancelación fa
   assert.equal(button.disabled, false);
   assert.match(fixture.feedback.textContent, /ya no se puede cancelar/i);
 });
+
+test('descarta el historial que llega después de cerrar sesión', async () => {
+  let resolveRequest;
+  const fixture = historyFixture(() => new Promise((resolve) => { resolveRequest = resolve; }));
+  const previous = renderReservationHistory(fixture.container, 'http://localhost:8080', 'token-anterior',
+    fixture.fetchImpl, fixture.documentRef);
+  await renderReservationHistory(fixture.container, 'http://localhost:8080', null, fixture.fetchImpl, fixture.documentRef);
+  resolveRequest({ ok: true, async json() { return [reservation('privada')]; } });
+  await previous;
+  assert.equal(fixture.container.hidden, true);
+  assert.equal(fixture.items.children.length, 0);
+  assert.equal(fixture.feedback.textContent, '');
+});
+
+test('permite publicar una reseña desde una reserva completada', async () => {
+  const completed = { ...reservation('reserva', 'COMPLETED'), listingId: 'alojamiento' };
+  const requests = [];
+  let created = false;
+  const fixture = historyFixture(async (url, options = {}) => {
+    requests.push({ url: url.toString(), options });
+    if (url.pathname === '/api/reservations') return { ok: true, async json() { return [completed]; } };
+    return { ok: true, async json() { return { id: 'reseña' }; } };
+  });
+  await renderReservationHistory(fixture.container, 'http://localhost:8080', 'guest-token', fixture.fetchImpl,
+    fixture.documentRef, '', { getToken: () => 'guest-token', onReviewCreated: () => { created = true; } });
+
+  const panel = find(fixture.items, (node) => node.className === 'review-form-panel');
+  assert.ok(panel);
+  const form = find(panel, (node) => node.tagName === 'form');
+  find(form, (node) => node.tagName === 'textarea').value = 'Una buena estancia.';
+  await form.dispatch('submit');
+  assert.equal(requests[1].url, 'http://localhost:8080/api/listings/alojamiento/reviews');
+  assert.deepEqual(JSON.parse(requests[1].options.body), { bookingId: 'reserva', rating: 5, content: 'Una buena estancia.' });
+  assert.equal(requests[1].options.headers.Authorization, 'Bearer guest-token');
+  assert.equal(created, true);
+});
+
+test('no vuelve a ofrecer una reseña al cargar una reserva ya reseñada', async () => {
+  const completed = { ...reservation('reserva', 'COMPLETED'), listingId: 'alojamiento', reviewed: true };
+  const fixture = historyFixture(async () => ({ ok: true, async json() { return [completed]; } }));
+  await renderReservationHistory(fixture.container, 'http://localhost:8080', 'guest-token', fixture.fetchImpl,
+    fixture.documentRef);
+  assert.equal(find(fixture.items, (node) => node.className === 'review-form-panel'), null);
+  assert.match(find(fixture.items, (node) => /Ya escribiste una reseña/.test(node.textContent))?.textContent,
+    /esta reserva/);
+});
