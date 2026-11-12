@@ -345,6 +345,36 @@ paths:
             application/json:
               schema: { type: array, items: { $ref: '#/components/schemas/Notification' } }
         '401': { $ref: '#/components/responses/Unauthorized' }
+  /notifications/{notificationId}:
+    get:
+      tags: [Notificaciones]
+      summary: Consultar una notificación propia
+      operationId: getNotification
+      parameters:
+        - { name: notificationId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Notificación del usuario autenticado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Notification' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { description: No existe o pertenece a otra cuenta }
+  /notifications/{notificationId}/read:
+    patch:
+      tags: [Notificaciones]
+      summary: Marcar una notificación propia como leída
+      operationId: markNotificationRead
+      parameters:
+        - { name: notificationId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Notificación actualizada; repetir la operación conserva la primera fecha de lectura
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Notification' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { description: No existe o pertenece a otra cuenta }
   /listings/{listingId}/reviews:
     get:
       tags: [Reseñas]
@@ -374,13 +404,58 @@ paths:
               required: [bookingId, rating, content]
               properties:
                 bookingId: { type: string, format: uuid }
-                rating: { type: integer, minimum: 1, maximum: 5, description: Rango propuesto para validación del equipo }
+                rating: { type: integer, minimum: 1, maximum: 5, description: Escala del MVP de 1 a 5 }
                 content: { type: string, minLength: 1, maxLength: 5000 }
       responses:
-        '201': { description: Reseña asociada a huésped, reserva y alojamiento }
+        '201':
+          description: Reseña asociada a huésped, reserva y alojamiento
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Review' }
         '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { description: Reserva no pertenece al usuario o no está completada }
         '409': { description: Ya existe una reseña para la reserva }
+  /admin/reviews:
+    get:
+      tags: [Reseñas, Administración]
+      summary: Consultar reseñas para moderación
+      operationId: listReviewsForModeration
+      responses:
+        '200':
+          description: Reseñas visibles y ocultas, solo para administración
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/ModerationReview' } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Rol no autorizado }
+  /admin/reviews/{reviewId}/hide:
+    post:
+      tags: [Reseñas, Administración]
+      summary: Ocultar una reseña y auditar el motivo
+      operationId: hideReview
+      parameters:
+        - { name: reviewId, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 1, maxLength: 1000 }
+      responses:
+        '200':
+          description: Reseña oculta con fecha, responsable y motivo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModerationReview' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Rol no autorizado }
+        '404': { description: Reseña inexistente }
+        '409': { description: Reseña ya oculta }
   /admin/audit-events:
     get:
       tags: [Administración]
@@ -571,6 +646,7 @@ components:
         currency: { type: string }
         createdAt: { type: string, format: date-time }
         confirmedAt: { type: [string, "null"], format: date-time }
+        reviewed: { type: boolean, description: Indica si la reserva ya tiene una reseña, incluso si fue ocultada. }
     Cancellation:
       type: object
       properties:
@@ -587,6 +663,8 @@ components:
         id: { type: string, format: uuid }
         type: { type: string }
         message: { type: string }
+        referenceType: { type: string, enum: [LISTING, RESERVATION] }
+        referenceId: { type: string, format: uuid }
         createdAt: { type: string, format: date-time }
         readAt: { type: [string, "null"], format: date-time }
     Review:
@@ -598,6 +676,17 @@ components:
         rating: { type: integer, minimum: 1, maximum: 5 }
         content: { type: string }
         createdAt: { type: string, format: date-time }
+    ModerationReview:
+      allOf:
+        - { $ref: '#/components/schemas/Review' }
+        - type: object
+          properties:
+            listingId: { type: string, format: uuid }
+            listingTitle: { type: string }
+            hidden: { type: boolean }
+            hiddenAt: { type: [string, 'null'], format: date-time }
+            hiddenBy: { type: [string, 'null'], format: uuid }
+            hiddenReason: { type: [string, 'null'] }
     Dashboard:
       type: object
       properties:

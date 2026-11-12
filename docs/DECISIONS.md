@@ -21,10 +21,10 @@ Las entradas marcadas como propuestas no constituyen acuerdos adoptados hasta se
 
 | ID | Pregunta | Opciones/impacto | Responsable propuesto | Estado |
 |---|---|---|---|---|
-| DEC-01 | ¿Qué porcentajes y fórmula componen tarifa de servicio, limpieza, descuentos y extras? | Cambia cotización, pruebas, persistencia de snapshot y reportes. | Product Owner (Juan Sebastián Morales) | Abierta |
-| DEC-02 | ¿Cuál es la política concreta de cancelación y devolución simulada? | Cambia elegibilidad, cálculo y liberación de disponibilidad. | Product Owner (Juan Sebastián Morales) | Abierta |
+| DEC-01 | ¿Qué porcentajes y fórmula componen tarifa de servicio, limpieza, descuentos y extras? | Cambia cotización, pruebas, persistencia de snapshot y reportes. | Product Owner (Juan Sebastián Morales) | Aprobada para el MVP: limpieza COP 35.000 por estancia, servicio 10% del subtotal de noches, descuento inicial 0% y extras por alojamiento. |
+| DEC-02 | ¿Cuál es la política concreta de cancelación y devolución simulada? | Cambia elegibilidad, cálculo y liberación de disponibilidad. | Product Owner (Juan Sebastián Morales) | Aprobada para el MVP: 100% desde 7 días antes, 50% entre 2 y 6 días y 0% con menos de 48 horas. |
 | DEC-03 | ¿Qué estados/transiciones se aplican a reserva y pago test? | Define fallo, reintentos, expiración, confirmación y liberación de inventario. | Backend + negocio por asignar | Abierta |
-| DEC-04 | ¿Cómo se marca una estancia como COMPLETADA? | Condición de elegibilidad para reseñas y algunos reportes. | Product Owner (Juan Sebastián Morales) | Abierta |
+| DEC-04 | ¿Cómo se marca una estancia como COMPLETADA? | Condición de elegibilidad para reseñas y algunos reportes. | Product Owner (Juan Sebastián Morales) | Aprobada para el MVP: una reserva confirmada pasa a COMPLETED después de la fecha de salida, según la fecha local de Bogotá; las canceladas no se completan. |
 | DEC-05 | ¿Qué publicación requiere PENDIENTE_REVISION y quién la activa? | Cambia la ruta de moderación y disponibilidad pública. | Product Owner (Juan Sebastián Morales) | Abierta |
 | DEC-06 | ¿Qué campos/criterios exactos definen el tipo de alojamiento, servicios y reglas? | Afecta catálogo, filtros y criterios de aceptación. | Equipo de requerimientos por asignar | Abierta |
 | DEC-07 | ¿Qué permisos administrativos aplican a datos personales, reservas y reportes? | Impacta seguridad, privacidad y auditoría. | Product Owner (Juan Sebastián Morales) con el equipo | Abierta |

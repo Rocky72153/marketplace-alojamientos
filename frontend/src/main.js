@@ -2,6 +2,8 @@ import { fetchCitySuggestions, searchListings, validateSearch } from './search.j
 import { buildListingDetailUrl, fetchListingDetail, renderListingDetail, renderListingDetailError } from './detail.js';
 import { initAccount, renderReservationHistory } from './account.js';
 import { initBooking } from './booking.js';
+import { initNotifications } from './notifications.js';
+import { initReviewList, initReviewModeration } from './reviews.js';
 
 function initializeCitySuggestions(cityInput, citySuggestions, apiBase, documentRef) {
   if (!cityInput || !citySuggestions) return Promise.resolve();
@@ -96,13 +98,42 @@ if (typeof document !== 'undefined') {
   const citySuggestions = document.querySelector('#city-suggestions');
   const initialSuggestions = initializeCitySuggestions(cityInput, citySuggestions, apiBase, document);
   const historyContainer = document.querySelector('#reservation-history');
+  const reservationLink = document.querySelector('#reservation-link');
+  const adminPanel = document.querySelector('#review-admin');
+  const adminLink = document.querySelector('#admin-reviews-link');
   let currentToken = null;
+  let currentRole = null;
   let bookingFlow = null;
+  let reviewList = null;
+  const notifications = initNotifications(document.querySelector('#notifications-panel'), apiBase, () => currentToken,
+    globalThis.fetch, document);
+  const moderation = initReviewModeration(document.querySelector('#review-admin-content'), apiBase, () => currentToken,
+    () => reviewList?.refresh(), document, globalThis.fetch);
+  const historyCallbacks = {
+    getToken: () => currentToken,
+    onReservationChanged: () => notifications?.refresh(),
+    onReviewCreated: () => reviewList?.refresh(),
+  };
   const refreshHistory = (notice = '') => renderReservationHistory(historyContainer, apiBase, currentToken, globalThis.fetch,
-    document, notice);
+    document, notice, historyCallbacks);
+  adminLink?.addEventListener?.('click', (event) => {
+    event.preventDefault();
+    if (currentRole !== 'ADMIN') return;
+    if (adminPanel) adminPanel.hidden = false;
+    void moderation?.refresh();
+    adminPanel?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+  });
   initAccount(document, apiBase, (session) => {
     currentToken = session?.accessToken || null;
-    void refreshHistory();
+    currentRole = session?.user?.role || null;
+    if (adminLink) adminLink.hidden = currentRole !== 'ADMIN';
+    if (reservationLink) reservationLink.hidden = Boolean(session) && currentRole !== 'GUEST';
+    if (adminPanel) adminPanel.hidden = true;
+    moderation?.clear();
+    if (currentRole === 'GUEST') void refreshHistory();
+    else void renderReservationHistory(historyContainer, apiBase, null, globalThis.fetch, document);
+    if (currentToken) void notifications?.refresh();
+    else notifications?.clear();
     bookingFlow?.syncAccount();
   });
 
@@ -114,7 +145,11 @@ if (typeof document !== 'undefined') {
     detailFeedback.textContent = 'Cargando alojamiento…';
     fetchListingDetail(requestedListingId, apiBase).then((listing) => {
       renderListingDetail(detailContent, listing);
-      bookingFlow = initBooking(detailContent, listing, apiBase, () => currentToken, () => refreshHistory());
+      bookingFlow = initBooking(detailContent, listing, apiBase, () => currentToken, () => {
+        void refreshHistory();
+        void notifications?.refresh();
+      });
+      reviewList = initReviewList(detailContent, listing, apiBase, document, globalThis.fetch);
       bookingFlow?.syncAccount();
       detailFeedback.textContent = '';
     }).catch((error) => {
