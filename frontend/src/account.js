@@ -1,4 +1,7 @@
+import { initReviewForm } from './reviews.js';
+
 const SESSION_KEY = 'marketplace-session';
+const historyRequests = new WeakMap();
 
 function readSession() {
   try {
@@ -121,6 +124,15 @@ function reservationCard(documentRef, reservation, cancelContext) {
     card.append(element(documentRef, 'p', '', `Reembolso simulado: ${reservation.refundPercentage}% · ${money(reservation.refundAmount)} COP`));
   }
   if (reservation.status === 'CONFIRMED') card.append(cancellationForm(documentRef, reservation, cancelContext));
+  if (reservation.status === 'COMPLETED') {
+    if (reservation.reviewed) {
+      card.append(element(documentRef, 'p', '', 'Ya escribiste una reseña para esta reserva.'));
+    } else {
+      const { apiBase, token, fetchImpl, callbacks } = cancelContext;
+      initReviewForm(card, reservation, apiBase, callbacks.getToken || (() => token),
+        () => callbacks.onReviewCreated?.(reservation), documentRef, fetchImpl);
+    }
+  }
   return card;
 }
 
@@ -151,9 +163,13 @@ async function cancelReservation(reservation, reason, button, context) {
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.message || 'No fue posible cancelar la reserva.');
+    if (context.callbacks.getToken && context.callbacks.getToken() !== token) return;
     await renderReservationHistory(container, apiBase, token, fetchImpl, documentRef,
-      `Cancelación registrada. Reembolso de prueba: ${result.refundPercentage}% (${money(result.refundAmount)} COP).`);
+      `Cancelación registrada. Reembolso de prueba: ${result.refundPercentage}% (${money(result.refundAmount)} COP).`,
+      context.callbacks);
+    context.callbacks.onReservationChanged?.();
   } catch (error) {
+    if (context.callbacks.getToken && context.callbacks.getToken() !== token) return;
     button.disabled = false;
     setFeedback(feedback, error.message);
   }
@@ -166,23 +182,32 @@ function renderReservationCards(items, documentRef, reservations, cancelContext)
 }
 
 export async function renderReservationHistory(container, apiBase, token, fetchImpl = globalThis.fetch,
-  documentRef = globalThis.document, notice = '') {
+  documentRef = globalThis.document, notice = '', callbacks = {}) {
   if (!container) return;
+  const request = (historyRequests.get(container) || 0) + 1;
+  historyRequests.set(container, request);
   container.hidden = !token;
   const feedback = documentRef.querySelector('#reservation-history-feedback');
   const items = documentRef.querySelector('#reservation-history-items');
-  if (!token || !items) return;
+  if (!token) {
+    items?.replaceChildren();
+    setFeedback(feedback, '');
+    return;
+  }
+  if (!items) return;
+  items.replaceChildren();
   setFeedback(feedback, 'Cargando tus reservas…');
   try {
     const response = await fetchImpl(new URL('/api/reservations', apiBase), {
       headers: { Authorization: `Bearer ${token}` },
     });
     const reservations = await response.json().catch(() => []);
+    if (historyRequests.get(container) !== request) return;
     if (!response.ok) throw new Error(reservations.message || 'No fue posible consultar tus reservas.');
-    const cancelContext = { apiBase, token, fetchImpl, documentRef, container, feedback };
+    const cancelContext = { apiBase, token, fetchImpl, documentRef, container, feedback, callbacks };
     renderReservationCards(items, documentRef, reservations, cancelContext);
     setFeedback(feedback, notice || (reservations.length ? '' : 'Aún no tienes reservas.'));
   } catch (error) {
-    setFeedback(feedback, error.message);
+    if (historyRequests.get(container) === request) setFeedback(feedback, error.message);
   }
 }
