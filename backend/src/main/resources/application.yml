@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    default: local
   application:
     name: marketplace-alojamientos
   datasource:
@@ -27,3 +29,20 @@ marketplace:
     discount-rate: ${STAY_DISCOUNT_RATE:0.00}
   payment:
     mode: ${PAYMENT_MODE:SIMULATED_TEST}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+app:
+  demo-seed:
+    enabled: ${DEMO_SEED_ENABLED:true}
+    password: ${DEMO_SEED_PASSWORD:}
+    listing-count: ${DEMO_SEED_LISTING_COUNT:10000}

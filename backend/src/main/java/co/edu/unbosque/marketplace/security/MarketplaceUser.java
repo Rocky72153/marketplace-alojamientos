@@ -123,6 +123,10 @@ public class MarketplaceUser implements UserDetails {
         this.accountState = AccountState.DEACTIVATED;
     }
 
+    public void restrict() {
+        this.accountState = AccountState.RESTRICTED;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Set.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
