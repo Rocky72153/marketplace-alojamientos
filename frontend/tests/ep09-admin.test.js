@@ -28,7 +28,7 @@ function backend(requests) {
     if (url.pathname === '/api/admin/dashboard') return ok(dashboard);
     if (url.pathname === '/api/admin/users') return ok(page([{ id: 'u1', name: 'Ana', email: 'a@example.test', role: 'HOST', accountState: 'ACTIVE' }]));
     if (url.pathname === '/api/admin/listings') return ok(page([{ id: 'l1', title: 'Casa', city: 'Bogotá', status: 'ACTIVE' }]));
-    if (url.pathname === '/api/admin/audit') return ok(page([{ eventType: 'ACCOUNT_RESTRICTED', actorId: 'a1', reason: 'Motivo' }]));
+    if (url.pathname === '/api/admin/audit') return ok(page([{ eventType: 'ACCOUNT_RESTRICTED', actorId: 'a1', reason: 'Motivo', correlationId: 'solicitud-123' }]));
     if (url.pathname === '/api/admin/reservations/manual-review') return ok([{ id: 'b1', listingTitle: 'Casa', checkIn: '2026-12-01', checkOut: '2026-12-03', status: 'CONFIRMED' }]);
     if (url.pathname === '/api/admin/reports') return { ok: true, blob: async () => ({ file: true }) };
     return ok({});
@@ -44,6 +44,7 @@ test('muestra indicadores y gestiones con autorización administrativa', async (
   assert.ok(byText(panel.section, 'estimatedRevenue: Cobros simulados'));
   assert.ok(byText(panel.section, 'Ana'));
   assert.ok(byText(panel.section, 'Reserva: b1'));
+  assert.ok(byText(panel.section, 'Referencia de solicitud: solicitud-123'));
   assert.ok(requests.every((r) => r.options.headers.Authorization === 'Bearer admin'));
 });
 
