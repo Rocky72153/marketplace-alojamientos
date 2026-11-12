@@ -2,6 +2,7 @@ package co.edu.unbosque.marketplace.listing;
 
 import co.edu.unbosque.marketplace.api.DomainException;
 import co.edu.unbosque.marketplace.audit.AuditService;
+import co.edu.unbosque.marketplace.notification.NotificationService;
 import co.edu.unbosque.marketplace.security.AccountRole;
 import co.edu.unbosque.marketplace.security.MarketplaceUser;
 import java.math.BigDecimal;
@@ -34,9 +35,11 @@ public class ListingService {
     private final ListingRepository listings;
     private final AvailabilityRepository availability;
     private final AuditService audit;
+    private final NotificationService notifications;
 
-    public ListingService(ListingRepository listings, AvailabilityRepository availability, AuditService audit) {
-        this.listings = listings; this.availability = availability; this.audit = audit;
+    public ListingService(ListingRepository listings, AvailabilityRepository availability, AuditService audit,
+            NotificationService notifications) {
+        this.listings = listings; this.availability = availability; this.audit = audit; this.notifications = notifications;
     }
 
     @Transactional
@@ -79,6 +82,7 @@ public class ListingService {
         listing.setStatus(target);
         listings.save(listing);
         audit.recordEvent("LISTING_STATE_CHANGED", principal.getId(), LISTING_ENTITY, id, SUCCESS, reason);
+        notifications.listingStateChanged(listing, current, target);
         return listing;
     }
 
