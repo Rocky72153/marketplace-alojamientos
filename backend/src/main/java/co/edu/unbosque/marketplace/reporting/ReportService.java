@@ -145,5 +145,16 @@ public class ReportService {
     }
 
     private record Line(String label, String value) { }
-    public record Export(byte[] bytes, String format) { }
+    public static final class Export {
+        private final byte[] bytes;
+        private final String format;
+
+        Export(byte[] bytes, String format) {
+            this.bytes = bytes.clone();
+            this.format = format;
+        }
+
+        public byte[] bytes() { return bytes.clone(); }
+        public String format() { return format; }
+    }
 }
