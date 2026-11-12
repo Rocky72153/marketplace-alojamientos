@@ -35,6 +35,7 @@ Las tecnologías son una propuesta técnica inicial incluida en la ratificación
 - docs/DECISIONS.md: decisiones técnicas y asuntos por validar.
 - docs/EP07-EP08-EVIDENCE.md: alcance y comprobaciones de notificaciones y reseñas.
 - docs/EP09-administracion-reportes.md: reglas del panel, administración, exportaciones y evidencias.
+- docs/EP10-observabilidad.md: referencias de solicitud, auditoría y evidencia de registros seguros.
 - docs/evidencias/: inspección, ejecución parcial de pruebas y auditoría de PR.
 - scripts/: configuración auxiliar para reglas de protección vía GitHub CLI.
 
