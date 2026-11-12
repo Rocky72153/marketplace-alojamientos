@@ -78,8 +78,13 @@ public class ReservationService {
         if (idempotencyKey.isBlank() || idempotencyKey.length() > 100) {
             throw validation("Debes enviar una clave de idempotencia válida.");
         }
-        users.lockForReservationById(guest.getId())
+        MarketplaceUser lockedGuest = users.lockForReservationById(guest.getId())
                 .orElseThrow(() -> new DomainException(HttpStatus.UNAUTHORIZED, "AUTHENTICATION_REQUIRED", "La sesión ya no es válida."));
+        // The account may have been restricted after the request was authenticated while it waited for this lock.
+        if (!lockedGuest.isEnabled() || !lockedGuest.isAccountNonLocked()) {
+            throw new DomainException(HttpStatus.UNAUTHORIZED, "AUTHENTICATION_REQUIRED", "La sesión ya no es válida.");
+        }
+        requireGuest(lockedGuest);
         String fingerprint = fingerprint(request);
         Reservation previous = reservations.findByGuest_IdAndIdempotencyKey(guest.getId(), idempotencyKey).orElse(null);
         if (previous != null) return returnIdempotent(previous, fingerprint);
