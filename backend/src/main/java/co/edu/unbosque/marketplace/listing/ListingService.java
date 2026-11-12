@@ -1,6 +1,8 @@
 package co.edu.unbosque.marketplace.listing;
 
 import co.edu.unbosque.marketplace.api.DomainException;
+import co.edu.unbosque.marketplace.booking.ReservationRepository;
+import co.edu.unbosque.marketplace.booking.ReservationStatus;
 import co.edu.unbosque.marketplace.audit.AuditService;
 import co.edu.unbosque.marketplace.notification.NotificationService;
 import co.edu.unbosque.marketplace.security.AccountRole;
@@ -36,10 +38,12 @@ public class ListingService {
     private final AvailabilityRepository availability;
     private final AuditService audit;
     private final NotificationService notifications;
+    private final ReservationRepository reservations;
 
     public ListingService(ListingRepository listings, AvailabilityRepository availability, AuditService audit,
-            NotificationService notifications) {
+            NotificationService notifications, ReservationRepository reservations) {
         this.listings = listings; this.availability = availability; this.audit = audit; this.notifications = notifications;
+        this.reservations = reservations;
     }
 
     @Transactional
@@ -66,7 +70,7 @@ public class ListingService {
 
     @Transactional
     public Listing changeState(MarketplaceUser principal, UUID id, ListingStatus target, String reason) {
-        Listing listing = get(id);
+        Listing listing = getForUpdate(id);
         boolean admin = principal.getRole() == AccountRole.ADMIN;
         requireOwnerOrAdmin(principal, listing);
         ListingStatus current = listing.getStatus();
@@ -81,6 +85,9 @@ public class ListingService {
         if (!allowed) throw new DomainException(HttpStatus.CONFLICT, "INVALID_STATE_TRANSITION", "El cambio de estado solicitado no está permitido.");
         listing.setStatus(target);
         listings.save(listing);
+        if (target == ListingStatus.BLOCKED) {
+            reservations.flagFutureForManualReview(id, LocalDate.now(java.time.ZoneId.of("America/Bogota")), ReservationStatus.CONFIRMED);
+        }
         audit.recordEvent("LISTING_STATE_CHANGED", principal.getId(), LISTING_ENTITY, id, SUCCESS, reason);
         notifications.listingStateChanged(listing, current, target);
         return listing;
