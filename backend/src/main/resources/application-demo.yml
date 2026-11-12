@@ -2,6 +2,7 @@ app:
   demo-seed:
     enabled: ${DEMO_SEED_ENABLED:true}
     password: ${DEMO_SEED_PASSWORD:}
+    listing-count: ${DEMO_SEED_LISTING_COUNT:10000}
 
 spring:
   jpa:
