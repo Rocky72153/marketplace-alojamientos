@@ -34,6 +34,7 @@ Las tecnologías son una propuesta técnica inicial incluida en la ratificación
 - docs/TRACEABILITY_TEMPLATE.csv: matriz inicial de trazabilidad.
 - docs/DECISIONS.md: decisiones técnicas y asuntos por validar.
 - docs/EP07-EP08-EVIDENCE.md: alcance y comprobaciones de notificaciones y reseñas.
+- docs/EP09-administracion-reportes.md: reglas del panel, administración, exportaciones y evidencias.
 - docs/evidencias/: inspección, ejecución parcial de pruebas y auditoría de PR.
 - scripts/: configuración auxiliar para reglas de protección vía GitHub CLI.
 
@@ -55,19 +56,20 @@ El backend expone autenticación y perfil, consulta de publicaciones, `POST /api
 
 ## Catálogo y cuentas de demostración
 
-El perfil opcional `demo` carga 5.000 alojamientos ficticios repartidos entre los 1.122 destinos territoriales del catálogo DIVIPOLA de 2024 (1.103 municipios, una isla y 18 áreas no municipalizadas), con tarifas en COP, capacidades, servicios y disponibilidad de muestra. También crea 1.001 cuentas: 500 huéspedes (`guest.001@marketplace.test` a `guest.500@marketplace.test`), 500 anfitriones (`host.001@marketplace.test` a `host.500@marketplace.test`) y un administrador (`demo-admin@marketplace.test`). Los nombres de territorios y departamentos se basan en el [catálogo DIVIPOLA de DANE publicado en Datos Abiertos Colombia](https://www.datos.gov.co/Mapas-Nacionales/DIVIPOLA-C-digos-municipios/gdxc-w37w); los alojamientos y las cuentas sí son ficticios. Los registros de muestra usan dominios `.test` y no deben copiarse a producción.
+El perfil predeterminado `local` carga 10.000 alojamientos ficticios repartidos entre los 1.122 destinos territoriales del catálogo DIVIPOLA de 2024 (1.103 municipios, una isla y 18 áreas no municipalizadas), con tarifas en COP, capacidades, servicios y disponibilidad de muestra. Solo admite carga automática en PostgreSQL de `localhost` o `127.0.0.1`. También crea 1.001 cuentas ficticias: 500 huéspedes (`guest.001@marketplace.test` a `guest.500@marketplace.test`), 500 anfitriones (`host.001@marketplace.test` a `host.500@marketplace.test`) y un administrador (`demo-admin@marketplace.test`). Los nombres de territorios y departamentos se basan en el [catálogo DIVIPOLA de DANE publicado en Datos Abiertos Colombia](https://www.datos.gov.co/Mapas-Nacionales/DIVIPOLA-C-digos-municipios/gdxc-w37w); los alojamientos y las cuentas no representan ofertas ni personas reales. Los datos de muestra no deben copiarse a producción.
 
-Para cargar estos datos en una base local, inicia PostgreSQL y ejecuta el backend con el perfil `demo` y una contraseña definida por ti. En PowerShell:
+Para cargar estos datos en una base local, inicia PostgreSQL y ejecuta el backend. Si deseas iniciar sesión en las cuentas de demostración, define la contraseña **antes de la primera carga**. En PowerShell:
 
 ```powershell
 docker compose up -d db
-$env:SPRING_PROFILES_ACTIVE = "demo"
 $env:DEMO_SEED_PASSWORD = "una-clave-local-de-8-a-72-caracteres"
 $env:AUTH_TOKEN_SECRET = "define-aqui-un-secreto-local-de-al-menos-32-caracteres"
 mvn -f backend/pom.xml spring-boot:run
 ```
 
-La contraseña configurada se aplica a las cuentas demo locales. El seeder corre solo con el perfil `demo`, es idempotente y puede apagarse con `DEMO_SEED_ENABLED=false`; sin `DEMO_SEED_PASSWORD` válido, el backend falla antes de escribir datos. Al abrir la página se muestran destinos sugeridos sin exigir inicio de sesión; el campo ciudad busca en los 1.122 destinos territoriales, tolera tildes y ofrece hasta diez opciones navegables con teclado. La consulta de alojamientos es pública; confirmar una reserva, consultar reservas y cancelarlas requiere una sesión de huésped.
+La contraseña se usa solo al crear cuentas demo; nunca reemplaza contraseñas ni modifica cuentas ya existentes. Si no defines `DEMO_SEED_PASSWORD`, se asigna una clave aleatoria desconocida y no podrás iniciar sesión en esas cuentas de muestra; puedes registrar tu propia cuenta normalmente. Si después configuras una contraseña, las cuentas demo existentes no cambian. El cargador es idempotente y conserva los datos. Cuando identifica con seguridad el catálogo anterior de 5.000, registra como omitidas las entradas antiguas editadas, eliminadas o ambiguas para no recrearlas, y agrega las nuevas: el total puede quedar por debajo de 10.000. Si no puede identificar el catálogo anterior con suficiente certeza, detiene la carga sin modificar los datos. `DEMO_SEED_ENABLED=false` la desactiva y `DEMO_SEED_LISTING_COUNT` permite cambiar la cantidad. Fuera del entorno local, configura explícitamente otro perfil y credenciales apropiadas; el perfil opcional `demo` también activa la carga de ejemplo y solo debe usarse con una base de pruebas.
+
+Al abrir la página se muestran destinos sugeridos sin exigir inicio de sesión; el campo ciudad busca en los 1.122 destinos territoriales, tolera tildes y ofrece hasta diez opciones navegables con teclado. La consulta de alojamientos es pública; confirmar una reserva, consultar reservas y cancelarlas requiere una sesión de huésped.
 
 ## Flujo de trabajo
 

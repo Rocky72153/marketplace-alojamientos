@@ -114,6 +114,10 @@ public class Reservation {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    // Nullable for reservations created before this feature was introduced.
+    @Column(name = "manual_review_required")
+    private Boolean manualReviewRequired = false;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "reservation_extras", joinColumns = @JoinColumn(name = "reservation_id"))
     @OrderColumn(name = "line_number")
@@ -189,6 +193,8 @@ public class Reservation {
     public int getPolicyPartialRefundDays() { return policyPartialRefundDays; }
     public BigDecimal getPolicyPartialRefundPercentage() { return policyPartialRefundPercentage; }
     public Instant getCreatedAt() { return createdAt; }
+    public boolean isManualReviewRequired() { return Boolean.TRUE.equals(manualReviewRequired); }
+    public void resolveManualReview() { this.manualReviewRequired = false; }
     public List<ReservationExtra> getExtras() { return List.copyOf(extras); }
 
     public record ReservationDetails(LocalDate checkIn, LocalDate checkOut, int nights, int guests,
