@@ -69,7 +69,9 @@ export function initReviewList(container, listing, apiBase, documentRef = global
       feedback.textContent = error.message || 'No fue posible cargar las reseñas.';
     }
   }
-  refresh();
+  refresh().catch(() => {
+    feedback.textContent = 'No fue posible cargar las reseñas.';
+  });
   return { section, refresh };
 }
 
@@ -212,6 +214,8 @@ export function initReviewModeration(container, apiBase, getToken, onChanged = (
       feedback.textContent = error.message || 'No fue posible consultar las reseñas.';
     }
   }
-  refresh();
+  refresh().catch(() => {
+    feedback.textContent = 'No fue posible consultar las reseñas.';
+  });
   return { section, refresh, clear() { revision += 1; items.replaceChildren(); feedback.textContent = ''; section.hidden = true; } };
 }

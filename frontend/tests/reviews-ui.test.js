@@ -52,6 +52,13 @@ test('una respuesta antigua no repone una reseña ocultada después de refrescar
   assert.match(find(panel.section, (node) => /no hay reseñas/i.test(node.textContent)).textContent, /no hay reseñas/i);
 });
 
+test('informa si falla la carga inicial de reseñas públicas', async () => {
+  const panel = initReviewList(new Element('div'), { id: 'listing-1' }, 'http://localhost:8080', documentRef,
+    async () => { throw new Error('No hay conexión'); });
+  await wait();
+  assert.ok(find(panel.section, (node) => node.textContent === 'No hay conexión'));
+});
+
 test('solo una reserva completada ofrece formulario y envía reseña vinculada', async () => {
   const container = new Element('div');
   assert.equal(initReviewForm(container, { id: 'b', listingId: 'l', status: 'CONFIRMED' }, 'http://localhost:8080', () => 'token', () => {}, documentRef), null);
@@ -100,4 +107,11 @@ test('el cierre de sesión elimina datos de moderación y descarta respuestas at
   await wait();
   assert.equal(panel.section.hidden, true);
   assert.equal(find(panel.section, (node) => node.textContent === 'No mostrar'), null);
+});
+
+test('informa un fallo inesperado al iniciar la moderación', async () => {
+  const panel = initReviewModeration(new Element('div'), 'http://localhost:8080',
+    () => { throw new Error('Sesión no disponible'); }, () => {}, documentRef);
+  await wait();
+  assert.ok(find(panel.section, (node) => node.textContent === 'No fue posible consultar las reseñas.'));
 });
