@@ -35,10 +35,19 @@ public class AuditEvent {
     @Column(name = "occurred_at", nullable = false, updatable = false)
     private Instant occurredAt;
 
+    // Existing events predate correlation and remain readable with a null value.
+    @Column(name = "correlation_id", length = 36, updatable = false)
+    private String correlationId;
+
     protected AuditEvent() {
     }
 
     public AuditEvent(String eventType, UUID actorId, String entityType, UUID entityId, String result, String reason) {
+        this(eventType, actorId, entityType, entityId, result, reason, CorrelationContext.currentOrCreate());
+    }
+
+    public AuditEvent(String eventType, UUID actorId, String entityType, UUID entityId, String result, String reason,
+            String correlationId) {
         this.id = UUID.randomUUID();
         this.eventType = eventType;
         this.actorId = actorId;
@@ -47,6 +56,7 @@ public class AuditEvent {
         this.result = result;
         this.reason = reason;
         this.occurredAt = Instant.now();
+        this.correlationId = correlationId;
     }
 
     public UUID getId() { return id; }
@@ -57,5 +67,6 @@ public class AuditEvent {
     public String getResult() { return result; }
     public String getReason() { return reason; }
     public Instant getOccurredAt() { return occurredAt; }
+    public String getCorrelationId() { return correlationId; }
 
 }
