@@ -5,6 +5,8 @@ import co.edu.unbosque.marketplace.audit.AuditService;
 import co.edu.unbosque.marketplace.listing.Listing;
 import co.edu.unbosque.marketplace.listing.ListingExtraOption;
 import co.edu.unbosque.marketplace.listing.ListingService;
+import co.edu.unbosque.marketplace.notification.NotificationService;
+import co.edu.unbosque.marketplace.review.ReviewRepository;
 import co.edu.unbosque.marketplace.security.AccountRole;
 import co.edu.unbosque.marketplace.security.MarketplaceUser;
 import co.edu.unbosque.marketplace.security.MarketplaceUserRepository;
@@ -45,15 +47,22 @@ public class ReservationService {
     private final TestPaymentSimulator payments;
     private final AuditService audit;
     private final MarketplaceUserRepository users;
+    private final NotificationService notifications;
+    private final ReservationCompletionService completion;
+    private final ReviewRepository reviews;
 
     public ReservationService(ListingService listings, ReservationRepository reservations, BookingPricePolicy pricing,
-            TestPaymentSimulator payments, AuditService audit, MarketplaceUserRepository users) {
+            TestPaymentSimulator payments, AuditService audit, MarketplaceUserRepository users,
+            NotificationService notifications, ReservationCompletionService completion, ReviewRepository reviews) {
         this.listings = listings;
         this.reservations = reservations;
         this.pricing = pricing;
         this.payments = payments;
         this.audit = audit;
         this.users = users;
+        this.notifications = notifications;
+        this.completion = completion;
+        this.reviews = reviews;
     }
 
     @Transactional(readOnly = true)
@@ -88,21 +97,26 @@ public class ReservationService {
         listings.confirmReservation(listing.getId(), quote.checkIn(), quote.checkOut(), reservation.getId().toString());
         audit.recordEvent("PAYMENT_TEST_APPROVED", guest.getId(), RESERVATION_ENTITY, reservation.getId(), AUDIT_SUCCESS, paymentReference);
         audit.recordEvent("RESERVATION_CONFIRMED", guest.getId(), RESERVATION_ENTITY, reservation.getId(), AUDIT_SUCCESS, null);
-        return ReservationView.from(reservation);
+        notifications.reservationConfirmed(reservation);
+        return ReservationView.from(reservation, false);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<ReservationView> history(MarketplaceUser guest) {
         requireGuest(guest);
-        return reservations.findByGuest_IdOrderByCreatedAtDesc(guest.getId()).stream().map(ReservationView::from).toList();
+        completion.completeDueReservations();
+        Set<UUID> reviewed = new HashSet<>(reviews.findReviewedReservationIdsByGuest(guest.getId()));
+        return reservations.findByGuest_IdOrderByCreatedAtDesc(guest.getId()).stream()
+                .map(reservation -> ReservationView.from(reservation, reviewed.contains(reservation.getId()))).toList();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ReservationView get(MarketplaceUser guest, UUID reservationId) {
         requireGuest(guest);
+        completion.completeDueReservations();
         Reservation reservation = reservations.findByIdAndGuest_Id(reservationId, guest.getId())
                 .orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "NOT_FOUND", "No se encontró la reserva."));
-        return ReservationView.from(reservation);
+        return ReservationView.from(reservation, reviews.existsByReservation_Id(reservation.getId()));
     }
 
     @Transactional
@@ -136,7 +150,8 @@ public class ReservationService {
         Reservation saved = reservations.save(reservation);
         String auditReason = request.reason().trim() + " | Reembolso de prueba: " + refundPercentage + "% / " + refundAmount + " COP";
         audit.recordEvent("RESERVATION_CANCELLED", guest.getId(), RESERVATION_ENTITY, reservationId, AUDIT_SUCCESS, auditReason);
-        return ReservationView.from(saved);
+        notifications.reservationCancelled(saved);
+        return ReservationView.from(saved, false);
     }
 
     private Quote calculateQuote(Listing listing, QuoteRequest request) {
@@ -209,7 +224,7 @@ public class ReservationService {
         if (!reservation.getRequestFingerprint().equals(fingerprint)) {
             throw conflict("La clave de idempotencia ya se usó con otros datos.");
         }
-        return ReservationView.from(reservation);
+        return ReservationView.from(reservation, reviews.existsByReservation_Id(reservation.getId()));
     }
 
     private BigDecimal money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP); }
@@ -243,8 +258,9 @@ public class ReservationService {
             int nights, int guests, BigDecimal pricePerNight, BigDecimal nightlySubtotal, BigDecimal cleaningFee,
             BigDecimal serviceFee, BigDecimal discountAmount, List<ReservationExtra> extras, BigDecimal extrasTotal,
             BigDecimal total, String currency, String paymentStatus, ReservationStatus status, Instant createdAt,
-            String cancellationReason, Instant cancelledAt, BigDecimal refundPercentage, BigDecimal refundAmount) {
-        static ReservationView from(Reservation reservation) {
+            String cancellationReason, Instant cancelledAt, BigDecimal refundPercentage, BigDecimal refundAmount,
+            boolean reviewed) {
+        static ReservationView from(Reservation reservation, boolean reviewed) {
             return new ReservationView(reservation.getId(), reservation.getListing().getId(),
                     reservation.getListing().getTitle(), reservation.getCheckIn(), reservation.getCheckOut(),
                     reservation.getNights(), reservation.getGuests(), reservation.getPricePerNight(),
@@ -252,7 +268,7 @@ public class ReservationService {
                     reservation.getDiscountAmount(), reservation.getExtras(), reservation.getExtrasTotal(),
                     reservation.getTotal(), reservation.getCurrency(), reservation.getPaymentStatus(),
                     reservation.getStatus(), reservation.getCreatedAt(), reservation.getCancellationReason(),
-                    reservation.getCancelledAt(), reservation.getRefundPercentage(), reservation.getRefundAmount());
+                    reservation.getCancelledAt(), reservation.getRefundPercentage(), reservation.getRefundAmount(), reviewed);
         }
     }
 
