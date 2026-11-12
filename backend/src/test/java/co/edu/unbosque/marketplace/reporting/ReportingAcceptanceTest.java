@@ -52,7 +52,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-@SpringBootTest
+// This test asserts absolute dashboard totals, so it must not reuse another
+// test class's already-populated Spring context and in-memory database.
+@SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:reporting_${random.uuid};DB_CLOSE_DELAY=-1;MODE=PostgreSQL")
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
