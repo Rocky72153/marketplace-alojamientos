@@ -17,7 +17,7 @@ test('loads a listing detail from a direct URL and renders its fields', async ()
   const detailContent = element('div');
   const input = { value: '', min: '', addEventListener() {} };
   const searchForm = { addEventListener() {} };
-  let requestedUrl;
+  const requestedUrls = [];
   globalThis.document = {
     querySelector(selector) {
       return {
@@ -30,7 +30,8 @@ test('loads a listing detail from a direct URL and renders its fields', async ()
   };
   globalThis.window = { location: { search: '?listing=listing-123' } };
   globalThis.fetch = async (url) => {
-    requestedUrl = url.toString();
+    requestedUrls.push(url.toString());
+    if (url.pathname.endsWith('/reviews')) return { ok: true, async json() { return []; } };
     return { ok: true, async json() {
       return { id: 'listing-123', title: 'Casa segura', description: 'Cerca del parque', city: 'Bogotá',
         location: 'Chapinero', type: 'APARTMENT', capacity: 4, pricePerNight: 180000,
@@ -40,7 +41,10 @@ test('loads a listing detail from a direct URL and renders its fields', async ()
   try {
     await import('../src/main.js?direct-detail-route-test');
     await new Promise(setImmediate);
-    assert.equal(requestedUrl, 'http://localhost:8080/api/listings/listing-123');
+    assert.deepEqual(requestedUrls, [
+      'http://localhost:8080/api/listings/listing-123',
+      'http://localhost:8080/api/listings/listing-123/reviews',
+    ]);
     assert.equal(detailSection.hidden, false);
     assert.equal(detailFeedback.textContent, '');
     assert.equal(detailContent.children[0].children[1].children.find((child) => child.id === 'detail-title').textContent, 'Casa segura');
