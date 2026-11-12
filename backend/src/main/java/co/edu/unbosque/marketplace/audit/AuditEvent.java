@@ -49,6 +49,7 @@ public class AuditEvent {
         this.occurredAt = Instant.now();
     }
 
+    public UUID getId() { return id; }
     public String getEventType() { return eventType; }
     public UUID getActorId() { return actorId; }
     public String getEntityType() { return entityType; }
