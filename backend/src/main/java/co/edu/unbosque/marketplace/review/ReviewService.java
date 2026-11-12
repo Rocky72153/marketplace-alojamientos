@@ -66,7 +66,9 @@ public class ReviewService {
         if (reviews.existsByReservation_Id(booking.getId())) {
             throw new DomainException(HttpStatus.CONFLICT, "REVIEW_EXISTS", "Ya existe una reseña para esta reserva.");
         }
-        return ReviewView.from(reviews.saveAndFlush(new Review(booking, request.rating(), request.content())));
+        Review review = reviews.saveAndFlush(new Review(booking, request.rating(), request.content()));
+        audit.recordEvent("REVIEW_CREATED", guest.getId(), "REVIEW", review.getId(), "SUCCESS", null);
+        return ReviewView.from(review);
     }
 
     @Transactional(readOnly = true)
