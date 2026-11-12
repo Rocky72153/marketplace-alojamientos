@@ -456,23 +456,117 @@ paths:
         '403': { description: Rol no autorizado }
         '404': { description: Reseña inexistente }
         '409': { description: Reseña ya oculta }
-  /admin/audit-events:
+  /admin/users:
+    get:
+      tags: [Administración]
+      summary: Listar cuentas para moderación
+      operationId: listAdminUsers
+      parameters:
+        - { name: page, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+        - { name: size, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+      responses:
+        '200': { description: Página de cuentas, solo para administradores }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Rol no autorizado }
+  /admin/listings:
+    get:
+      tags: [Administración]
+      summary: Listar publicaciones para moderación
+      operationId: listAdminListings
+      parameters:
+        - { name: page, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+        - { name: size, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+      responses:
+        '200': { description: Página de publicaciones para administradores }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Rol no autorizado }
+  /admin/users/{userId}/restrict:
+    post:
+      tags: [Administración]
+      summary: Restringir una cuenta con motivo y auditoría
+      operationId: restrictUser
+      parameters:
+        - { name: userId, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 1, maxLength: 1000 }
+      responses:
+        '200': { description: Cuenta restringida }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Rol no autorizado }
+        '404': { description: Cuenta inexistente }
+        '409': { description: Restricción no aplicable }
+  /admin/audit:
     get:
       tags: [Administración]
       summary: Consultar eventos de auditoría
       operationId: listAuditEvents
       parameters:
-        - { name: from, in: query, schema: { type: string, format: date-time } }
-        - { name: to, in: query, schema: { type: string, format: date-time } }
-        - { name: eventType, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+        - { name: size, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
       responses:
-        '200': { description: Eventos filtrados, solo para administradores autorizados }
+        '200': { description: Página de eventos para administradores }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { description: Rol no autorizado }
+  /admin/audit/{eventId}:
+    get:
+      tags: [Administración]
+      summary: Consultar el detalle de un evento de auditoría
+      operationId: getAuditEvent
+      parameters:
+        - { name: eventId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200': { description: Actor, fecha, entidad, motivo y resultado }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Rol no autorizado }
+        '404': { description: Evento inexistente }
+  /admin/reservations/manual-review:
+    get:
+      tags: [Administración]
+      summary: Consultar reservas señaladas para revisión manual
+      operationId: listReservationsForManualReview
+      responses:
+        '200': { description: Reservas afectadas por bloqueo de publicación }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Rol no autorizado }
+  /admin/reservations/{reservationId}/resolve-review:
+    post:
+      tags: [Administración]
+      summary: Registrar la resolución de una revisión manual
+      operationId: resolveReservationReview
+      parameters:
+        - { name: reservationId, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 1, maxLength: 1000 }
+      responses:
+        '200': { description: Resolución registrada sin cancelar la reserva }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { description: Rol no autorizado }
+        '404': { description: Reserva inexistente }
+        '409': { description: La reserva no requiere revisión }
   /admin/dashboard:
     get:
       tags: [Administración]
       summary: Consultar indicadores básicos
       operationId: getDashboard
+      parameters:
+        - { name: from, in: query, schema: { type: string, format: date }, description: Fecha inicial inclusiva en Bogotá }
+        - { name: to, in: query, schema: { type: string, format: date }, description: Fecha final inclusiva en Bogotá }
       responses:
         '200':
           description: Usuarios, publicaciones activas, reservas por estado, ingresos estimados y ciudades de mayor demanda
@@ -481,24 +575,22 @@ paths:
               schema: { $ref: '#/components/schemas/Dashboard' }
         '403': { description: Rol no autorizado }
   /admin/reports:
-    post:
+    get:
       tags: [Administración]
       summary: Generar reporte PDF o Excel
       operationId: exportReport
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [type, format]
-              properties:
-                type: { type: string, enum: [users, listings, bookings, estimated-revenue, demand] }
-                format: { type: string, enum: [PDF, XLSX] }
-                filters: { type: object, additionalProperties: true }
+      parameters:
+        - { name: format, in: query, required: true, schema: { type: string, enum: [PDF, XLSX] } }
+        - { name: from, in: query, schema: { type: string, format: date }, description: Fecha inicial inclusiva en Bogotá }
+        - { name: to, in: query, schema: { type: string, format: date }, description: Fecha final inclusiva en Bogotá }
       responses:
-        '202': { description: Reporte solicitado; registrar solicitante y fecha de petición }
+        '200':
+          description: Archivo generado con datos agregados y exportación auditada
+          content:
+            application/pdf: { schema: { type: string, format: binary } }
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: { schema: { type: string, format: binary } }
         '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { description: Rol no autorizado }
 components:
   securitySchemes:
@@ -690,11 +782,17 @@ components:
     Dashboard:
       type: object
       properties:
-        usersCount: { type: integer, minimum: 0 }
-        activeListingsCount: { type: integer, minimum: 0 }
-        bookingsByState: { type: object, additionalProperties: { type: integer, minimum: 0 } }
+        generatedAt: { type: string, format: date-time }
+        from: { type: [string, 'null'], format: date }
+        to: { type: [string, 'null'], format: date }
+        timezone: { type: string, example: America/Bogota }
+        users: { type: integer, minimum: 0 }
+        activeListings: { type: integer, minimum: 0 }
+        bookingsByStatus: { type: object, additionalProperties: { type: integer, minimum: 0 } }
         estimatedRevenue: { type: number, minimum: 0 }
-        topCitiesByDemand: { type: array, items: { type: object, properties: { city: { type: string }, bookings: { type: integer } } } }
+        currency: { type: string, example: COP }
+        topCities: { type: array, items: { type: object, properties: { city: { type: string }, bookings: { type: integer } } } }
+        definitions: { type: object, additionalProperties: { type: string } }
     ApiError:
       type: object
       required: [code, message]
