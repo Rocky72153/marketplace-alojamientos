@@ -4,6 +4,7 @@ import { initAccount, renderReservationHistory } from './account.js';
 import { initBooking } from './booking.js';
 import { initNotifications } from './notifications.js';
 import { initReviewList, initReviewModeration } from './reviews.js';
+import { initAdministration } from './ep09-admin.js';
 
 function initializeCitySuggestions(cityInput, citySuggestions, apiBase, documentRef) {
   if (!cityInput || !citySuggestions) return Promise.resolve();
@@ -101,6 +102,8 @@ if (typeof document !== 'undefined') {
   const reservationLink = document.querySelector('#reservation-link');
   const adminPanel = document.querySelector('#review-admin');
   const adminLink = document.querySelector('#admin-reviews-link');
+  const adminWorkspace = document.querySelector('#admin-workspace');
+  const adminWorkspaceLink = document.querySelector('#admin-workspace-link');
   let currentToken = null;
   let currentRole = null;
   let bookingFlow = null;
@@ -109,6 +112,8 @@ if (typeof document !== 'undefined') {
     globalThis.fetch, document);
   const moderation = initReviewModeration(document.querySelector('#review-admin-content'), apiBase, () => currentToken,
     () => reviewList?.refresh(), document, globalThis.fetch);
+  const administration = initAdministration(document.querySelector('#admin-workspace-content'), apiBase, () => currentToken,
+    document, globalThis.fetch);
   const historyCallbacks = {
     getToken: () => currentToken,
     onReservationChanged: () => notifications?.refresh(),
@@ -123,10 +128,20 @@ if (typeof document !== 'undefined') {
     void moderation?.refresh();
     adminPanel?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
   });
+  adminWorkspaceLink?.addEventListener?.('click', (event) => {
+    event.preventDefault();
+    if (currentRole !== 'ADMIN') return;
+    if (adminWorkspace) adminWorkspace.hidden = false;
+    void administration?.refresh();
+    adminWorkspace?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+  });
   initAccount(document, apiBase, (session) => {
     currentToken = session?.accessToken || null;
     currentRole = session?.user?.role || null;
     if (adminLink) adminLink.hidden = currentRole !== 'ADMIN';
+    if (adminWorkspaceLink) adminWorkspaceLink.hidden = currentRole !== 'ADMIN';
+    if (adminWorkspace) adminWorkspace.hidden = true;
+    administration?.clear();
     if (reservationLink) reservationLink.hidden = Boolean(session) && currentRole !== 'GUEST';
     if (adminPanel) adminPanel.hidden = true;
     moderation?.clear();
