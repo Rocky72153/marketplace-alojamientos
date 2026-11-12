@@ -6,7 +6,7 @@ Marketplace web para conectar anfitriones con huéspedes y permitir publicación
 
 ## Alcance implementado
 
-La base funcional cubre registro e inicio de sesión con token, perfil, publicaciones, disponibilidad, búsqueda, detalle público, cotización, reserva idempotente, historial propio y cancelación con reembolso simulado. Los cobros reales y el envío real de correos no forman parte del MVP. Las tarifas, reglas de cálculo, privacidad y recuperación de disponibilidad se describen en [EP-05 y EP-06](docs/EP05-EP06-reservas-cancelaciones.md).
+La base funcional cubre registro e inicio de sesión con token, perfil, publicaciones, disponibilidad, búsqueda, detalle público, cotización, reserva idempotente, historial propio y cancelación con reembolso simulado. También incluye notificaciones internas sobre cambios de publicación y reservas, reseñas de estancias completadas y moderación de reseñas por administradores. Los cobros reales y el envío real de correos no forman parte del MVP. Las tarifas, reglas de cálculo, privacidad y recuperación de disponibilidad se describen en [EP-05 y EP-06](docs/EP05-EP06-reservas-cancelaciones.md); la implementación y pruebas de notificaciones y reseñas se describen en [EP-07 y EP-08](docs/EP07-EP08-EVIDENCE.md).
 
 ## Entrega 1 — Análisis de requerimientos y diseño
 
@@ -33,6 +33,7 @@ Las tecnologías son una propuesta técnica inicial incluida en la ratificación
 - docs/GITHUB_SETUP.md: configuración administrativa de GitHub y SonarCloud.
 - docs/TRACEABILITY_TEMPLATE.csv: matriz inicial de trazabilidad.
 - docs/DECISIONS.md: decisiones técnicas y asuntos por validar.
+- docs/EP07-EP08-EVIDENCE.md: alcance y comprobaciones de notificaciones y reseñas.
 - docs/evidencias/: inspección, ejecución parcial de pruebas y auditoría de PR.
 - scripts/: configuración auxiliar para reglas de protección vía GitHub CLI.
 
@@ -50,7 +51,7 @@ Base de datos local: docker compose up -d db
 
 Para que los tokens sigan siendo válidos tras reiniciar el backend, configura `AUTH_TOKEN_SECRET` con al menos 32 bytes. `ADMIN_BOOTSTRAP_KEY` permite registrar una cuenta `ADMIN` de forma controlada; sin esa clave, el registro público solo admite `GUEST` y `HOST`. Define `CORS_ALLOWED_ORIGINS` si el frontend se sirve desde otro origen. La recuperación de cuenta solo registra la solicitud y devuelve el mismo mensaje exista o no la cuenta; no envía correo ni cambia contraseñas.
 
-El backend expone autenticación y perfil, consulta de publicaciones, `POST /api/listings/{listingId}/quotes`, y el flujo protegido `/api/reservations` para confirmar, consultar y cancelar reservas. El frontend consume la búsqueda, el detalle, la cotización y el historial; ajusta la etiqueta `api-base-url` en `frontend/index.html` si el backend usa otra dirección.
+El backend expone autenticación y perfil, consulta de publicaciones, `POST /api/listings/{listingId}/quotes`, y el flujo protegido `/api/reservations` para confirmar, consultar y cancelar reservas. También ofrece notificaciones privadas, reseñas públicas y moderación protegida para administradores. El frontend consume estos flujos; ajusta la etiqueta `api-base-url` en `frontend/index.html` si el backend usa otra dirección.
 
 ## Catálogo y cuentas de demostración
 
