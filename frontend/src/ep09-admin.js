@@ -187,6 +187,7 @@ export function initAdministration(container, apiBase, getToken, doc = globalThi
     card.append(el(doc, 'h4', `${event.eventType || 'Acción'} · ${event.result || ''}`));
     card.append(el(doc, 'p', `Fecha: ${event.occurredAt || 'No disponible'} · Actor: ${event.actorId || 'Sistema'}`));
     card.append(el(doc, 'p', `Entidad: ${event.entityType || ''} ${event.entityId || ''}`));
+    if (event.correlationId) card.append(el(doc, 'p', `Referencia de solicitud: ${event.correlationId}`));
     if (event.reason) card.append(el(doc, 'p', `Motivo: ${event.reason}`));
     return card;
   }

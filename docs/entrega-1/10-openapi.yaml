@@ -14,6 +14,10 @@ info:
     CONFIRMED=CONFIRMADA, CANCELLED=CANCELADA, COMPLETED=COMPLETADA,
     REJECTED=RECHAZADA, PENDING_PAYMENT=PAGO_PENDIENTE y
     PAYMENT_FAILED=PAGO_FALLIDO.
+    El servidor genera un UUID por solicitud y lo devuelve en la cabecera
+    X-Correlation-ID; en errores también se incluye como correlationId en el
+    cuerpo. Las consultas administrativas de auditoría incluyen correlationId
+    cuando el evento fue registrado después de implementar esta referencia.
 servers:
   - url: http://localhost:8080/api
     description: Entorno local
