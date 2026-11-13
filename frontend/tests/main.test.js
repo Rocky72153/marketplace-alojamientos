@@ -81,3 +81,46 @@ test('conecta validación, búsqueda y mensajes de error de la interfaz', async 
     globalThis.fetch = previous.fetch;
   }
 });
+
+test('ignora búsquedas anteriores al cambiar criterios o al mostrar un error de validación', async () => {
+  const previous = { document: globalThis.document, FormData: globalThis.FormData, fetch: globalThis.fetch };
+  const handlers = {};
+  const values = { city: 'Bogotá', checkin: '2026-12-03', checkout: '2026-12-05', guests: '2' };
+  const feedback = { textContent: '' };
+  const cards = [];
+  const form = { addEventListener: (name, handler) => { handlers[name] = handler; } };
+  const input = () => ({ min: '', value: '', addEventListener() {} });
+  const lookup = { '#search-form': form, '#search-feedback': feedback,
+    '#search-results': { replaceChildren() { cards.length = 0; }, append(card) { cards.push(card); } },
+    '#checkin': input(), '#checkout': input() };
+  globalThis.document = { querySelector: (selector) => lookup[selector] || null,
+    createElement: () => ({ append(...children) { this.children = children; } }) };
+  globalThis.FormData = class { entries() { return Object.entries(values); } getAll() { return []; } };
+  const pending = [];
+  globalThis.fetch = () => new Promise((resolve) => pending.push(resolve));
+  const response = (title) => ({ ok: true, json: async () => ({ total: 1, items: [
+    { id: 'a4887b19-653a-4c03-b2d8-7717ebcd3205', title, city: 'Bogotá', capacity: 4, type: 'HOUSE', pricePerNight: 100000 },
+  ] }) });
+  try {
+    await import('../src/main.js?search-race-test');
+    handlers.submit({ preventDefault() {} });
+    values.city = 'Medellín';
+    handlers.submit({ preventDefault() {} });
+    pending[1](response('Resultado nuevo'));
+    await new Promise(setImmediate);
+    pending[0](response('Resultado anterior'));
+    await new Promise(setImmediate);
+    assert.equal(cards[0].children[0].textContent, 'Resultado nuevo');
+    handlers.submit({ preventDefault() {} });
+    values.city = '';
+    handlers.submit({ preventDefault() {} });
+    pending[2](response('Resultado caducado'));
+    await new Promise(setImmediate);
+    assert.equal(cards.length, 0);
+    assert.match(feedback.textContent, /ciudad/i);
+  } finally {
+    globalThis.document = previous.document;
+    globalThis.FormData = previous.FormData;
+    globalThis.fetch = previous.fetch;
+  }
+});

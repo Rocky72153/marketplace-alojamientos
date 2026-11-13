@@ -86,3 +86,67 @@ test('cotiza extras del alojamiento y confirma con una clave idempotente de pago
   assert.match(find(flow.section, (node) => node.tagName === 'strong' && /295\.000,50/.test(node.textContent)).textContent,
     /295\.000,50/);
 });
+
+test('descarta una cotización cuando cambian las fechas antes de recibirla', async () => {
+  let resolveQuote;
+  const documentRef = { createElement: (tag) => new MockElement(tag), querySelector: () => null };
+  const fetchImpl = () => new Promise((resolve) => { resolveQuote = resolve; });
+  const flow = initBooking(new MockElement('div'), { id: 'listing', capacity: 4 },
+    'http://localhost:8080', () => 'guest-token', () => {}, documentRef, fetchImpl);
+  const arrival = find(flow.form, (node) => node.name === 'checkIn');
+  const request = flow.form.dispatch('submit');
+  arrival.value = '2026-12-10';
+  await arrival.dispatch('input');
+  resolveQuote({ ok: true, async json() { return { nights: 2, extras: [], total: 100000 }; } });
+  await request;
+  assert.equal(flow.reserveButton.hidden, true);
+  assert.equal(flow.quoteButton.disabled, false);
+});
+
+test('no muestra una reserva tardía a otra cuenta ni permite enviar dos confirmaciones', async () => {
+  let token = 'guest-one';
+  let resolveReservation;
+  let reservationRequests = 0;
+  let refreshes = 0;
+  const documentRef = { createElement: (tag) => new MockElement(tag), querySelector: () => null };
+  const fetchImpl = (url) => {
+    if (url.pathname.endsWith('/quotes')) return Promise.resolve({ ok: true, async json() {
+      return { nights: 2, pricePerNight: 100000, nightlySubtotal: 200000, cleaningFee: 0, serviceFee: 0,
+        discountAmount: 0, total: 200000, extras: [], freeRefundDays: 7, partialRefundDays: 2, partialRefundPercentage: 50 };
+    } });
+    reservationRequests += 1;
+    return new Promise((resolve) => { resolveReservation = resolve; });
+  };
+  const flow = initBooking(new MockElement('div'), { id: 'listing', capacity: 4 }, 'http://localhost:8080',
+    () => token, () => { refreshes += 1; }, documentRef, fetchImpl);
+  await flow.form.dispatch('submit');
+  const pending = flow.reserveButton.dispatch('click');
+  await flow.reserveButton.dispatch('click');
+  assert.equal(reservationRequests, 1);
+  assert.equal(find(flow.form, (node) => node.name === 'checkIn').disabled, true);
+  token = 'guest-two';
+  flow.syncAccount();
+  resolveReservation({ ok: true, async json() { return { id: 'private-reservation' }; } });
+  await pending;
+  assert.equal(refreshes, 0);
+  assert.doesNotMatch(find(flow.section, (node) => node.className === 'booking-feedback').textContent, /private-reservation/);
+  assert.equal(flow.reserveButton.hidden, true);
+  assert.equal(find(flow.form, (node) => node.name === 'checkIn').disabled, false);
+});
+
+test('mantiene confirmada la reserva si falla la actualización del historial', async () => {
+  const documentRef = { createElement: (tag) => new MockElement(tag), querySelector: () => null };
+  const fetchImpl = async (url) => url.pathname.endsWith('/quotes')
+    ? { ok: true, json: async () => ({ nights: 2, pricePerNight: 100000, nightlySubtotal: 200000,
+      cleaningFee: 0, serviceFee: 0, discountAmount: 0, total: 200000, extras: [],
+      freeRefundDays: 7, partialRefundDays: 2, partialRefundPercentage: 50 }) }
+    : { ok: true, json: async () => ({ id: 'reserva-confirmada' }) };
+  const flow = initBooking(new MockElement('div'), { id: 'listing', capacity: 4 }, 'http://localhost:8080',
+    () => 'guest-token', () => { throw new Error('historial no disponible'); }, documentRef, fetchImpl);
+  await flow.form.dispatch('submit');
+  await flow.reserveButton.dispatch('click');
+  const feedback = find(flow.section, (node) => node.className === 'booking-feedback').textContent;
+  assert.match(feedback, /reserva confirmada.*reserva-confirmada/i);
+  assert.match(feedback, /no fue posible actualizar el historial/i);
+  assert.equal(flow.reserveButton.hidden, true);
+});
