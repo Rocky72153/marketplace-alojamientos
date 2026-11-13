@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -63,7 +64,7 @@ public class ListingService {
 
     @Transactional
     public Listing update(MarketplaceUser principal, UUID id, ListingInput input) {
-        Listing listing = get(id);
+        Listing listing = getForUpdate(id);
         requireOwnerOrAdmin(principal, listing);
         if (listing.getStatus() == ListingStatus.BLOCKED) throw forbidden("Una publicación bloqueada no se puede editar.");
         listing.update(input.toData());
@@ -370,9 +371,10 @@ public class ListingService {
     public record ListingInput(@NotBlank @Size(max=160) String title, @NotBlank @Size(max=4000) String description,
             @NotBlank @Size(max=120) String city, @NotBlank @Size(max=240) String location,
             @NotBlank @Size(max=50) String type, @Min(1) int capacity,
-            @NotNull @DecimalMin(value="0.01") BigDecimal pricePerNight, Set<String> amenityIds,
-            @Size(max=2000) String rules, Set<String> imageReferences,
-            @Valid List<ExtraInput> extraOptions, @Valid CancellationPolicyInput cancellationPolicy) {
+            @NotNull @DecimalMin(value="0.01") @Digits(integer=10, fraction=2) BigDecimal pricePerNight,
+            Set<@NotBlank @Size(max=80) String> amenityIds,
+            @Size(max=2000) String rules, Set<@NotBlank @Size(max=1000) String> imageReferences,
+            List<@NotNull @Valid ExtraInput> extraOptions, @Valid CancellationPolicyInput cancellationPolicy) {
         public ListingInput(String title, String description, String city, String location, String type, int capacity,
                 BigDecimal pricePerNight, Set<String> amenityIds, String rules, Set<String> imageReferences) {
             this(title, description, city, location, type, capacity, pricePerNight, amenityIds, rules,
@@ -385,8 +387,9 @@ public class ListingService {
         }
     }
     public record ExtraInput(@Size(max=36) String id, @NotBlank @Size(max=80) String name,
-            @NotNull @DecimalMin(value="0.01") BigDecimal unitPrice) { }
+            @NotNull @DecimalMin(value="0.01") @Digits(integer=10, fraction=2) BigDecimal unitPrice) { }
     public record CancellationPolicyInput(@Min(0) int freeRefundDays, @Min(0) int partialRefundDays,
-            @NotNull @DecimalMin(value="0.00") @DecimalMax(value="100.00") BigDecimal partialRefundPercentage) { }
+            @NotNull @DecimalMin(value="0.00") @DecimalMax(value="100.00")
+            @Digits(integer=3, fraction=2) BigDecimal partialRefundPercentage) { }
     public record AvailabilityInput(@NotNull LocalDate startDate, @NotNull LocalDate endDate, @NotNull AvailabilityType type) { }
 }

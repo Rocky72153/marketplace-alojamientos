@@ -24,6 +24,8 @@ En el commit `2a35047` se completaron correctamente `mvn verify` con **33 prueba
 
 Se usó la alternativa aislada documentada con `docker run`: **no se probó el comando predeterminado `docker compose up -d db`** ni se utilizó el volumen habitual de Compose en esta comprobación.
 
+En una comprobación posterior, el 12 de noviembre de 2026, se ejecutó también `docker compose up -d db` con el volumen habitual ya existente. El servicio quedó saludable, conservó 10.000 anuncios activos y 1.001 cuentas de muestra y publicó PostgreSQL solo en `127.0.0.1:5432`. Esta comprobación adicional no es un segundo clon limpio ni una prueba de despliegue de producción.
+
 ## Rendimiento de búsqueda
 
 La medición final del escenario de búsqueda con 10.000 alojamientos activos registró **50 solicitudes exitosas y 0 fallos**, con 5 clientes concurrentes. El percentil 50 fue de **0,069932 segundos**, el percentil 95 de **0,854151 segundos** y el máximo de **1,201424 segundos**. Se cumplió el objetivo inicial para MARKET-69 aprobado por Juan: percentil 95 de hasta 3 segundos con 50 solicitudes y 5 clientes simultáneos. No se presenta ese objetivo como una aprobación del profesor ni como un acuerdo de servicio de producción.

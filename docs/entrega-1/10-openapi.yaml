@@ -3,7 +3,11 @@ info:
   title: Marketplace Alojamientos API
   version: 0.1.0
   description: >-
-    Contrato inicial propuesto para revisión en la Entrega 1. Describe capacidades
+    Contrato inicial propuesto para revisión en la Entrega 1; es una referencia histórica,
+    no un contrato actualizado del backend. El inventario de rutas implementadas está en
+    docs/API-IMPLEMENTADA.md. Por ejemplo, el backend usa /reservations y
+    /listings/{listingId}/quotes en lugar de las rutas propuestas /bookings y /quotes.
+    Describe capacidades
     del catálogo del producto; las prioridades MoSCoW de los RF delimitan cuáles
     son obligatorias para el MVP. Las operaciones SHOULD/COULD no bloquean el MVP
     y ninguna operación descrita implica que ya esté implementada.

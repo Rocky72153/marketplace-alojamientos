@@ -245,9 +245,9 @@ public class ReservationService {
 
     public record ExtraQuantity(@NotBlank @Size(max=36) String extraId, @Min(1) @Max(99) int quantity) { }
     public record QuoteRequest(@NotNull LocalDate checkIn, @NotNull LocalDate checkOut, @Min(1) int guests,
-            @Valid List<ExtraQuantity> extras) { }
+            List<@NotNull @Valid ExtraQuantity> extras) { }
     public record ReservationRequest(@NotNull UUID listingId, @NotNull LocalDate checkIn, @NotNull LocalDate checkOut,
-            @Min(1) int guests, @Valid List<ExtraQuantity> extras) {
+            @Min(1) int guests, List<@NotNull @Valid ExtraQuantity> extras) {
         QuoteRequest toQuoteRequest() { return new QuoteRequest(checkIn, checkOut, guests, extras); }
     }
     public record CancelRequest(@NotBlank @Size(max=1000) String reason) { }
