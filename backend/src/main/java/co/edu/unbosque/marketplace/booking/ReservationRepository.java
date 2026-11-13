@@ -28,6 +28,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
             @Param("confirmed") ReservationStatus confirmed);
 
     @Modifying(flushAutomatically = true)
+    @Query("update Reservation r set r.manualReviewRequired = true where r.listing.id in (select l.id from Listing l where l.host.id = :hostId) and r.status = :confirmed and r.checkIn >= :today")
+    int flagHostFutureForManualReview(@Param("hostId") UUID hostId, @Param("today") LocalDate today,
+            @Param("confirmed") ReservationStatus confirmed);
+
+    @Modifying(flushAutomatically = true)
     @Query("update Reservation r set r.status = :completed where r.status = :confirmed and r.checkOut < :today")
     int completeBefore(@Param("today") LocalDate today, @Param("confirmed") ReservationStatus confirmed,
             @Param("completed") ReservationStatus completed);
