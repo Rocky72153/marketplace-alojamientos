@@ -29,6 +29,7 @@ public class ListingSuggestionController {
         List<Suggestion> items = entityManager.createQuery("""
                 select l.id, l.title, l.city, l.type, l.capacity, l.pricePerNight
                 from Listing l where l.status = :status
+                  and l.host.accountState = co.edu.unbosque.marketplace.security.AccountState.ACTIVE
                 order by l.createdAt desc, l.id asc
                 """, Object[].class)
                 .setParameter("status", ListingStatus.ACTIVE)
