@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "checks": [
+    "POST /api/auth/register: 200",
+    "POST /api/auth/register: 200",
+    "POST /api/listings: 200",
+    "PATCH /api/listings/f15a29df-baee-47e2-9fe2-ccfb72245536: 200",
+    "PUT /api/listings/f15a29df-baee-47e2-9fe2-ccfb72245536/availability: 200",
+    "PUT /api/listings/f15a29df-baee-47e2-9fe2-ccfb72245536/availability: 400",
+    "GET /api/listings/f15a29df-baee-47e2-9fe2-ccfb72245536/availability: 200",
+    "PATCH /api/listings/f15a29df-baee-47e2-9fe2-ccfb72245536/state: 200",
+    "GET /api/listings/suggestions: 200",
+    "POST /api/listings/f15a29df-baee-47e2-9fe2-ccfb72245536/quotes: 200",
+    "POST /api/reservations: 200",
+    "POST /api/reservations: 200",
+    "POST /api/reservations/198fad16-9db6-42d9-9960-49e9f55387c7/cancel: 200",
+    "POST /api/auth/register: 400"
+  ],
+  "storage": "PostgreSQL temporal aislado; datos ficticios"
+}
