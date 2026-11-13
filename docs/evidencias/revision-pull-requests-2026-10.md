@@ -4,6 +4,8 @@
 **Corte:** 14 de octubre de 2026, America/Bogota  
 **Commit de `main` verificado:** [e4d192e](https://github.com/Rocky72153/marketplace-alojamientos/commit/e4d192e8054484174b80a5820131a419da55e907)
 
+**Actualización posterior:** [PR #1](https://github.com/Rocky72153/marketplace-alojamientos/pull/1) se cerró sin integrar el 28 de octubre de 2026 (fecha UTC), después del corte de esta auditoría. Las observaciones siguientes describen el estado del 14 de octubre. Las equivalencias de commits tras la reescritura autorizada están en [historial-commit-map.csv](../historial-commit-map.csv).
+
 Se revisaron los cambios, el estado de integración y las verificaciones disponibles para las PR #1–#9. Esta auditoría es técnica: GitHub no registra aprobación independiente de otra persona integrante en estas PR, por lo que no sustituye la revisión académica entre pares.
 
 | PR | Cambio | Estado y decisión | Evidencia |
