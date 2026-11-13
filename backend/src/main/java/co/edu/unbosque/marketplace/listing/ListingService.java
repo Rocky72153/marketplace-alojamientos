@@ -53,7 +53,7 @@ public class ListingService {
 
     @Transactional
     public Listing create(MarketplaceUser principal, ListingInput input) {
-        requireRole(principal, AccountRole.HOST, AccountRole.ADMIN);
+        requireRole(principal, AccountRole.HOST);
         MarketplaceUser host = principal;
         Listing listing = new Listing(host, input.toData());
         applyCommercialTerms(listing, input, true);
