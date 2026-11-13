@@ -97,7 +97,7 @@ if (typeof document !== 'undefined') {
   const detailSection = document.querySelector('#listing-detail');
   const detailFeedback = document.querySelector('#detail-feedback');
   const detailContent = document.querySelector('#detail-content');
-  const apiBase = document.querySelector('meta[name="api-base-url"]')?.content || 'http://localhost:8080';
+  const apiBase = document.querySelector('meta[name="api-base-url"]')?.content || globalThis.location?.origin || 'http://localhost:8080';
   const cityInput = document.querySelector('#city');
   const citySuggestions = document.querySelector('#city-suggestions');
   const initialSuggestions = initializeCitySuggestions(cityInput, citySuggestions, apiBase, document);
