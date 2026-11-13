@@ -85,14 +85,25 @@ export function initAccount(documentRef = globalThis.document, apiBase = 'http:/
     event.preventDefault();
     void authenticate(registerForm, 'register');
   });
-  logoutButton?.addEventListener?.('click', () => {
+  function logout(message = 'Sesión cerrada.') {
     session = null;
     try { globalThis.localStorage?.removeItem(SESSION_KEY); } catch { /* Storage may be unavailable in private mode. */ }
-    draw('Sesión cerrada.');
-  });
+    draw(message);
+  }
+  logoutButton?.addEventListener?.('click', () => logout());
 
   draw();
-  return { getToken: () => session?.accessToken || null, getSession: () => session };
+  return {
+    getToken: () => session?.accessToken || null,
+    getSession: () => session,
+    logout,
+    updateUser: (user) => {
+      if (!session || !user || (session.user.id && user.id !== session.user.id)) return;
+      session = { ...session, user: { ...session.user, ...user } };
+      try { globalThis.localStorage?.setItem(SESSION_KEY, JSON.stringify(session)); } catch { /* Storage may be unavailable in private mode. */ }
+      draw();
+    },
+  };
 }
 
 function element(documentRef, tag, className, text) {
