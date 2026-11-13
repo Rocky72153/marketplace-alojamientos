@@ -110,6 +110,35 @@ paths:
         '200': { description: Perfil actualizado }
         '400': { $ref: '#/components/responses/ValidationError' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+  /listings/suggestions:
+    get:
+      tags: [Búsqueda y cotización]
+      security: []
+      summary: Consultar hasta ocho alojamientos activos sugeridos
+      description: Sugerencias públicas sin fechas; no garantizan disponibilidad para una estancia concreta.
+      operationId: getListingSuggestions
+      responses:
+        '200':
+          description: Sugerencias públicas para la página de inicio
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    maxItems: 8
+                    items:
+                      type: object
+                      required: [id, title, city, type, capacity, pricePerNight]
+                      properties:
+                        id: { type: string, format: uuid }
+                        title: { type: string }
+                        city: { type: string }
+                        type: { type: string }
+                        capacity: { type: integer }
+                        pricePerNight: { type: number }
   /listings:
     get:
       tags: [Publicaciones]

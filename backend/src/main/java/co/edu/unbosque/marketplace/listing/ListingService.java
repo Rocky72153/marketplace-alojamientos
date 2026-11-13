@@ -26,6 +26,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +41,13 @@ public class ListingService {
     private final AuditService audit;
     private final NotificationService notifications;
     private final ReservationRepository reservations;
+    private final EntityManager entityManager;
 
     public ListingService(ListingRepository listings, AvailabilityRepository availability, AuditService audit,
-            NotificationService notifications, ReservationRepository reservations) {
+            NotificationService notifications, ReservationRepository reservations, EntityManager entityManager) {
         this.listings = listings; this.availability = availability; this.audit = audit; this.notifications = notifications;
         this.reservations = reservations;
+        this.entityManager = entityManager;
     }
 
     @Transactional
@@ -163,7 +167,7 @@ public class ListingService {
     @Transactional(readOnly = true)
     public Listing getPublicOrOwned(UUID id, MarketplaceUser principal) {
         Listing listing = get(id);
-        if (listing.getStatus() != ListingStatus.ACTIVE && (principal == null
+        if ((listing.getStatus() != ListingStatus.ACTIVE || !listing.getHost().isEnabled()) && (principal == null
                 || !(principal.getRole() == AccountRole.ADMIN || listing.getHost().getId().equals(principal.getId())))) {
             throw new DomainException(HttpStatus.NOT_FOUND, "NOT_FOUND", "No se encontró la publicación.");
         }
@@ -182,7 +186,7 @@ public class ListingService {
     @Transactional(readOnly = true)
     public Listing getActiveListing(UUID listingId) {
         Listing listing = get(listingId);
-        if (listing.getStatus() != ListingStatus.ACTIVE) {
+        if (listing.getStatus() != ListingStatus.ACTIVE || !listing.getHost().isEnabled()) {
             throw new DomainException(HttpStatus.NOT_FOUND, "NOT_FOUND", "No se encontró la publicación.");
         }
         return listing;
@@ -191,7 +195,10 @@ public class ListingService {
     @Transactional
     public Listing lockActiveListing(UUID listingId) {
         Listing listing = getForUpdate(listingId);
-        if (listing.getStatus() != ListingStatus.ACTIVE) {
+        // Refresh while holding a write lock so deactivation or restriction cannot
+        // race a new reservation using an account loaded earlier in the request.
+        entityManager.refresh(listing.getHost(), LockModeType.PESSIMISTIC_WRITE);
+        if (listing.getStatus() != ListingStatus.ACTIVE || !listing.getHost().isEnabled()) {
             throw new DomainException(HttpStatus.NOT_FOUND, "NOT_FOUND", "No se encontró la publicación.");
         }
         return listing;

@@ -65,6 +65,9 @@ public class ModerationService {
             throw new DomainException(HttpStatus.CONFLICT, "ACCOUNT_NOT_ACTIVE", "La cuenta no está activa.");
         }
         target.restrict();
+        if (target.getRole() == AccountRole.HOST) {
+            reservations.flagHostFutureForManualReview(id, LocalDate.now(java.time.ZoneId.of("America/Bogota")), ReservationStatus.CONFIRMED);
+        }
         audit.recordEvent("ACCOUNT_RESTRICTED", admin.getId(), "USER", id, "SUCCESS", request.reason().trim());
         return UserView.from(target);
     }

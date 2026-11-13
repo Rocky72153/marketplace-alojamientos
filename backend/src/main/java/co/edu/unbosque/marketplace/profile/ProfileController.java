@@ -2,6 +2,9 @@ package co.edu.unbosque.marketplace.profile;
 
 import co.edu.unbosque.marketplace.api.DomainException;
 import co.edu.unbosque.marketplace.audit.AuditService;
+import co.edu.unbosque.marketplace.booking.ReservationRepository;
+import co.edu.unbosque.marketplace.booking.ReservationStatus;
+import co.edu.unbosque.marketplace.security.AccountRole;
 import co.edu.unbosque.marketplace.auth.AuthController.ProfileResponse;
 import co.edu.unbosque.marketplace.security.MarketplaceUser;
 import co.edu.unbosque.marketplace.security.MarketplaceUserRepository;
@@ -16,16 +19,21 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 @RestController
 @RequestMapping("/api/profile/me")
 public class ProfileController {
     private final MarketplaceUserRepository users;
     private final AuditService audit;
+    private final ReservationRepository reservations;
 
-    public ProfileController(MarketplaceUserRepository users, AuditService audit) {
+    public ProfileController(MarketplaceUserRepository users, AuditService audit, ReservationRepository reservations) {
         this.users = users;
         this.audit = audit;
+        this.reservations = reservations;
     }
 
     @GetMapping
@@ -43,10 +51,16 @@ public class ProfileController {
     }
 
     @DeleteMapping
+    @Transactional
     public DeactivationResponse deactivate(@AuthenticationPrincipal MarketplaceUser principal) {
-        MarketplaceUser user = current(principal);
+        MarketplaceUser user = users.lockForReservationById(principal.getId()).orElseThrow(() ->
+                new DomainException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "Sesión ausente o inválida."));
+        if (!user.isEnabled()) throw new DomainException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "Sesión ausente o inválida.");
         user.deactivate();
         users.save(user);
+        if (user.getRole() == AccountRole.HOST) {
+            reservations.flagHostFutureForManualReview(user.getId(), LocalDate.now(ZoneId.of("America/Bogota")), ReservationStatus.CONFIRMED);
+        }
         audit.recordEvent("ACCOUNT_DEACTIVATED", user.getId(), "USER", user.getId(), "SUCCESS", null);
         return new DeactivationResponse("La cuenta fue desactivada.");
     }

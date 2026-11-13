@@ -39,7 +39,7 @@ public class DashboardService {
                 + (to == null ? "" : " and r.createdAt < :end");
         long users = entityManager.createQuery("select count(u) from MarketplaceUser u where u.createdAt <= :cutoff", Long.class)
                 .setParameter("cutoff", cutoff).getSingleResult();
-        long listings = entityManager.createQuery("select count(l) from Listing l where l.status = :active and l.createdAt <= :cutoff", Long.class)
+        long listings = entityManager.createQuery("select count(l) from Listing l where l.status = :active and l.host.accountState = co.edu.unbosque.marketplace.security.AccountState.ACTIVE and l.createdAt <= :cutoff", Long.class)
                 .setParameter("active", ListingStatus.ACTIVE).setParameter("cutoff", cutoff).getSingleResult();
         Map<ReservationStatus, Long> states = new EnumMap<>(ReservationStatus.class);
         for (ReservationStatus state : ReservationStatus.values()) states.put(state, 0L);
@@ -55,7 +55,7 @@ public class DashboardService {
                 .setMaxResults(10).getResultList().stream().map(row -> new CityDemand((String) row[0], (Long) row[1])).toList();
         return new Dashboard(cutoff, from, to, ZONE.getId(), users, listings, states, revenue, "COP", cities,
                 new Definitions("Total de cuentas creadas hasta el corte; todos los estados.",
-                        "Publicaciones actualmente activas creadas hasta el corte; sin filtro de periodo.",
+                        "Publicaciones activas de anfitriones activos creadas hasta el corte; sin filtro de periodo.",
                         "Reservas por estado actual, filtradas por fecha de creación en Bogotá; extremos inclusivos.",
                         "Suma de totales de reservas confirmadas y completadas del periodo; excluye canceladas. Pagos simulados, no ingresos reales.",
                         "Hasta 10 ciudades por número de reservas confirmadas o completadas creadas en el periodo; empates por ciudad."));
