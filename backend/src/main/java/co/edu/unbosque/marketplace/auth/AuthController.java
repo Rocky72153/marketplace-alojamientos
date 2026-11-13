@@ -74,7 +74,7 @@ public class AuthController {
         String email = normalizeEmail(request.email());
         MarketplaceUser user = users.findByEmail(email).orElse(null);
         audit.recordEvent("RECOVERY_REQUESTED", user == null ? null : user.getId(), "USER", user == null ? null : user.getId(), "RECEIVED", null);
-        return new RecoveryResponse("Si la cuenta existe, recibirás instrucciones para continuar.");
+        return new RecoveryResponse("Solicitud simulada registrada. No se ha enviado un correo ni se ha cambiado la contraseña.");
     }
 
     private AuthResponse response(MarketplaceUser user) {

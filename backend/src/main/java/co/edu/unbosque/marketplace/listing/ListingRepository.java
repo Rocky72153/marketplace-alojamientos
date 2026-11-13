@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.UUID;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,9 +16,11 @@ import org.springframework.data.repository.query.Param;
 public interface ListingRepository extends JpaRepository<Listing, UUID> {
     List<Listing> findByStatus(ListingStatus status);
 
+    Page<Listing> findByHost_Id(UUID hostId, Pageable pageable);
+
     @Query("""
             select distinct listing from Listing listing
-            where listing.status = :status
+            where listing.status = :status and listing.host.accountState = co.edu.unbosque.marketplace.security.AccountState.ACTIVE
               and (:restrictCity = false or listing.city in :cities)
               and (:guests is null or listing.capacity >= :guests)
               and (:restrictType = false or upper(listing.type) = :type)
@@ -35,7 +39,7 @@ public interface ListingRepository extends JpaRepository<Listing, UUID> {
             @Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice,
             @Param("amenityCount") int amenityCount, @Param("amenityIds") Set<String> amenityIds);
 
-    @Query("select distinct listing.city from Listing listing where listing.status = :status order by listing.city")
+    @Query("select distinct listing.city from Listing listing where listing.status = :status and listing.host.accountState = co.edu.unbosque.marketplace.security.AccountState.ACTIVE order by listing.city")
     List<String> findDistinctCitiesByStatus(@Param("status") ListingStatus status);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
