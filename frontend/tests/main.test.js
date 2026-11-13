@@ -124,3 +124,26 @@ test('ignora búsquedas anteriores al cambiar criterios o al mostrar un error de
     globalThis.fetch = previous.fetch;
   }
 });
+
+test('usa el origen del sitio para consultar la API cuando no se configura otro', async () => {
+  const previous = { document: globalThis.document, FormData: globalThis.FormData, fetch: globalThis.fetch, location: globalThis.location };
+  const handlers = {};
+  const input = () => ({ min: '', value: '', addEventListener() {} });
+  const lookup = { '#search-form': { addEventListener: (name, handler) => { handlers[name] = handler; } },
+    '#search-feedback': { textContent: '' }, '#search-results': { replaceChildren() {}, append() {} },
+    '#checkin': input(), '#checkout': input(), 'meta[name="api-base-url"]': { content: '' } };
+  globalThis.document = { querySelector: (selector) => lookup[selector] || null };
+  globalThis.location = { origin: 'https://marketplace.example.test' };
+  globalThis.FormData = class { entries() { return Object.entries({ city: 'Bogotá', checkin: '2026-12-03', checkout: '2026-12-05', guests: '2' }); } getAll() { return []; } };
+  let requestedUrl;
+  globalThis.fetch = async (url) => { requestedUrl = String(url); return { ok: true, json: async () => ({ items: [], total: 0 }) }; };
+  try {
+    await import('../src/main.js?same-origin-test');
+    handlers.submit({ preventDefault() {} });
+    await new Promise(setImmediate);
+    assert.equal(new URL(requestedUrl).origin, 'https://marketplace.example.test');
+  } finally {
+    globalThis.document = previous.document; globalThis.FormData = previous.FormData;
+    globalThis.fetch = previous.fetch; globalThis.location = previous.location;
+  }
+});
