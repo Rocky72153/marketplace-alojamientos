@@ -4,7 +4,7 @@ Esta guía describe el arranque de desarrollo en un equipo con Git, Java y Node.
 
 ## Herramientas
 
-Instala Git, JDK 21, Maven 3.9 o compatible, Node.js 22 con npm y Docker Desktop con Docker Compose. Comprueba que Docker esté iniciado y registra las versiones para la evidencia de tu equipo:
+Instala Git, JDK 21, Maven 3.9 o compatible, Node.js 20.19 o Node.js 22 con npm y Docker Desktop con Docker Compose. La validación local documentada se hizo con Node.js 20.19 y la integración continua usa Node.js 22. Comprueba que Docker esté iniciado y registra las versiones para la evidencia de tu equipo:
 
 ```powershell
 git --version
@@ -28,6 +28,14 @@ docker compose ps
 ```
 
 Espera a que el servicio `db` figure como saludable. Compose conserva la información en el volumen `marketplace-postgres-data`, aun después de detener el contenedor. Su configuración predeterminada es PostgreSQL local en el puerto 5432, base y usuario `marketplace` y contraseña de ejemplo `marketplace_local`; corresponde solo a desarrollo.
+
+Para verificar un clon con una base vacía sin modificar un volumen existente, puedes usar en su lugar un contenedor temporal aislado. Estos datos se eliminan al detener ese contenedor; no lo uses para información que quieras conservar:
+
+```powershell
+docker run --rm -d --name marketplace-validacion-db -e POSTGRES_DB=marketplace -e POSTGRES_USER=marketplace -e POSTGRES_PASSWORD=marketplace_local -p 15433:5432 postgres:17-alpine
+```
+
+En la terminal del backend, antes de arrancarlo, usa `$env:DB_URL = "jdbc:postgresql://localhost:15433/marketplace"`. Al terminar, `docker stop marketplace-validacion-db` elimina solo ese contenedor temporal y sus datos, no el volumen de Compose.
 
 ## 2. Configurar y arrancar el backend
 
@@ -64,6 +72,8 @@ npm run dev
 ```
 
 Abre [http://localhost:4173](http://localhost:4173). La búsqueda y las sugerencias consultan el backend; puedes explorar sin iniciar sesión. Las reservas requieren cuenta de huésped. Por defecto la página usa `http://localhost:8080`; si cambias la dirección del backend, ajusta la etiqueta `api-base-url` de `frontend/index.html` y la configuración CORS correspondiente.
+
+Puedes crear una cuenta de anfitrión y entrar a «Administrar alojamientos» para crear y editar anuncios y disponibilidad. Si un anfitrión desactiva su cuenta o un administrador la restringe, sus publicaciones dejan de mostrarse y no aceptan nuevas reservas. Las reservas futuras confirmadas conservan su estado y se señalan para revisión administrativa. El pago y la recuperación de contraseña son simulaciones: no hay cobros ni envío de correos reales.
 
 ## 4. Verificar las pruebas
 

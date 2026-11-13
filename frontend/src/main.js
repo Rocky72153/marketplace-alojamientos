@@ -5,6 +5,9 @@ import { initBooking } from './booking.js';
 import { initNotifications } from './notifications.js';
 import { initReviewList, initReviewModeration } from './reviews.js';
 import { initAdministration } from './ep09-admin.js';
+import { initAccountTools } from './account-tools.js';
+import { initHostWorkspace } from './host.js';
+import { renderHomeSuggestions } from './home-suggestions.js';
 
 function initializeCitySuggestions(cityInput, citySuggestions, apiBase, documentRef) {
   if (!cityInput || !citySuggestions) return Promise.resolve();
@@ -106,6 +109,8 @@ if (typeof document !== 'undefined') {
   const adminWorkspaceLink = document.querySelector('#admin-workspace-link');
   let currentToken = null;
   let currentRole = null;
+  let currentSession = null;
+  let accountController = null;
   let bookingFlow = null;
   let reviewList = null;
   const notifications = initNotifications(document.querySelector('#notifications-panel'), apiBase, () => currentToken,
@@ -114,6 +119,30 @@ if (typeof document !== 'undefined') {
     () => reviewList?.refresh(), document, globalThis.fetch);
   const administration = initAdministration(document.querySelector('#admin-workspace-content'), apiBase, () => currentToken,
     document, globalThis.fetch);
+  const accountTools = initAccountTools(document.querySelector('#account-tools'), apiBase, {
+    onProfileUpdated: (user) => accountController?.updateUser(user),
+    onDeactivated: () => accountController?.logout('Tu cuenta fue desactivada.'),
+  }, document, globalThis.fetch);
+  const hostPanel = document.querySelector('#host-workspace');
+  const host = initHostWorkspace(document.querySelector('#host-workspace-content'), apiBase, () => currentSession,
+    document, globalThis.fetch);
+  document.querySelector('#host-entry')?.addEventListener('click', () => {
+    if (currentRole === 'HOST') {
+      if (hostPanel) hostPanel.hidden = false;
+      void host?.refresh();
+      hostPanel?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+    } else if (!currentSession) {
+      const panel = document.querySelector('#account-panel');
+      const role = document.querySelector('#register-form select[name="role"]');
+      if (role) role.value = 'HOST';
+      if (panel) panel.hidden = false;
+      panel?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+    } else {
+      const message = document.querySelector('#host-entry-feedback');
+      if (message) message.textContent = 'Para administrar alojamientos necesitas una cuenta de anfitrión.';
+    }
+  });
+  void renderHomeSuggestions(document.querySelector('#home-suggestions'), apiBase, document, globalThis.fetch);
   const historyCallbacks = {
     getToken: () => currentToken,
     onReservationChanged: () => notifications?.refresh(),
@@ -135,9 +164,16 @@ if (typeof document !== 'undefined') {
     void administration?.refresh();
     adminWorkspace?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
   });
-  initAccount(document, apiBase, (session) => {
+  accountController = initAccount(document, apiBase, (session) => {
+    const previousToken = currentToken;
+    currentSession = session;
     currentToken = session?.accessToken || null;
     currentRole = session?.user?.role || null;
+    accountTools?.sync(session);
+    if (previousToken !== currentToken) {
+      if (hostPanel) hostPanel.hidden = true;
+      host?.clear();
+    }
     if (adminLink) adminLink.hidden = currentRole !== 'ADMIN';
     if (adminWorkspaceLink) adminWorkspaceLink.hidden = currentRole !== 'ADMIN';
     if (adminWorkspace) adminWorkspace.hidden = true;

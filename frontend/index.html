@@ -35,7 +35,8 @@
               <button type="submit">Iniciar sesión</button>
             </form>
             <form id="register-form" class="account-form">
-              <h3>Crear cuenta de huésped</h3>
+              <h3>Crear cuenta</h3>
+              <label>Tipo de cuenta<select name="role"><option value="GUEST">Huésped</option><option value="HOST">Anfitrión</option></select></label>
               <label>Nombre<input name="name" autocomplete="name" required maxlength="120" /></label>
               <label>Correo<input name="email" type="email" autocomplete="email" required /></label>
               <label>Contraseña<input name="password" type="password" autocomplete="new-password" required minlength="8" /></label>
@@ -46,6 +47,7 @@
             <p id="session-summary"></p>
             <button id="logout-button" type="button" class="secondary-button">Cerrar sesión</button>
           </div>
+          <div id="account-tools"></div>
           <p id="account-feedback" class="feedback" role="status" aria-live="polite"></p>
         </div>
       </section>
@@ -62,6 +64,9 @@
       </section>
       <section id="admin-workspace" class="admin-workspace-panel" aria-label="Administración y reportes" hidden>
         <div id="admin-workspace-content" class="admin-workspace-shell"></div>
+      </section>
+      <section id="host-workspace" class="admin-workspace-panel" aria-label="Administración de alojamientos" hidden>
+        <div id="host-workspace-content" class="admin-workspace-shell"></div>
       </section>
       <section id="listing-detail" class="detail-section" aria-labelledby="detail-title" hidden>
         <div class="detail-shell">
@@ -103,13 +108,14 @@
         <p id="search-feedback" class="feedback" role="status" aria-live="polite"></p>
         <div id="search-results" class="listing-results" aria-live="polite"></div>
       </section>
+      <section id="home-suggestions" class="home-suggestions" aria-label="Alojamientos sugeridos"></section>
       <section class="intro" id="buscar">
         <p class="eyebrow">UN SOLO LUGAR PARA PLANEAR</p>
         <h2>Tu próxima estancia empieza aquí.</h2>
         <p>Consulta alojamientos activos y encuentra opciones según tu ciudad, fechas y número de huéspedes. El catálogo inicial contiene registros ficticios para demostración; no representan espacios reales.</p>
       </section>
       <section class="host-banner" id="anfitriones">
-        <div><p class="eyebrow">PARA ANFITRIONES</p><h2>Tu espacio puede ser el lugar favorito de alguien.</h2><p>Administra publicaciones, precios y disponibilidad desde una plataforma centralizada.</p></div>
+        <div><p class="eyebrow">PARA ANFITRIONES</p><h2>Tu espacio puede ser el lugar favorito de alguien.</h2><p>Administra publicaciones, precios y disponibilidad desde una plataforma centralizada.</p><button id="host-entry" type="button" class="primary-button">Administrar alojamientos</button><p id="host-entry-feedback" role="status"></p></div>
         <span aria-hidden="true" class="host-symbol">⌂</span>
       </section>
     </main>
