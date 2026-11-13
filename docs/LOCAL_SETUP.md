@@ -29,6 +29,14 @@ docker compose ps
 
 Espera a que el servicio `db` figure como saludable. Compose conserva la información en el volumen `marketplace-postgres-data`, aun después de detener el contenedor. Su configuración predeterminada es PostgreSQL local en el puerto 5432, base y usuario `marketplace` y contraseña de ejemplo `marketplace_local`; corresponde solo a desarrollo.
 
+Para verificar un clon con una base vacía sin modificar un volumen existente, puedes usar en su lugar un contenedor temporal aislado. Estos datos se eliminan al detener ese contenedor; no lo uses para información que quieras conservar:
+
+```powershell
+docker run --rm -d --name marketplace-validacion-db -e POSTGRES_DB=marketplace -e POSTGRES_USER=marketplace -e POSTGRES_PASSWORD=marketplace_local -p 15433:5432 postgres:17-alpine
+```
+
+En la terminal del backend, antes de arrancarlo, usa `$env:DB_URL = "jdbc:postgresql://localhost:15433/marketplace"`. Al terminar, `docker stop marketplace-validacion-db` elimina solo ese contenedor temporal y sus datos, no el volumen de Compose.
+
 ## 2. Configurar y arrancar el backend
 
 En otra terminal PowerShell, desde la raíz del clon, define una clave propia de al menos 32 bytes para mantener válidas las sesiones entre reinicios. Si deseas iniciar sesión con las cuentas de muestra, define también su contraseña propia de 8 a 72 caracteres antes del primer arranque. No copies los ejemplos literalmente ni guardes tus valores en Git:
