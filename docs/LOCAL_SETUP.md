@@ -4,7 +4,7 @@ Esta guía describe el arranque de desarrollo en un equipo con Git, Java y Node.
 
 ## Herramientas
 
-Instala Git, JDK 21, Maven 3.9 o compatible, Node.js 22 con npm y Docker Desktop con Docker Compose. Comprueba que Docker esté iniciado y registra las versiones para la evidencia de tu equipo:
+Instala Git, JDK 21, Maven 3.9 o compatible, Node.js 20.19 o Node.js 22 con npm y Docker Desktop con Docker Compose. La validación local documentada se hizo con Node.js 20.19 y la integración continua usa Node.js 22. Comprueba que Docker esté iniciado y registra las versiones para la evidencia de tu equipo:
 
 ```powershell
 git --version
