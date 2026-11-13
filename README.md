@@ -8,11 +8,13 @@ Marketplace web para conectar anfitriones con huéspedes y permitir publicación
 
 La base funcional cubre registro e inicio de sesión con token, perfil, publicaciones, disponibilidad, búsqueda, detalle público, cotización, reserva idempotente, historial propio y cancelación con reembolso simulado. También incluye notificaciones internas sobre cambios de publicación y reservas, reseñas de estancias completadas y moderación de reseñas por administradores. Los cobros reales y el envío real de correos no forman parte del MVP. Las tarifas, reglas de cálculo, privacidad y recuperación de disponibilidad se describen en [EP-05 y EP-06](docs/EP05-EP06-reservas-cancelaciones.md); la implementación y pruebas de notificaciones y reseñas se describen en [EP-07 y EP-08](docs/EP07-EP08-EVIDENCE.md).
 
+La [evidencia de la validación local](docs/EVIDENCIA-ENTREGA-FINAL.md) registra el clon limpio, las capturas y la medición sobre 10.000 alojamientos ficticios. El [contrato inicial de Entrega 1](docs/entrega-1/10-openapi.yaml) es una propuesta histórica y no equivale al contrato del backend actual; consulta [API implementada](docs/API-IMPLEMENTADA.md) para las rutas disponibles. El [checklist](docs/entrega-1/13-checklist-entrega.md) conserva las verificaciones humanas pendientes.
+
 ## Entrega 1 — Análisis de requerimientos y diseño
 
 El acta de constitución está disponible en [Word](docs/entrega-1/acta-constitucion-marketplace.docx) y [Markdown](docs/entrega-1/acta-constitucion-marketplace.md); la entrega final es el 26/11/2026; la aprobación y las firmas siguen pendientes. La [documentación de Entrega 1](docs/entrega-1/README.md) reúne análisis, diseño, 19 artefactos, metodología y la [evidencia parcial de inspección y pruebas](docs/evidencias/validacion-prototipo-y-pruebas-2026-10-14.md).
 
-**Estado de los artefactos:** el paquete documental de Entrega 1 está integrado en `main` y publicado en el [espacio Confluence MARKET](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/753665/Entrega+1+estado+evidencia+y+ratificaci+n+del+equipo); fue ratificado por Juan Sebastián Morales y Julián Aguilera el 14/10/2026; la validación docente y las verificaciones externas aún no constan. En el commit [e4d192e](https://github.com/Rocky72153/marketplace-alojamientos/commit/e4d192e8054484174b80a5820131a419da55e907), CI pasó ([run 38678644799](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644799)) y SonarCloud aprobó el Quality Gate ([run 38678644828](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644828)); la cobertura de código nuevo reportada en PR #8 fue 0.0 %. La auditoría de [PR #1–#9](docs/evidencias/revision-pull-requests-2026-10.md) detalla qué se integró y qué no. La ratificación del paquete ya está registrada. La retroalimentación real de participantes y las funciones/casos de negocio aún no implementados no se presentan como realizados. La guía no fija un mínimo de 44 casos para Entrega 1; la evidencia de negocio y producto funcional se amplía en Entrega 2, mientras los tests de historias ya implementadas deben correr en CI.
+**Estado de los artefactos:** el paquete documental de Entrega 1 está integrado en `main` y publicado en el [espacio Confluence MARKET](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/753665/Entrega+1+estado+evidencia+y+ratificaci+n+del+equipo); fue ratificado por Juan Sebastián Morales y Julián Aguilera el 14/10/2026. La validación docente y otras verificaciones humanas siguen sin acreditarse. Las ejecuciones históricas de [CI](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644799) y [SonarCloud](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38678644828) corresponden a antes de la reescritura del historial; el [mapa de commits](docs/historial-commit-map.csv) conserva las equivalencias. La auditoría de [PR #1–#9](docs/evidencias/revision-pull-requests-2026-10.md) documenta esa etapa, y la [evidencia de la entrega](docs/EVIDENCIA-ENTREGA-FINAL.md) recoge las comprobaciones posteriores. La retroalimentación de participantes debe ser real y no se presenta como realizada.
 
 ## Tecnologías base propuestas
 
@@ -22,7 +24,7 @@ El acta de constitución está disponible en [Word](docs/entrega-1/acta-constitu
 - CI: GitHub Actions.
 - Análisis estático: SonarQube Cloud (SonarCloud), integrado en GitHub Actions; [Quality Gate aprobado en el PR #8](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/38673786517).
 
-Las tecnologías son una propuesta técnica inicial incluida en la ratificación del paquete; su implementación y validación se evidencian por separado.
+Estas tecnologías están implementadas en el repositorio; su alcance y validación se evidencian en los documentos y comprobaciones del proyecto.
 
 ## Estructura
 
@@ -41,7 +43,7 @@ Las tecnologías son una propuesta técnica inicial incluida en la ratificación
 
 ## Requisitos locales
 
-Java 21, Maven, Node.js 22, npm, Docker Compose y Git.
+Java 21, Maven, Node.js 20.19 o 22, npm, Docker Compose y Git. Consulta [la guía local](docs/LOCAL_SETUP.md) para arrancar y detener el sistema.
 
 ## Ejecutar y verificar
 
