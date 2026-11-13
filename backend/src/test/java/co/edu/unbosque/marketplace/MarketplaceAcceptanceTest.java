@@ -66,6 +66,8 @@ class MarketplaceAcceptanceTest {
                         .content("{\"email\":\"absent-" + UUID.randomUUID() + "@example.test\"}"))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         org.junit.jupiter.api.Assertions.assertEquals(mapper.readTree(existing).get("message").asText(), mapper.readTree(absent).get("message").asText());
+        org.junit.jupiter.api.Assertions.assertEquals("Solicitud simulada registrada. No se ha enviado un correo ni se ha cambiado la contraseña.",
+                mapper.readTree(existing).get("message").asText());
         org.junit.jupiter.api.Assertions.assertEquals(recoveryEventsBefore + 2, auditEvents.countByEventType("RECOVERY_REQUESTED"));
         mockMvc.perform(post("/api/auth/recovery").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"not-an-email\"}"))
