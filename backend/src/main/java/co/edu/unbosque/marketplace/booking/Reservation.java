@@ -165,6 +165,35 @@ public class Reservation {
         this.paymentStatus = amount.signum() > 0 ? "TEST_REFUNDED" : "TEST_NO_REFUND";
     }
 
+    void awaitStripeTestPayment() {
+        this.status = ReservationStatus.PENDING_PAYMENT;
+        this.paymentStatus = "TEST_PENDING";
+    }
+
+    void confirmStripeTestPayment(String paymentIntentId) {
+        if (this.status != ReservationStatus.PENDING_PAYMENT) throw new IllegalStateException("Reserva no pendiente.");
+        this.paymentReference = paymentIntentId;
+        this.status = ReservationStatus.CONFIRMED;
+        this.paymentStatus = "TEST_APPROVED";
+    }
+
+    void expireStripeTestPayment() {
+        if (this.status != ReservationStatus.PENDING_PAYMENT) throw new IllegalStateException("Reserva no pendiente.");
+        this.status = ReservationStatus.CANCELLED;
+        this.paymentStatus = "TEST_EXPIRED";
+    }
+
+    void cancelStripeTest(String reason, Instant at, BigDecimal percentage, BigDecimal amount) {
+        if (this.status != ReservationStatus.CONFIRMED) throw new IllegalStateException("Reserva no confirmada.");
+        cancel(reason, at, percentage, amount);
+        if (amount.signum() > 0) this.paymentStatus = "TEST_REFUND_PENDING";
+    }
+
+    void stripeTestRefunded() { this.paymentStatus = "TEST_REFUNDED"; }
+    void stripeTestRefundFailed() { this.paymentStatus = "TEST_REFUND_FAILED"; this.manualReviewRequired = true; }
+    void stripeTestRefundUncertain() { this.paymentStatus = "TEST_REFUND_REVIEW"; this.manualReviewRequired = true; }
+    void requireManualReview() { this.manualReviewRequired = true; }
+
     public UUID getId() { return id; }
     public MarketplaceUser getGuest() { return guest; }
     public Listing getListing() { return listing; }
