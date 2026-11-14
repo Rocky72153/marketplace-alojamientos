@@ -1,0 +1,445 @@
+{
+  "scenario": "MARKET-69: búsqueda por ciudad, fechas y dos huéspedes",
+  "timestamp_bogota": "2026-11-14T09:48:18-05:00",
+  "base_url": "http://127.0.0.1:8080",
+  "target": {
+    "requests": 50,
+    "max_concurrent_clients": 5,
+    "p95_seconds_at_most": 3.0,
+    "required_active_listings": 10000,
+    "percentile_method": "nearest rank: ceil(0.95 * n), 1-indexado"
+  },
+  "environment": {
+    "platform": "Linux-7.0.0-1017-aws-x86_64-with-glibc2.43",
+    "processor": "",
+    "logical_cpus": 2,
+    "python": "3.14.4",
+    "commit": null,
+    "tracked_changes_present": null
+  },
+  "check_in": "2026-11-21",
+  "check_out": "2026-11-23",
+  "observed_active_listings": 10000,
+  "warmup_failures": [],
+  "cities": [
+    "Abejorral, Antioquia",
+    "Abriaquí, Antioquia",
+    "Acacías, Meta",
+    "Acandí, Chocó",
+    "Acevedo, Huila",
+    "Achí, Bolívar",
+    "Agrado, Huila",
+    "Agua de Dios, Cundinamarca",
+    "Aguachica, Cesar",
+    "Aguada, Santander"
+  ],
+  "wall_seconds": 1.39101,
+  "samples": [
+    {
+      "city": "Abejorral, Antioquia",
+      "seconds": 0.262913,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Abriaquí, Antioquia",
+      "seconds": 0.223493,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acacías, Meta",
+      "seconds": 0.206649,
+      "http_status": 200,
+      "total": 6,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acandí, Chocó",
+      "seconds": 0.199046,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acevedo, Huila",
+      "seconds": 0.056503,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Achí, Bolívar",
+      "seconds": 0.154085,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Agrado, Huila",
+      "seconds": 0.160221,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Agua de Dios, Cundinamarca",
+      "seconds": 0.149834,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Aguachica, Cesar",
+      "seconds": 0.133288,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Aguada, Santander",
+      "seconds": 0.125208,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Abejorral, Antioquia",
+      "seconds": 0.102682,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Abriaquí, Antioquia",
+      "seconds": 0.085428,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acacías, Meta",
+      "seconds": 0.153221,
+      "http_status": 200,
+      "total": 6,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acandí, Chocó",
+      "seconds": 0.160771,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acevedo, Huila",
+      "seconds": 0.101566,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Achí, Bolívar",
+      "seconds": 0.173247,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Agrado, Huila",
+      "seconds": 0.174801,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Agua de Dios, Cundinamarca",
+      "seconds": 0.110443,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Aguachica, Cesar",
+      "seconds": 0.067547,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Aguada, Santander",
+      "seconds": 0.139112,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Abejorral, Antioquia",
+      "seconds": 0.176768,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Abriaquí, Antioquia",
+      "seconds": 0.125558,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acacías, Meta",
+      "seconds": 0.112552,
+      "http_status": 200,
+      "total": 6,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acandí, Chocó",
+      "seconds": 0.109081,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acevedo, Huila",
+      "seconds": 0.177628,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Achí, Bolívar",
+      "seconds": 0.107604,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Agrado, Huila",
+      "seconds": 0.159801,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Agua de Dios, Cundinamarca",
+      "seconds": 0.153931,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Aguachica, Cesar",
+      "seconds": 0.116935,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Aguada, Santander",
+      "seconds": 0.058183,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Abejorral, Antioquia",
+      "seconds": 0.136871,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Abriaquí, Antioquia",
+      "seconds": 0.135681,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acacías, Meta",
+      "seconds": 0.097322,
+      "http_status": 200,
+      "total": 6,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acandí, Chocó",
+      "seconds": 0.136606,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acevedo, Huila",
+      "seconds": 0.144639,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Achí, Bolívar",
+      "seconds": 0.122641,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Agrado, Huila",
+      "seconds": 0.174096,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Agua de Dios, Cundinamarca",
+      "seconds": 0.105183,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Aguachica, Cesar",
+      "seconds": 0.173445,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Aguada, Santander",
+      "seconds": 0.094837,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Abejorral, Antioquia",
+      "seconds": 0.168035,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Abriaquí, Antioquia",
+      "seconds": 0.094018,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acacías, Meta",
+      "seconds": 0.124152,
+      "http_status": 200,
+      "total": 6,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acandí, Chocó",
+      "seconds": 0.168313,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Acevedo, Huila",
+      "seconds": 0.127423,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Achí, Bolívar",
+      "seconds": 0.141817,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Agrado, Huila",
+      "seconds": 0.146746,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Agua de Dios, Cundinamarca",
+      "seconds": 0.081924,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Aguachica, Cesar",
+      "seconds": 0.093894,
+      "http_status": 200,
+      "total": 7,
+      "ok": true,
+      "error": null
+    },
+    {
+      "city": "Aguada, Santander",
+      "seconds": 0.063124,
+      "http_status": 200,
+      "total": 9,
+      "ok": true,
+      "error": null
+    }
+  ],
+  "successful_requests": 50,
+  "failed_requests": 0,
+  "p50_seconds": 0.135681,
+  "p95_seconds": 0.206649,
+  "max_seconds": 0.262913,
+  "passed": true
+}

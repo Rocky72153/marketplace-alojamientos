@@ -3,6 +3,7 @@ package co.edu.unbosque.marketplace.listing;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,10 +55,41 @@ class HostListingAcceptanceTest {
         assertTrue(mapper.readTree(empty).get("content").isEmpty());
     }
 
+    @Test
+    void onlyHostCanCreateListingAndIsRecordedAsItsOwner() throws Exception {
+        String host = register("HOST");
+        String guest = register("GUEST");
+        String admin = register("ADMIN");
+        String body = mapper.writeValueAsString(Map.of("title", "Casa de prueba", "description", "Alojamiento de prueba",
+                "city", "Bogotá", "location", "Chapinero", "type", "APARTMENT", "capacity", 4,
+                "pricePerNight", 100000, "amenityIds", List.of("WIFI")));
+
+        mvc.perform(post("/api/listings").contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/listings").header("Authorization", bearer(guest))
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/api/listings").header("Authorization", bearer(admin))
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isForbidden());
+        String profile = mvc.perform(get("/api/profile/me").header("Authorization", bearer(host)))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        String created = mvc.perform(post("/api/listings").header("Authorization", bearer(host))
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        JsonNode listing = mapper.readTree(created);
+        assertEquals(mapper.readTree(profile).get("id").asText(), listing.get("hostId").asText());
+        String updated = mvc.perform(patch("/api/listings/" + listing.get("id").asText())
+                        .header("Authorization", bearer(admin)).contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        assertEquals(listing.get("hostId").asText(), mapper.readTree(updated).get("hostId").asText());
+    }
+
     private String register(String role) throws Exception {
         String body = mapper.writeValueAsString(Map.of("name", "Usuario", "email", UUID.randomUUID() + "@example.test",
                 "password", "safe-password-123", "role", role));
-        String response = mvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON).content(body))
+        String response = mvc.perform(post("/api/auth/register").header("X-Admin-Bootstrap", "bootstrap-key-for-tests")
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         return mapper.readTree(response).get("accessToken").asText();
     }

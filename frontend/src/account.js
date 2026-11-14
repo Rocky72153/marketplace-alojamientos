@@ -6,7 +6,8 @@ const historyRequests = new WeakMap();
 function readSession() {
   try {
     const session = JSON.parse(globalThis.localStorage?.getItem(SESSION_KEY) || 'null');
-    if (!session?.accessToken || !session?.user || Date.parse(session.expiresAt) <= Date.now()) {
+    const expiration = Date.parse(session?.expiresAt);
+    if (!session?.accessToken || !session?.user || !Number.isFinite(expiration) || expiration <= Date.now()) {
       globalThis.localStorage?.removeItem(SESSION_KEY);
       return null;
     }
@@ -31,6 +32,8 @@ function formValues(form) {
 
 export function initAccount(documentRef = globalThis.document, apiBase = 'http://localhost:8080', onSessionChange = () => {}, fetchImpl = globalThis.fetch) {
   let session = readSession();
+  let authenticationRevision = 0;
+  let registrationPending = false;
   const panel = documentRef?.querySelector('#account-panel');
   const accountLink = documentRef?.querySelector('#account-link');
   const reservationLink = documentRef?.querySelector('#reservation-link');
@@ -54,14 +57,28 @@ export function initAccount(documentRef = globalThis.document, apiBase = 'http:/
 
   async function authenticate(form, path) {
     if (!form || typeof FormData === 'undefined') return;
+    if (path === 'register' && registrationPending) return;
+    const registerButton = path === 'register' ? form.querySelector?.('button[type="submit"]') : null;
+    if (path === 'register') {
+      registrationPending = true;
+      if (registerButton) registerButton.disabled = true;
+    }
+    const revision = ++authenticationRevision;
     if (feedback) feedback.textContent = 'Procesando…';
     try {
-      session = await sendAuthRequest(path, formValues(form), apiBase, fetchImpl);
+      const nextSession = await sendAuthRequest(path, formValues(form), apiBase, fetchImpl);
+      if (revision !== authenticationRevision) return;
+      session = nextSession;
       try { globalThis.localStorage?.setItem(SESSION_KEY, JSON.stringify(session)); } catch { /* Storage may be unavailable in private mode. */ }
       form.reset();
       draw(path === 'register' ? 'Cuenta creada e ingreso completado.' : 'Sesión iniciada.');
     } catch (error) {
-      if (feedback) feedback.textContent = error.message || 'No fue posible iniciar sesión.';
+      if (revision === authenticationRevision && feedback) feedback.textContent = error.message || 'No fue posible iniciar sesión.';
+    } finally {
+      if (path === 'register') {
+        registrationPending = false;
+        if (registerButton) registerButton.disabled = false;
+      }
     }
   }
 
@@ -86,6 +103,7 @@ export function initAccount(documentRef = globalThis.document, apiBase = 'http:/
     void authenticate(registerForm, 'register');
   });
   function logout(message = 'Sesión cerrada.') {
+    authenticationRevision += 1;
     session = null;
     try { globalThis.localStorage?.removeItem(SESSION_KEY); } catch { /* Storage may be unavailable in private mode. */ }
     draw(message);

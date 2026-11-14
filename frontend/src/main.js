@@ -97,7 +97,7 @@ if (typeof document !== 'undefined') {
   const detailSection = document.querySelector('#listing-detail');
   const detailFeedback = document.querySelector('#detail-feedback');
   const detailContent = document.querySelector('#detail-content');
-  const apiBase = document.querySelector('meta[name="api-base-url"]')?.content || 'http://localhost:8080';
+  const apiBase = document.querySelector('meta[name="api-base-url"]')?.content || globalThis.location?.origin || 'http://localhost:8080';
   const cityInput = document.querySelector('#city');
   const citySuggestions = document.querySelector('#city-suggestions');
   const initialSuggestions = initializeCitySuggestions(cityInput, citySuggestions, apiBase, document);
@@ -211,7 +211,8 @@ if (typeof document !== 'undefined') {
   }
 
   if (searchForm && feedback) {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    let searchRevision = 0;
     const checkin = document.querySelector('#checkin');
     const checkout = document.querySelector('#checkout');
     checkin.min = today;
@@ -222,6 +223,7 @@ if (typeof document !== 'undefined') {
     });
     searchForm.addEventListener('submit', (event) => {
       event.preventDefault();
+      const revision = ++searchRevision;
       const formData = new FormData(searchForm);
       const data = Object.fromEntries(formData.entries());
       data.amenityIds = formData.getAll('amenityIds');
@@ -233,6 +235,7 @@ if (typeof document !== 'undefined') {
       }
       feedback.textContent = 'Buscando alojamientos…';
       searchListings(data, apiBase).then(({ items = [], total = 0 }) => {
+        if (revision !== searchRevision) return;
         results?.replaceChildren();
         for (const listing of items) {
           const card = document.createElement('article');
@@ -255,6 +258,7 @@ if (typeof document !== 'undefined') {
         const resultLabel = `${total} ${noun} encontrado${total === 1 ? '' : 's'}.`;
         feedback.textContent = total ? resultLabel : 'No encontramos alojamientos con esos criterios.';
       }).catch((error_) => {
+        if (revision !== searchRevision) return;
         feedback.textContent = error_.message || 'No fue posible consultar los alojamientos.';
         results?.replaceChildren();
       });
