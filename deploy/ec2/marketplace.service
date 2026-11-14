@@ -13,6 +13,8 @@ Group=marketplace
 EnvironmentFile=/etc/marketplace/marketplace.env
 WorkingDirectory=/srv/marketplace/current
 ExecStart=/usr/bin/java -Xms64m -Xmx384m -XX:+ExitOnOutOfMemoryError -jar /srv/marketplace/current/marketplace.jar
+# Java exits with 128 + SIGTERM after a normal graceful shutdown.
+SuccessExitStatus=143
 Restart=on-failure
 RestartSec=10
 NoNewPrivileges=true
