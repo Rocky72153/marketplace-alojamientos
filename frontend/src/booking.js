@@ -1,3 +1,5 @@
+import { stripeCheckoutUrl } from './stripe-checkout.js';
+
 function el(documentRef, tag, className, text) {
   const node = documentRef.createElement(tag);
   if (className) node.className = className;
@@ -40,7 +42,7 @@ function makeIdempotencyKey() {
 }
 
 export function initBooking(container, listing, apiBase, getToken, onReservationChanged = () => {},
-  documentRef = globalThis.document, fetchImpl = globalThis.fetch) {
+  documentRef = globalThis.document, fetchImpl = globalThis.fetch, options = {}) {
   if (!container || !listing) return null;
   const section = el(documentRef, 'section', 'booking-panel');
   section.setAttribute?.('aria-labelledby', 'booking-title');
@@ -106,6 +108,8 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
   let accountRevision = 0;
   let accountToken = getToken();
   let reservationInFlight = false;
+  const getPaymentMode = options.getPaymentMode || (() => 'SIMULATED_TEST');
+  const navigate = options.navigate || ((url) => globalThis.location.assign(url));
   function clearQuote() {
     quoteRevision += 1;
     current.payload = null;
@@ -162,9 +166,17 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
     quoteSummary.append(el(documentRef, 'p', 'cancellation-policy',
       `Política del alojamiento: 100% desde ${quote.freeRefundDays} días; ${quote.partialRefundPercentage}% entre ${quote.partialRefundDays} y ${quote.freeRefundDays - 1} días; 0% con menos de ${quote.partialRefundDays} días.`));
     reserveButton.hidden = false;
-    reserveButton.textContent = getToken() ? 'Confirmar reserva · pago de prueba' : 'Iniciar sesión para reservar';
-    reserveButton.disabled = reservationInFlight;
+    syncPaymentMode();
     if (!getToken()) feedback.textContent = 'Inicia sesión o crea una cuenta de huésped para confirmar la reserva.';
+  }
+
+  function syncPaymentMode() {
+    const mode = getPaymentMode();
+    if (mode === 'STRIPE_TEST') reserveButton.textContent = getToken() ? 'Continuar a Stripe · modo de prueba' : 'Iniciar sesión para reservar';
+    else if (mode === 'SIMULATED_TEST') reserveButton.textContent = getToken() ? 'Confirmar reserva · pago de prueba' : 'Iniciar sesión para reservar';
+    else reserveButton.textContent = 'Opciones de pago no disponibles';
+    reserveButton.disabled = reservationInFlight || !['STRIPE_TEST', 'SIMULATED_TEST'].includes(mode);
+    if (mode === 'UNAVAILABLE' && current.payload) feedback.textContent = 'No fue posible consultar las opciones de pago. Recarga la página para reintentar.';
   }
 
   form.addEventListener?.('submit', async (event) => {
@@ -205,22 +217,42 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
       return;
     }
     if (!current.payload || !current.idempotencyKey) return;
+    const mode = getPaymentMode();
+    if (!['SIMULATED_TEST', 'STRIPE_TEST'].includes(mode)) {
+      feedback.textContent = 'No fue posible consultar las opciones de pago. Recarga la página para reintentar.';
+      return;
+    }
     const revision = accountRevision;
     reservationInFlight = true;
     const controls = [checkIn, checkOut, guests, quoteButton, ...extraInputs.flatMap(({ checkbox, quantity }) => [checkbox, quantity])];
     const disabledBeforeReservation = controls.map((control) => control.disabled);
     controls.forEach((control) => { control.disabled = true; });
     reserveButton.disabled = true;
-    feedback.textContent = 'Confirmando reserva con el proveedor de pago simulado…';
+    feedback.textContent = mode === 'STRIPE_TEST' ? 'Preparando el pago de prueba en Stripe…' : 'Confirmando reserva con pago simulado…';
     const requestBody = { listingId: listing.id, ...current.payload };
     try {
-      const response = await fetchImpl(new URL('/api/reservations', apiBase), {
+      const response = await fetchImpl(new URL(mode === 'STRIPE_TEST' ? '/api/stripe-test/checkouts' : '/api/reservations', apiBase), {
         method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json',
           'Idempotency-Key': current.idempotencyKey }, body: JSON.stringify(requestBody),
       });
       const result = await response.json().catch(() => ({}));
       if (revision !== accountRevision || token !== getToken()) return;
       if (!response.ok) throw new Error(result.message || 'No fue posible confirmar la reserva.');
+      if (mode === 'STRIPE_TEST') {
+        if (result.status === 'PREPARING') {
+          feedback.textContent = 'El pago de prueba se está preparando. Vuelve a intentarlo para continuar.';
+          return;
+        }
+        if (result.status !== 'OPEN') {
+          feedback.textContent = 'Consulta el estado del pago desde el enlace de retorno. La reserva aún no se confirma desde esta pantalla.';
+          return;
+        }
+        const url = stripeCheckoutUrl(result.checkoutUrl);
+        if (!url) throw new Error('No fue posible abrir una página de pago válida de Stripe.');
+        feedback.textContent = 'Abriendo Stripe en modo de prueba. La reserva se confirmará cuando el servidor verifique el pago.';
+        navigate(url);
+        return;
+      }
       current.payload = null; current.idempotencyKey = null;
       reserveButton.hidden = true;
       feedback.textContent = `Reserva confirmada. Código ${result.id}. Pago simulado aprobado; no se realizó ningún cobro real.`;
@@ -236,7 +268,7 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
     } finally {
       reservationInFlight = false;
       controls.forEach((control, index) => { control.disabled = disabledBeforeReservation[index]; });
-      if (current.payload) reserveButton.disabled = false;
+      if (current.payload) syncPaymentMode();
     }
   });
   return {
@@ -249,8 +281,8 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
         if (reservationInFlight) clearQuote();
       }
       if (!current.payload) return;
-      reserveButton.textContent = nextToken ? 'Confirmar reserva · pago de prueba' : 'Iniciar sesión para reservar';
-      reserveButton.disabled = reservationInFlight;
+      syncPaymentMode();
     },
+    syncPaymentMode,
   };
 }

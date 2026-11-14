@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,8 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ReservationController {
     private final ReservationService service;
+    private StripeCancellationService stripeCancellation;
 
     public ReservationController(ReservationService service) { this.service = service; }
+
+    @Autowired(required = false)
+    public void setStripeCancellation(StripeCancellationService stripeCancellation) { this.stripeCancellation = stripeCancellation; }
 
     @PostMapping("/api/listings/{listingId}/quotes")
     public ReservationService.QuoteView quote(@PathVariable UUID listingId,
@@ -46,6 +51,8 @@ public class ReservationController {
     @PostMapping("/api/reservations/{reservationId}/cancel")
     public ReservationService.ReservationView cancel(@AuthenticationPrincipal MarketplaceUser guest,
             @PathVariable UUID reservationId, @Valid @RequestBody ReservationService.CancelRequest request) {
+        if (stripeCancellation != null && stripeCancellation.hasAttempt(reservationId))
+            return stripeCancellation.cancel(guest, reservationId, request);
         return service.cancel(guest, reservationId, request);
     }
 }
