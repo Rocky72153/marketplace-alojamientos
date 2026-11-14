@@ -8,6 +8,7 @@ import { initAdministration } from './ep09-admin.js';
 import { initAccountTools } from './account-tools.js';
 import { initHostWorkspace } from './host.js';
 import { renderHomeSuggestions } from './home-suggestions.js';
+import { fetchPaymentMode, initStripeReturn } from './stripe-checkout.js';
 
 function initializeCitySuggestions(cityInput, citySuggestions, apiBase, documentRef) {
   if (!cityInput || !citySuggestions) return Promise.resolve();
@@ -150,6 +151,9 @@ if (typeof document !== 'undefined') {
   };
   const refreshHistory = (notice = '') => renderReservationHistory(historyContainer, apiBase, currentToken, globalThis.fetch,
     document, notice, historyCallbacks);
+  const query = typeof window === 'undefined' ? new URLSearchParams() : new URLSearchParams(window.location.search);
+  const paymentReturn = initStripeReturn(document.querySelector('#payment-return'), query.get('stripe_checkout'), apiBase,
+    () => currentToken, () => { void refreshHistory(); void notifications?.refresh(); }, document, globalThis.fetch);
   adminLink?.addEventListener?.('click', (event) => {
     event.preventDefault();
     if (currentRole !== 'ADMIN') return;
@@ -186,12 +190,19 @@ if (typeof document !== 'undefined') {
     if (currentToken) void notifications?.refresh();
     else notifications?.clear();
     bookingFlow?.syncAccount();
+    void paymentReturn?.refresh();
   });
 
-  const requestedListingId = typeof window === 'undefined'
-    ? null
-    : new URLSearchParams(window.location.search).get('listing');
+  const requestedListingId = query.get('listing');
   if (requestedListingId && detailSection && detailFeedback && detailContent) {
+    let paymentMode = null;
+    fetchPaymentMode(apiBase, globalThis.fetch).then((mode) => {
+      paymentMode = mode;
+      bookingFlow?.syncPaymentMode();
+    }).catch(() => {
+      paymentMode = 'UNAVAILABLE';
+      bookingFlow?.syncPaymentMode();
+    });
     detailSection.hidden = false;
     detailFeedback.textContent = 'Cargando alojamiento…';
     fetchListingDetail(requestedListingId, apiBase).then((listing) => {
@@ -199,7 +210,7 @@ if (typeof document !== 'undefined') {
       bookingFlow = initBooking(detailContent, listing, apiBase, () => currentToken, () => {
         void refreshHistory();
         void notifications?.refresh();
-      });
+      }, document, globalThis.fetch, { getPaymentMode: () => paymentMode });
       reviewList = initReviewList(detailContent, listing, apiBase, document, globalThis.fetch);
       bookingFlow?.syncAccount();
       detailFeedback.textContent = '';
