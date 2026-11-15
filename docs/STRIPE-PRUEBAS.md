@@ -2,6 +2,14 @@
 
 Esta integración es exclusivamente para un sandbox de Stripe. No recibe claves de producción ni realiza cobros reales. Su código y pruebas automatizadas no demuestran por sí solos que el despliegue haya sido configurado o que se haya completado un pago en Stripe.
 
+## Validación y publicación del 14 de noviembre de 2026
+
+Se completó un recorrido con el proveedor externo real en sandbox, desde una base PostgreSQL aislada: creación idempotente de Checkout, reserva pendiente, pago con tarjeta de prueba, confirmación del evento firmado, reserva confirmada, cancelación y reembolso confirmado por Stripe. El total y la devolución de prueba fueron COP 255.000, sin dinero real. La [evidencia estructurada](evidencias/stripe-sandbox-2026-11-14.json) conserva los identificadores para contrastarlos con el Dashboard del sandbox.
+
+Después se publicó el módulo en `http://moralesforero.lol/` y se verificó desde Internet que `/api/payments/config` devuelve `STRIPE_TEST`, `/api/health` devuelve `UP` y el webhook público devuelve 404. La base existente se respaldó y se restauró en una base temporal para comprobar la copia antes de aplicar la migración. La copia permanece protegida en el servidor. Los cambios de código continúan sujetos a la revisión de los PR.
+
+Las [plantillas del servicio](../deploy/ec2/stripe/) recuperan la clave restringida desde un único parámetro SecureString de AWS y la entregan mediante credenciales efímeras de systemd. El listener usa un usuario dedicado y la cuenta sandbox. El perfil IAM solo permite leer ese parámetro; otros procesos locales con acceso a IMDS podrían utilizar dicho permiso, por lo que el servidor se considera un entorno de demostración confiable. Un filtro global de IMDS probado se retiró porque interrumpía EC2 Instance Connect. No se presenta este diseño como aislamiento frente a administradores del equipo ni como despliegue de producción.
+
 La aplicación inicia Checkout en Stripe y mantiene la reserva pendiente hasta recibir un evento firmado válido. La página de retorno no confirma el pago. La cancelación solicita un reembolso de prueba y solo lo muestra como procesado cuando Stripe lo confirma. Los eventos perdidos y los reembolsos cuyo resultado siga incierto se señalan para revisión; no deben repetirse manualmente sin consultar primero en Stripe.
 
 Para configurar el servidor se necesitan el modo `STRIPE_TEST`, el identificador de la cuenta sandbox, la URL pública de la demostración, una clave restringida del sandbox y el secreto de firma del receptor. Las credenciales se deben suministrar por un mecanismo privado y permanecer fuera del repositorio, capturas y registros. La opción `marketplace.payment.stripe-allow-http-demo` habilita explícitamente una URL de retorno HTTP solo para este modo de pruebas. En HTTP se deben utilizar exclusivamente datos y cuentas ficticios.

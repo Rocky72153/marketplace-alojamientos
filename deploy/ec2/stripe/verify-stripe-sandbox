@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+"""Fail closed unless the local Stripe CLI session targets the approved sandbox."""
+import json
+import os
+import subprocess
+import sys
+
+STRIPE = "/opt/marketplace/stripe-cli/stripe"
+EXPECTED_ACCOUNT = "acct_1Ub5gzIhAtwt7sQc"
+os.environ.pop("STRIPE_API_KEY", None)
+try:
+    result = subprocess.run([STRIPE, "whoami", "--format", "json"], capture_output=True, text=True, timeout=20, check=True)
+    identity = json.loads(result.stdout)
+    if identity.get("account_id") != EXPECTED_ACCOUNT or identity.get("mode") != "test":
+        raise ValueError("sandbox mismatch")
+except (OSError, subprocess.SubprocessError, ValueError, json.JSONDecodeError):
+    # Never log CLI output: it can contain confidential account information.
+    print("No se pudo verificar la cuenta Stripe de prueba.", file=sys.stderr)
+    sys.exit(1)
