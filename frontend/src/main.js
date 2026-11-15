@@ -1,5 +1,6 @@
-import { fetchCitySuggestions, searchListings, validateSearch } from './search.js';
-import { buildListingDetailUrl, fetchListingDetail, renderListingDetail, renderListingDetailError } from './detail.js';
+import { buildSearchReturnUrl, fetchCitySuggestions } from './search.js';
+import { initSearchResults } from './search-results.js';
+import { fetchListingDetail, renderListingDetail, renderListingDetailError } from './detail.js';
 import { initAccount, renderReservationHistory } from './account.js';
 import { initBooking } from './booking.js';
 import { initNotifications } from './notifications.js';
@@ -93,9 +94,6 @@ function initializeCitySuggestions(cityInput, citySuggestions, apiBase, document
 }
 
 if (typeof document !== 'undefined') {
-  const searchForm = document.querySelector('#search-form');
-  const feedback = document.querySelector('#search-feedback');
-  const results = document.querySelector('#search-results');
   const detailSection = document.querySelector('#listing-detail');
   const detailFeedback = document.querySelector('#detail-feedback');
   const detailContent = document.querySelector('#detail-content');
@@ -116,6 +114,7 @@ if (typeof document !== 'undefined') {
   let bookingFlow = null;
   let reviewList = null;
   let navigation = null;
+  let searchController = null;
   const notifications = initNotifications(document.querySelector('#notifications-panel'), apiBase, () => currentToken,
     globalThis.fetch, document);
   const moderation = initReviewModeration(document.querySelector('#review-admin-content'), apiBase, () => currentToken,
@@ -146,6 +145,8 @@ if (typeof document !== 'undefined') {
   accountController = initAccount(document, apiBase, (session) => {
     const previousToken = currentToken;
     currentSession = session;
+    const paymentAccountLink = document.querySelector('#payment-account-link');
+    if (paymentAccountLink) paymentAccountLink.textContent = session ? 'Mi cuenta' : 'Iniciar sesión';
     currentToken = session?.accessToken || null;
     currentRole = session?.user?.role || null;
     accountTools?.sync(session);
@@ -175,6 +176,7 @@ if (typeof document !== 'undefined') {
   });
 
   navigation = initNavigation(document, typeof window === 'undefined' ? null : window, () => currentSession, (view) => {
+    if (view === 'explore') searchController?.resume();
     if (view === 'reservations') void refreshHistory();
     if (view === 'notifications') void notifications?.refresh();
     if (view === 'host') void host?.refresh();
@@ -200,7 +202,7 @@ if (typeof document !== 'undefined') {
       bookingFlow = initBooking(detailContent, listing, apiBase, () => currentToken, () => {
         void refreshHistory();
         void notifications?.refresh();
-      }, document, globalThis.fetch, { getPaymentMode: () => paymentMode, onRequireAccount: () => navigation?.navigate('account') });
+      }, document, globalThis.fetch, { getPaymentMode: () => paymentMode, onRequireAccount: () => navigation?.requireAccountForBooking() });
       reviewList = initReviewList(detailContent, listing, apiBase, document, globalThis.fetch);
       bookingFlow?.syncAccount();
       detailFeedback.textContent = '';
@@ -211,59 +213,10 @@ if (typeof document !== 'undefined') {
     });
   }
 
-  if (searchForm && feedback) {
-    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
-    let searchRevision = 0;
-    const checkin = document.querySelector('#checkin');
-    const checkout = document.querySelector('#checkout');
-    checkin.min = today;
-    checkout.min = today;
-    checkin.addEventListener('change', () => {
-      checkout.min = checkin.value || today;
-      if (checkout.value && checkout.value <= checkin.value) checkout.value = '';
-    });
-    searchForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const revision = ++searchRevision;
-      const formData = new FormData(searchForm);
-      const data = Object.fromEntries(formData.entries());
-      data.amenityIds = formData.getAll('amenityIds');
-      const error = validateSearch(data);
-      if (error) {
-        feedback.textContent = error;
-        results?.replaceChildren();
-        return;
-      }
-      feedback.textContent = 'Buscando alojamientos…';
-      searchListings(data, apiBase).then(({ items = [], total = 0 }) => {
-        if (revision !== searchRevision) return;
-        results?.replaceChildren();
-        for (const listing of items) {
-          const card = document.createElement('article');
-          card.className = 'listing-card';
-          const title = document.createElement('h3');
-          title.textContent = listing.title;
-          const location = document.createElement('p');
-          location.textContent = `${listing.city} · ${listing.type} · Hasta ${listing.capacity} huéspedes`;
-          const price = document.createElement('p');
-          price.className = 'listing-price';
-          price.textContent = `$${Number(listing.pricePerNight).toLocaleString('es-CO')} por noche`;
-          const detailLink = document.createElement('a');
-          detailLink.className = 'listing-detail-link';
-          detailLink.href = buildListingDetailUrl(listing.id);
-          detailLink.textContent = 'Ver alojamiento';
-          card.append(title, location, price, detailLink);
-          results?.append(card);
-        }
-        const noun = total === 1 ? 'alojamiento' : 'alojamientos';
-        const resultLabel = `${total} ${noun} encontrado${total === 1 ? '' : 's'}.`;
-        feedback.textContent = total ? resultLabel : 'No encontramos alojamientos con esos criterios.';
-      }).catch((error_) => {
-        if (revision !== searchRevision) return;
-        feedback.textContent = error_.message || 'No fue posible consultar los alojamientos.';
-        results?.replaceChildren();
-      });
-    });
-  }
+  const backLink = document.querySelector('.back-link');
+  if (backLink) backLink.href = buildSearchReturnUrl(query);
+  searchController = initSearchResults(document, apiBase, {
+    query, windowRef: typeof window === 'undefined' ? null : window,
+  });
   await initialSuggestions;
 }

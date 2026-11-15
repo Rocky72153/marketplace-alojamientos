@@ -54,12 +54,16 @@
           </div>
           <div id="account-tools"></div>
           <p id="account-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <div class="view-actions">
+            <a id="account-listing-return" href="#alojamiento" data-view-link="detail" hidden>Volver al alojamiento</a>
+            <a id="account-payment-return" href="#pago" data-view-link="payment" hidden>Ver estado del pago</a>
+          </div>
         </div>
       </section>
       </div>
       <div id="view-payment" class="app-view" data-view="payment" tabindex="-1" hidden>
       <section id="payment-return" class="account-panel" aria-label="Estado del pago de prueba" hidden></section>
-      <div class="view-actions"><a href="#mi-cuenta" data-view-link="account">Mi cuenta</a><a href="#reservas" data-view-link="reservations">Ver mis reservas</a></div>
+      <div class="view-actions"><a id="payment-account-link" href="#mi-cuenta" data-view-link="account">Iniciar sesión</a><a href="#reservas" data-view-link="reservations">Ver mis reservas</a></div>
       </div>
       <div id="view-notifications" class="app-view" data-view="notifications" tabindex="-1" hidden>
       <section id="notifications-panel" class="notifications-panel" aria-labelledby="notifications-title" hidden>

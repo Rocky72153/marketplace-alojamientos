@@ -41,6 +41,12 @@ function makeIdempotencyKey() {
   throw new Error('Tu navegador no puede generar una clave segura para la reserva.');
 }
 
+function validDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return false;
+  const date = new Date(`${value}T00:00:00Z`);
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
 export function initBooking(container, listing, apiBase, getToken, onReservationChanged = () => {},
   documentRef = globalThis.document, fetchImpl = globalThis.fetch, options = {}) {
   if (!container || !listing) return null;
@@ -58,6 +64,18 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
   checkOut.type = 'date'; checkOut.name = 'checkOut'; checkOut.required = true; checkOut.min = checkIn.value; checkOut.value = laterDate(9);
   const guests = el(documentRef, 'input');
   guests.type = 'number'; guests.name = 'guests'; guests.required = true; guests.min = '1'; guests.max = String(listing.capacity); guests.value = String(Math.min(2, listing.capacity));
+  const win = options.window || documentRef.defaultView || globalThis.window;
+  const params = new URLSearchParams(win?.location?.search || '');
+  const requestedCheckIn = params.get('checkin');
+  const requestedCheckOut = params.get('checkout');
+  const requestedGuests = params.get('guests');
+  if (validDate(requestedCheckIn) && requestedCheckIn >= bogotaToday()) {
+    checkIn.value = requestedCheckIn;
+    checkOut.min = requestedCheckIn;
+    if (checkOut.value <= requestedCheckIn) checkOut.value = '';
+  }
+  if (validDate(requestedCheckOut) && requestedCheckOut > checkIn.value) checkOut.value = requestedCheckOut;
+  if (/^[1-9]\d*$/.test(requestedGuests || '') && Number(requestedGuests) <= Number(listing.capacity)) guests.value = requestedGuests;
   const fields = [
     ['Llegada', checkIn], ['Salida', checkOut], ['Huéspedes', guests],
   ];
@@ -211,6 +229,13 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
     const token = getToken();
     if (!token) {
       feedback.textContent = 'Inicia sesión como huésped para confirmar la reserva.';
+      if (win?.location?.href && win?.history?.replaceState) {
+        const url = new URL(win.location.href);
+        url.searchParams.set('checkin', checkIn.value);
+        url.searchParams.set('checkout', checkOut.value);
+        url.searchParams.set('guests', guests.value);
+        win.history.replaceState(win.history.state, '', url);
+      }
       if (options.onRequireAccount) { options.onRequireAccount(); return; }
       const accountPanel = documentRef.querySelector('#account-panel');
       if (accountPanel) accountPanel.hidden = false;
@@ -280,6 +305,9 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
         accountToken = nextToken;
         accountRevision += 1;
         if (reservationInFlight) clearQuote();
+        else if (current.payload) feedback.textContent = nextToken
+          ? 'Sesión iniciada. Revisa la cotización antes de continuar.'
+          : 'Inicia sesión o crea una cuenta de huésped para confirmar la reserva.';
       }
       if (!current.payload) return;
       syncPaymentMode();
