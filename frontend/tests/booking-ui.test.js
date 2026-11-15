@@ -36,6 +36,41 @@ function find(node, predicate) {
   return null;
 }
 
+test('recupera fechas y huéspedes de búsqueda y conserva cambios al solicitar acceso', async () => {
+  const win = { location: new URL('http://localhost/?listing=listing-1&checkin=2099-12-10&checkout=2099-12-12&guests=3') };
+  win.history = { replaceState(_state, _unused, url) { win.location = new URL(url); } };
+  let prompted = false;
+  const doc = { createElement: (tag) => new MockElement(tag), defaultView: win };
+  const fetchImpl = async () => ({ ok: true, json: async () => ({ nights: 2, extras: [], total: 100000 }) });
+  const flow = initBooking(new MockElement('div'), { id: 'listing-1', capacity: 4 }, 'http://localhost:8080',
+    () => null, () => {}, doc, fetchImpl, { onRequireAccount: () => { prompted = true; } });
+  const checkIn = find(flow.form, (node) => node.name === 'checkIn');
+  const checkOut = find(flow.form, (node) => node.name === 'checkOut');
+  const guests = find(flow.form, (node) => node.name === 'guests');
+  assert.equal(checkIn.value, '2099-12-10');
+  assert.equal(checkOut.value, '2099-12-12');
+  assert.equal(guests.value, '3');
+  checkIn.value = '2099-12-11';
+  guests.value = '2';
+  await flow.form.dispatch('submit');
+  await flow.reserveButton.dispatch('click');
+  assert.equal(prompted, true);
+  assert.equal(win.location.searchParams.get('checkin'), '2099-12-11');
+  assert.equal(win.location.searchParams.get('checkout'), '2099-12-12');
+  assert.equal(win.location.searchParams.get('guests'), '2');
+});
+
+test('ignora fechas imposibles y cantidades fuera de capacidad en la URL', () => {
+  const doc = { createElement: (tag) => new MockElement(tag), defaultView: {
+    location: new URL('http://localhost/?checkin=2099-02-31&checkout=mal&guests=99'),
+  } };
+  const flow = initBooking(new MockElement('div'), { id: 'listing-1', capacity: 4 }, 'http://localhost:8080',
+    () => null, () => {}, doc);
+  assert.notEqual(find(flow.form, (node) => node.name === 'checkIn').value, '2099-02-31');
+  assert.notEqual(find(flow.form, (node) => node.name === 'checkOut').value, 'mal');
+  assert.equal(find(flow.form, (node) => node.name === 'guests').value, '2');
+});
+
 test('cotiza extras del alojamiento y confirma con una clave idempotente de pago simulado', async () => {
   const container = new MockElement('div');
   const accountPanel = new MockElement('section');
