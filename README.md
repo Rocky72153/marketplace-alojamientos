@@ -4,6 +4,8 @@ Proyecto de curso de Ingeniería de Software I — Universidad El Bosque, period
 
 Marketplace web para conectar anfitriones con huéspedes y permitir publicación, búsqueda, disponibilidad, cotización, reserva y cancelación de alojamientos temporales.
 
+**Demostración publicada:** [moralesforero.lol](http://moralesforero.lol/), con 10.000 alojamientos ficticios colombianos y Stripe sandbox. Se comprobó una reserva, la confirmación por evento firmado y su reembolso de prueba; consulta [configuración y evidencia](docs/STRIPE-PRUEBAS.md). Usar solo cuentas y datos ficticios en esta demostración HTTP. Los cambios recientes se revisan en [PR #36](https://github.com/Rocky72153/marketplace-alojamientos/pull/36).
+
 ## Alcance implementado
 
 La base funcional cubre registro e inicio de sesión con token, perfil, publicaciones, disponibilidad, búsqueda, detalle público, cotización, reserva idempotente, historial propio y cancelación con reembolso simulado. También incluye notificaciones internas sobre cambios de publicación y reservas, reseñas de estancias completadas y moderación de reseñas por administradores. Los cobros reales y el envío real de correos no forman parte del MVP. Las tarifas, reglas de cálculo, privacidad y recuperación de disponibilidad se describen en [EP-05 y EP-06](docs/EP05-EP06-reservas-cancelaciones.md); la implementación y pruebas de notificaciones y reseñas se describen en [EP-07 y EP-08](docs/EP07-EP08-EVIDENCE.md).
