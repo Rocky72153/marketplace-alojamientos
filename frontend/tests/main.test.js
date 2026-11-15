@@ -62,7 +62,11 @@ test('conecta validación, búsqueda y mensajes de error de la interfaz', async 
     await new Promise(setImmediate);
     assert.match(feedback.textContent, /1 alojamiento encontrado/i);
     assert.equal(cards[0].children[0].textContent, 'Casa segura');
-    assert.equal(cards[0].children[3].href, '/?listing=a4887b19-653a-4c03-b2d8-7717ebcd3205');
+    const detailUrl = new URL(cards[0].children[3].href, 'http://marketplace.test');
+    assert.equal(detailUrl.searchParams.get('listing'), 'a4887b19-653a-4c03-b2d8-7717ebcd3205');
+    assert.equal(detailUrl.searchParams.get('checkin'), formValues.checkin);
+    assert.equal(detailUrl.searchParams.get('checkout'), formValues.checkout);
+    assert.equal(detailUrl.searchParams.get('guests'), String(formValues.guests));
     assert.equal(cards[0].children[3].textContent, 'Ver alojamiento');
 
     formValues.city = 'Sin resultados';
