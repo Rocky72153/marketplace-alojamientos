@@ -2,7 +2,7 @@
 
 Este inventario describe las rutas del backend actual. La URL base local es `http://localhost:8080`; las rutas incluyen el prefijo `/api`. El [OpenAPI de Entrega 1](entrega-1/10-openapi.yaml) conserva el diseño inicial y contiene operaciones y códigos propuestos que no son equivalentes a la implementación.
 
-Para las operaciones protegidas se envía `Authorization: Bearer <token>`. El servidor agrega `X-Correlation-ID` a las respuestas y lo incluye como `correlationId` en el cuerpo de los errores. Las cuentas inactivas o restringidas no pueden operar con su sesión. El pago y la recuperación de contraseña son simulados.
+Para las operaciones protegidas se envía `Authorization: Bearer <token>`. El servidor agrega `X-Correlation-ID` a las respuestas y lo incluye como `correlationId` en el cuerpo de los errores. Las cuentas inactivas o restringidas no pueden operar con su sesión. La recuperación de contraseña es simulada. Los pagos usan el simulador interno o Stripe sandbox según la configuración; no hay cobros reales.
 
 Las contraseñas de registro deben tener entre 8 y 72 caracteres y ocupar como máximo 72 bytes UTF-8; los caracteres acentuados y otros símbolos pueden ocupar varios bytes.
 
@@ -38,12 +38,23 @@ Los anuncios de un anfitrión inactivo o restringido no aparecen en búsquedas n
 | Método y ruta | Uso |
 | --- | --- |
 | `POST /api/listings/{id}/quotes` | Cotizar fechas, huéspedes y extras; público y sin crear una reserva. |
-| `POST /api/reservations` | Confirmar reserva como huésped con la cabecera obligatoria `Idempotency-Key`. |
+| `POST /api/reservations` | Confirmar reserva en el simulador interno como huésped con `Idempotency-Key`; no disponible en modo Stripe. |
 | `GET /api/reservations` | Consultar el historial propio. |
 | `GET /api/reservations/{id}` | Consultar una reserva propia. |
 | `POST /api/reservations/{id}/cancel` | Cancelar una reserva propia con motivo. |
 
-La solicitud de cotización incluye `checkIn`, `checkOut`, `guests` y, opcionalmente, `extras` con `extraId` y `quantity`. La reserva incluye esos mismos datos y `listingId`; no recibe un identificador de cotización. Los montos se calculan de nuevo en el servidor. El pago y cualquier reembolso son simulados.
+La solicitud de cotización incluye `checkIn`, `checkOut`, `guests` y, opcionalmente, `extras` con `extraId` y `quantity`. La reserva incluye esos mismos datos y `listingId`; no recibe un identificador de cotización. Los montos se calculan de nuevo en el servidor.
+
+## Stripe sandbox
+
+| Método y ruta | Uso |
+| --- | --- |
+| `GET /api/payments/config` | Consultar públicamente el modo de pago, sin credenciales. |
+| `POST /api/stripe-test/checkouts` | Crear Checkout como huésped, con el cuerpo de reserva y `Idempotency-Key`. Devuelve `attemptId`, `status`, `checkoutUrl` y `expiresAt`. |
+| `GET /api/stripe-test/checkouts/{id}` | Consultar el intento propio autenticado. |
+| `POST /api/stripe-test/webhook` | Recibir el cuerpo sin modificar y `Stripe-Signature`; solo en modo Stripe. En la demostración HTTP se entrega por loopback con Stripe CLI y Nginx bloquea la ruta pública. |
+
+La reserva queda pendiente hasta un evento firmado válido. La cancelación de una reserva pagada solicita una devolución de prueba; el historial diferencia reembolso pendiente, confirmado, fallido o en revisión. [Configuración y evidencia](STRIPE-PRUEBAS.md).
 
 ## Notificaciones, reseñas y administración
 
@@ -58,4 +69,4 @@ La solicitud de cotización incluye `checkIn`, `checkOut`, `guests` y, opcionalm
 | `GET /api/admin/reservations/manual-review`, `POST /api/admin/reservations/{id}/resolve-review` | Consultar y resolver revisiones manuales. Solo administrador. |
 | `GET /api/admin/dashboard`, `GET /api/admin/reports` | Consultar indicadores y exportaciones. Solo administrador. |
 
-Los detalles de campos y validaciones se encuentran en los controladores y tipos de solicitud del backend, y su comportamiento se comprueba en las pruebas de aceptación. Este inventario no afirma que exista un servicio de pagos o de correo externo.
+Los detalles de campos y validaciones se encuentran en los controladores y tipos de solicitud del backend. La integración externa de Stripe fue comprobada en sandbox; el envío real de correo continúa fuera del alcance implementado.
