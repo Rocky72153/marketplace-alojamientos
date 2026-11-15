@@ -211,6 +211,7 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
     const token = getToken();
     if (!token) {
       feedback.textContent = 'Inicia sesión como huésped para confirmar la reserva.';
+      if (options.onRequireAccount) { options.onRequireAccount(); return; }
       const accountPanel = documentRef.querySelector('#account-panel');
       if (accountPanel) accountPanel.hidden = false;
       documentRef.querySelector('#account-panel')?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });

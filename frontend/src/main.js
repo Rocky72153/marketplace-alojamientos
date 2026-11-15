@@ -9,6 +9,7 @@ import { initAccountTools } from './account-tools.js';
 import { initHostWorkspace } from './host.js';
 import { renderHomeSuggestions } from './home-suggestions.js';
 import { fetchPaymentMode, initStripeReturn } from './stripe-checkout.js';
+import { initNavigation } from './navigation.js';
 
 function initializeCitySuggestions(cityInput, citySuggestions, apiBase, documentRef) {
   if (!cityInput || !citySuggestions) return Promise.resolve();
@@ -114,6 +115,7 @@ if (typeof document !== 'undefined') {
   let accountController = null;
   let bookingFlow = null;
   let reviewList = null;
+  let navigation = null;
   const notifications = initNotifications(document.querySelector('#notifications-panel'), apiBase, () => currentToken,
     globalThis.fetch, document);
   const moderation = initReviewModeration(document.querySelector('#review-admin-content'), apiBase, () => currentToken,
@@ -128,20 +130,7 @@ if (typeof document !== 'undefined') {
   const host = initHostWorkspace(document.querySelector('#host-workspace-content'), apiBase, () => currentSession,
     document, globalThis.fetch);
   document.querySelector('#host-entry')?.addEventListener('click', () => {
-    if (currentRole === 'HOST') {
-      if (hostPanel) hostPanel.hidden = false;
-      void host?.refresh();
-      hostPanel?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
-    } else if (!currentSession) {
-      const panel = document.querySelector('#account-panel');
-      const role = document.querySelector('#register-form select[name="role"]');
-      if (role) role.value = 'HOST';
-      if (panel) panel.hidden = false;
-      panel?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
-    } else {
-      const message = document.querySelector('#host-entry-feedback');
-      if (message) message.textContent = 'Para administrar alojamientos necesitas una cuenta de anfitrión.';
-    }
+    navigation?.navigate('host');
   });
   void renderHomeSuggestions(document.querySelector('#home-suggestions'), apiBase, document, globalThis.fetch);
   const historyCallbacks = {
@@ -154,20 +143,6 @@ if (typeof document !== 'undefined') {
   const query = typeof window === 'undefined' ? new URLSearchParams() : new URLSearchParams(window.location.search);
   const paymentReturn = initStripeReturn(document.querySelector('#payment-return'), query.get('stripe_checkout'), apiBase,
     () => currentToken, () => { void refreshHistory(); void notifications?.refresh(); }, document, globalThis.fetch);
-  adminLink?.addEventListener?.('click', (event) => {
-    event.preventDefault();
-    if (currentRole !== 'ADMIN') return;
-    if (adminPanel) adminPanel.hidden = false;
-    void moderation?.refresh();
-    adminPanel?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
-  });
-  adminWorkspaceLink?.addEventListener?.('click', (event) => {
-    event.preventDefault();
-    if (currentRole !== 'ADMIN') return;
-    if (adminWorkspace) adminWorkspace.hidden = false;
-    void administration?.refresh();
-    adminWorkspace?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
-  });
   accountController = initAccount(document, apiBase, (session) => {
     const previousToken = currentToken;
     currentSession = session;
@@ -183,6 +158,11 @@ if (typeof document !== 'undefined') {
     if (adminWorkspace) adminWorkspace.hidden = true;
     administration?.clear();
     if (reservationLink) reservationLink.hidden = Boolean(session) && currentRole !== 'GUEST';
+    const hostLink = document.querySelector('#host-link');
+    if (hostLink) {
+      hostLink.hidden = Boolean(session) && currentRole !== 'HOST';
+      hostLink.textContent = currentRole === 'HOST' ? 'Mis alojamientos' : 'Soy anfitrión';
+    }
     if (adminPanel) adminPanel.hidden = true;
     moderation?.clear();
     if (currentRole === 'GUEST') void refreshHistory();
@@ -191,6 +171,16 @@ if (typeof document !== 'undefined') {
     else notifications?.clear();
     bookingFlow?.syncAccount();
     void paymentReturn?.refresh();
+    navigation?.syncSession();
+  });
+
+  navigation = initNavigation(document, typeof window === 'undefined' ? null : window, () => currentSession, (view) => {
+    if (view === 'reservations') void refreshHistory();
+    if (view === 'notifications') void notifications?.refresh();
+    if (view === 'host') void host?.refresh();
+    if (view === 'moderation') void moderation?.refresh();
+    if (view === 'admin') void administration?.refresh();
+    if (view === 'payment') void paymentReturn?.refresh();
   });
 
   const requestedListingId = query.get('listing');
@@ -210,7 +200,7 @@ if (typeof document !== 'undefined') {
       bookingFlow = initBooking(detailContent, listing, apiBase, () => currentToken, () => {
         void refreshHistory();
         void notifications?.refresh();
-      }, document, globalThis.fetch, { getPaymentMode: () => paymentMode });
+      }, document, globalThis.fetch, { getPaymentMode: () => paymentMode, onRequireAccount: () => navigation?.navigate('account') });
       reviewList = initReviewList(detailContent, listing, apiBase, document, globalThis.fetch);
       bookingFlow?.syncAccount();
       detailFeedback.textContent = '';
