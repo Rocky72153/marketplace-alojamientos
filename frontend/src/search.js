@@ -58,7 +58,7 @@ function appendSearchFilters(params, filters, page = 0) {
 
 /** Preserve the exact search when opening a listing or returning to its results. */
 export function buildSearchDetailUrl(listingId, filters, page = 0) {
-  const url = new URL(buildListingDetailUrl(listingId), 'http://marketplace.invalid');
+  const url = new URL(buildListingDetailUrl(listingId), 'https://marketplace.invalid');
   appendSearchFilters(url.searchParams, filters, page);
   return `${url.pathname}${url.search}`;
 }

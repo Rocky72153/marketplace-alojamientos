@@ -1,7 +1,7 @@
 # Verificación del frontend y Stripe — 15 de noviembre de 2026
 
 La versión publicada en `http://moralesforero.lol/` usa el paquete de interfaz
-`f950656ff48e3b8b` y mantiene el servidor de pagos previamente validado. Conserva
+`6006e79a47c4d669` y mantiene el servidor de pagos previamente validado. Conserva
 los 10.000 alojamientos activos del catálogo de demostración.
 
 ## Correcciones
