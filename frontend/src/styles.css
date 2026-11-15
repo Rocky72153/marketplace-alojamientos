@@ -149,6 +149,7 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 .search-filters input[type=checkbox] { width: 16px; min-height: 16px; accent-color: var(--accent); }
 .city-suggestions { border-radius: 14px; padding: 7px; }
 .listing-results { gap: 18px; text-align: left; }
+.search-pagination { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px; }
 .listing-card { position: relative; padding: 24px; border-color: var(--line); border-radius: 18px; background: linear-gradient(155deg, #f4f8f0 0, #fff 45%); box-shadow: 0 4px 18px #1b423307; transition: transform .18s ease, box-shadow .18s ease; overflow-wrap: anywhere; }
 .listing-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px #1b423312; }
 .listing-card h3 { color: var(--ink); font-size: 1.12rem; line-height: 1.45; }
