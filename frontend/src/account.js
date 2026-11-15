@@ -143,14 +143,30 @@ function setFeedback(feedback, message) {
   if (feedback) feedback.textContent = message;
 }
 
+const RESERVATION_STATES = {
+  PENDING_PAYMENT: 'pendiente de pago', CONFIRMED: 'confirmada', CANCELLED: 'cancelada', COMPLETED: 'completada',
+};
+const PAYMENT_STATES = {
+  TEST_PENDING: 'pago de prueba pendiente',
+  TEST_APPROVED: 'pago de prueba aprobado',
+  TEST_EXPIRED: 'pago de prueba vencido',
+  TEST_NO_REFUND: 'sin reembolso de prueba',
+  TEST_REFUND_PENDING: 'reembolso de prueba pendiente',
+  TEST_REFUND_REVIEW: 'reembolso de prueba requiere revisión',
+  TEST_REFUND_FAILED: 'reembolso de prueba fallido; requiere revisión',
+  TEST_REFUNDED: 'reembolso de prueba confirmado',
+};
+
 function reservationCard(documentRef, reservation, cancelContext) {
   const card = element(documentRef, 'article', 'reservation-card');
   card.append(element(documentRef, 'h3', '', reservation.listingTitle));
   card.append(element(documentRef, 'p', '', `${reservation.checkIn} al ${reservation.checkOut} · ${reservation.nights} noches`));
   card.append(element(documentRef, 'p', 'reservation-total', `Total: ${money(reservation.total)} COP`));
-  card.append(element(documentRef, 'p', '', `Estado: ${reservation.status} · Pago: ${reservation.paymentStatus.replaceAll('_', ' ').toLowerCase()}`));
-  if (reservation.status === 'CANCELLED') {
-    card.append(element(documentRef, 'p', '', `Reembolso simulado: ${reservation.refundPercentage}% · ${money(reservation.refundAmount)} COP`));
+  const status = RESERVATION_STATES[reservation.status] || 'no disponible';
+  const payment = PAYMENT_STATES[reservation.paymentStatus] || 'estado de pago no disponible';
+  card.append(element(documentRef, 'p', '', `Estado: ${status} · ${payment}`));
+  if (reservation.status === 'CANCELLED' && reservation.refundPercentage != null && reservation.refundAmount != null) {
+    card.append(element(documentRef, 'p', '', `Reembolso de prueba: ${reservation.refundPercentage}% · ${money(reservation.refundAmount)} COP`));
   }
   if (reservation.status === 'CONFIRMED') card.append(cancellationForm(documentRef, reservation, cancelContext));
   if (reservation.status === 'COMPLETED') {
@@ -193,8 +209,9 @@ async function cancelReservation(reservation, reason, button, context) {
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.message || 'No fue posible cancelar la reserva.');
     if (context.callbacks.getToken && context.callbacks.getToken() !== token) return;
+    const payment = PAYMENT_STATES[result.paymentStatus];
     await renderReservationHistory(container, apiBase, token, fetchImpl, documentRef,
-      `Cancelación registrada. Reembolso de prueba: ${result.refundPercentage}% (${money(result.refundAmount)} COP).`,
+      `Cancelación registrada. ${payment ? `${payment}. ` : ''}Reembolso de prueba: ${result.refundPercentage}% (${money(result.refundAmount)} COP).`,
       context.callbacks);
     context.callbacks.onReservationChanged?.();
   } catch (error) {
