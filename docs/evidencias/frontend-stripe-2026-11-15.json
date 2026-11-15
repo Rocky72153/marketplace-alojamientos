@@ -13,8 +13,8 @@
   "reservation_status": "PENDING_PAYMENT",
   "total_cop": 654850,
   "new_payment_executed": false,
-  "verified_utc": "2026-11-15T15:32:42.636Z",
-  "frontend_release": "f950656ff48e3b8b",
+  "verified_utc": "2026-11-15T15:38:19.017Z",
+  "frontend_release": "6006e79a47c4d669",
   "frontend_tests": {
     "passed": 94,
     "failed": 0,
