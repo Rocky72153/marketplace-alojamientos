@@ -58,6 +58,7 @@ public class StripeEventTransactions {
                 reservation.expireStripeTestPayment();
                 attempt.expired();
                 attempt.requireRefund(event.paymentIntentId(), attempt.getAmountMinor());
+                reservation.stripeTestLateRefundPending(event.paymentIntentId(), attempt.getAmountMinor());
                 audit.recordEvent("STRIPE_TEST_REFUND_REQUIRED", attempt.getGuestId(), "RESERVATION", attempt.getReservationId(), "SUCCESS", null);
             } else {
                 reservation.confirmStripeTestPayment(event.paymentIntentId());
@@ -69,6 +70,8 @@ public class StripeEventTransactions {
             expireLocked(attempt);
         } else if (action == StripeCheckoutEventDecision.Action.REFUND_LATE) {
             attempt.requireRefund(event.paymentIntentId(), attempt.getAmountMinor());
+            Reservation reservation = reservations.lockById(attempt.getReservationId()).orElseThrow(this::retry);
+            reservation.stripeTestLateRefundPending(event.paymentIntentId(), attempt.getAmountMinor());
         }
         processed.save(new StripeProcessedEvent(event.eventId()));
     }

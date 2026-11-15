@@ -73,6 +73,7 @@ class StripeEventTransactionsTest {
         assertEquals(StripeCheckoutAttempt.State.REFUND_PENDING, attempt.getState());
         assertEquals(80000L, attempt.getRefundAmountMinor());
         verify(reservation).expireStripeTestPayment();
+        verify(reservation).stripeTestLateRefundPending("pi_123", 80000L);
         verify(inventory).releaseReservation(listingId, reservationId);
         verify(reservation, never()).confirmStripeTestPayment(anyString());
     }
@@ -81,7 +82,21 @@ class StripeEventTransactionsTest {
         assertEquals(StripeCheckoutAttempt.State.EXPIRED, attempt.getState());
         subject.process(paid("evt_late"));
         assertEquals(StripeCheckoutAttempt.State.REFUND_PENDING, attempt.getState());
+        verify(reservation).stripeTestLateRefundPending("pi_123", 80000L);
         verify(inventory, times(1)).releaseReservation(listingId, reservationId);
+    }
+    @Test void lateRefundUpdatesReservationWithoutClearingManualReview() {
+        var late = new Reservation();
+        late.awaitStripeTestPayment();
+        late.expireStripeTestPayment();
+        late.requireManualReview();
+        late.stripeTestLateRefundPending("pi_123", 80000L);
+        assertEquals(ReservationStatus.CANCELLED, late.getStatus());
+        assertEquals("TEST_REFUND_PENDING", late.getPaymentStatus());
+        assertEquals("pi_123", late.getPaymentReference());
+        assertEquals(new java.math.BigDecimal("800.00"), late.getRefundAmount());
+        assertEquals(new java.math.BigDecimal("100.00"), late.getRefundPercentage());
+        assertTrue(late.isManualReviewRequired());
     }
     @Test void amountMismatchDoesNotFulfillOrRecordEvent() {
         var wrong = new StripeTestGateway.VerifiedEvent("evt_bad", "checkout.session.completed", attempt.getId(),

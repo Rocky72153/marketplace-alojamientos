@@ -189,6 +189,16 @@ public class Reservation {
         if (amount.signum() > 0) this.paymentStatus = "TEST_REFUND_PENDING";
     }
 
+    void stripeTestLateRefundPending(String paymentIntentId, long amountMinor) {
+        if (this.status != ReservationStatus.CANCELLED || !"TEST_EXPIRED".equals(this.paymentStatus)
+                || paymentIntentId == null || !paymentIntentId.startsWith("pi_") || amountMinor <= 0)
+            throw new IllegalStateException("Reserva no disponible para reembolso tardío.");
+        this.paymentReference = paymentIntentId;
+        this.paymentStatus = "TEST_REFUND_PENDING";
+        this.refundPercentage = new BigDecimal("100.00");
+        this.refundAmount = BigDecimal.valueOf(amountMinor, 2);
+    }
+
     void stripeTestRefunded() { this.paymentStatus = "TEST_REFUNDED"; }
     void stripeTestRefundFailed() { this.paymentStatus = "TEST_REFUND_FAILED"; this.manualReviewRequired = true; }
     void stripeTestRefundUncertain() { this.paymentStatus = "TEST_REFUND_REVIEW"; this.manualReviewRequired = true; }
