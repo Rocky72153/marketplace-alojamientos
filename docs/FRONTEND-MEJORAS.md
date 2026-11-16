@@ -1,6 +1,6 @@
 # Mejoras de experiencia y diseño — 15 de noviembre de 2026
 
-Paquete de interfaz: `49e2397dfdde3191`. La actualización mantiene el backend,
+Paquete de interfaz: `71d3d56ed90c7ea5`. La actualización mantiene el backend,
 el catálogo y Stripe en modo de prueba.
 
 ## Cambios entregados
