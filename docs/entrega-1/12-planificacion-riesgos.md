@@ -21,17 +21,19 @@ Esta asignación es la misma del acta de constitución y del documento 19 (unifi
 
 Jira contiene seis sprints, del 19 de octubre al 26 de noviembre de 2026, fecha de la entrega final. Los sprints 1 a 5 duran una semana y van de lunes a lunes a las 09:00, hora de Bogotá. El Sprint 6 es corto (23 al 26 de noviembre) y termina con la entrega. Los sprints 7 y 8 del plan inicial quedaron sin uso porque caían después de la entrega.
 
-**Plan vigente (08/11/2026)**
+**Plan vigente (actualizado el 16/11/2026)**
 
 | Sprint | Fechas | Objetivo | Historias | Puntos | Estado en Jira |
 |---|---|---|---|---:|---|
 | MARKET Sprint 1 | 19 al 26 oct 2026 | Identidad, publicaciones, disponibilidad y búsqueda | HU-01 a HU-07 | 37 terminados | Cerrado |
 | MARKET Sprint 2 | 26 oct al 2 nov 2026 | Detalle de alojamiento | HU-08 | 3 terminados | Cerrado |
 | MARKET Sprint 3 | 2 al 9 nov 2026 | Terminar e integrar HU-09 a HU-12 | Ninguna terminada (PR #15 sin revisar) | 0 | Cerrado |
-| MARKET Sprint 4 | 9 al 16 nov 2026 | Revisar, integrar y validar cotización, reserva, historial y cancelación | HU-09 a HU-12 | 29 | Activo |
-| MARKET Sprint 5 | 16 al 23 nov 2026 | Notificaciones, reseñas, moderación, administración, dashboard y trazas | HU-13 a HU-17 y HU-19 | 29 | Futuro |
-| MARKET Sprint 6 | 23 al 26 nov 2026 | Exportación de reportes, integración final, pruebas, release y entrega | HU-18 | 8 | Futuro |
-| **Total** | **19 oct al 26 nov 2026** | **Backlog completo para la entrega final** | **19 historias** | **106 (40 terminados)** | |
+| MARKET Sprint 4 | 9 al 16 nov 2026 | Integrar en main HU-09 a HU-19 | HU-09 a HU-19 (PR #15, #26, #29 y #31) | 66 terminados | Cerrado |
+| MARKET Sprint 5 | 16 al 23 nov 2026 | Revisión de los PR #35 a #37, diagramas que faltan, demostración estable y registro de eventos Scrum | Tareas MARKET-70 a MARKET-79 | - | Activo |
+| MARKET Sprint 6 | 23 al 26 nov 2026 | Release v1.0, demostración final, sustentación y acta de cierre | Tareas MARKET-80 y MARKET-81 | - | Futuro |
+| **Total** | **19 oct al 26 nov 2026** | **Backlog completo para la entrega final** | **19 historias** | **106 (106 terminados)** | |
+
+HU-13 a HU-19 estaban planeadas para los sprints 5 y 6, pero se terminaron el 11 y 12 de noviembre, dentro del Sprint 4. El 16/11/2026 se pasaron al Sprint 4 antes de cerrarlo; en el reporte de Jira aparecen como alcance agregado durante el sprint. Los sprints 5 y 6 quedaron para tareas de revisión, diagramas, release y cierre, que no se estiman en puntos.
 
 **Plan inicial (14/10/2026, reemplazado el 08/11/2026)**
 
@@ -47,7 +49,7 @@ Jira contiene seis sprints, del 19 de octubre al 26 de noviembre de 2026, fecha 
 | MARKET Sprint 8 | 7–14 dic 2026 | Reportes y trazabilidad técnica | HU-18–HU-19 | 13 |
 | **Total** | **8 semanas** | **Backlog total propuesto; no equivale al MVP MUST** | **19 historias** | **106** |
 
-El 08/11/2026 se decidió mantener las 19 historias para la entrega del 26/11: HU-01, HU-04 a HU-12 y HU-19 son MUST; HU-02, HU-03 y HU-13 a HU-17 son SHOULD; HU-18 es COULD. La velocidad real de los sprints 1 a 3 fue de 37, 3 y 0 puntos (promedio de 13,3 puntos por sprint). Los sprints 4 y 5 piden 29 puntos cada uno, más del doble de ese promedio, así que el plan solo se cumple si el PR #15 (HU-09 a HU-12, ya programado) se revisa e integra al inicio del Sprint 4 y los PR se revisan sin esperas largas. Si en la Sprint Review del Sprint 5 el trabajo no alcanza, se recorta primero HU-18 (COULD) y después las SHOULD; las MUST no se recortan. La disponibilidad estimada es de 4 a 6 horas por semana por integrante (8 a 12 horas combinadas).
+El 08/11/2026 se decidió mantener las 19 historias para la entrega del 26/11: HU-01, HU-04 a HU-12 y HU-19 son MUST; HU-02, HU-03 y HU-13 a HU-17 son SHOULD; HU-18 es COULD. La velocidad real fue de 37, 3, 0 y 66 puntos en los sprints 1 a 4 (promedio de 26,5 puntos por sprint): el PR #15 se integró el 10/11 y HU-13 a HU-19 se terminaron el 11 y 12 de noviembre, así que el backlog completo quedó terminado en el Sprint 4 y no fue necesario recortar alcance. La disponibilidad estimada es de 4 a 6 horas por semana por integrante (8 a 12 horas combinadas).
 
 ## 12.1.3 Cadencia, calidad y mejora continua
 
@@ -108,7 +110,7 @@ Escala inicial cualitativa (probabilidad/impacto): baja, media, alta. Reevaluar 
 | R-09 | La documentación no refleja el código o estado real. | Media | Alta | Revisar trazabilidad por PR; documentar decisiones de cambio y versiones. | OpenAPI/diagramas no concuerdan con endpoints/campos implementados. | Equipo |
 | R-10 | El repositorio queda visible públicamente sin decisión consciente. | Media | Media | Acordar visibilidad con el equipo/docente; revisar configuración y secretos antes de publicar. | Repositorio expone información interna o credenciales. | Propietario repositorio |
 | R-11 | Ausencia de feedback real de usuarios/interesados invalida supuestos del prototipo. | Alta | Media | Registrar quién revisó qué y observaciones reales; no fabricar evidencia. | Se afirma validación sin registro de revisión. | Responsable UX/requerimientos por asignar |
-| R-12 | La entrega final del 26/11/2026 deja 2,5 semanas para 66 puntos, más del doble de la velocidad promedio. | Alta | Alta | Integrar el PR #15 al inicio del Sprint 4, revisar cada PR en menos de 48 horas, seguir el burndown en Jira y, si no alcanza, recortar primero HU-18 y después las SHOULD. | El burndown del Sprint 4 o del Sprint 5 va por encima de la línea ideal a mitad del sprint. | Julián (Scrum Master) / Juan (Product Owner) |
+| R-12 | La entrega final del 26/11/2026 deja 2,5 semanas para 66 puntos, más del doble de la velocidad promedio. | Superado (16/11/2026) | Alta | Se integró el PR #15 al inicio del Sprint 4 y HU-13 a HU-19 se terminaron el 11 y 12/11; las 19 historias están finalizadas. Queda vigilar la revisión de PR (MARKET-72) y la demostración publicada (MARKET-73). | El burndown del Sprint 4 o del Sprint 5 va por encima de la línea ideal a mitad del sprint. | Julián (Scrum Master) / Juan (Product Owner) |
 
 ## 12.6 Recursos y responsabilidades (RACI operativo inicial)
 
