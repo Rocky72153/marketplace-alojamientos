@@ -2,6 +2,8 @@
 
 El diagrama propone un modelo relacional conceptual compatible con PostgreSQL. Los nombres finales, tipos y normalización deben validarse frente a los servicios y el diseño físico. `UUID` y `TIMESTAMPTZ` son propuestas técnicas, no restricciones del enunciado.
 
+El [diagrama de clases del backend implementado](../DIAGRAMA-CLASES.md) documenta las entidades actuales y distingue las asociaciones JPA de las referencias escalares.
+
 ```mermaid
 erDiagram
     USUARIO ||--o| PERFIL : tiene

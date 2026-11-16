@@ -43,6 +43,10 @@ public class AuthController {
     @PostMapping("/register")
     public AuthResponse register(@Valid @RequestBody RegisterRequest request,
             @RequestHeader(value = "X-Admin-Bootstrap", required = false) String bootstrapKey) {
+        if (!fitsBcrypt(request.password())) {
+            throw new DomainException(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR",
+                    "La contraseña no puede superar 72 bytes en UTF-8.");
+        }
         String email = normalizeEmail(request.email());
         if (users.existsByEmail(email)) {
             throw new DomainException(HttpStatus.CONFLICT, "EMAIL_EXISTS", "No fue posible crear la cuenta con esos datos.");
@@ -61,7 +65,8 @@ public class AuthController {
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         String email = normalizeEmail(request.email());
         MarketplaceUser user = users.findByEmail(email).orElse(null);
-        if (user == null || !passwordEncoder.matches(request.password(), user.getPassword()) || !user.isEnabled() || !user.isAccountNonLocked()) {
+        if (user == null || !fitsBcrypt(request.password()) || !passwordEncoder.matches(request.password(), user.getPassword())
+                || !user.isEnabled() || !user.isAccountNonLocked()) {
             audit.recordEvent("LOGIN", user == null ? null : user.getId(), "USER", user == null ? null : user.getId(), "REJECTED", null);
             throw new DomainException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Correo o contraseña inválidos.");
         }
@@ -89,6 +94,10 @@ public class AuthController {
     }
 
     static String normalizeEmail(String email) { return email.trim().toLowerCase(Locale.ROOT); }
+
+    private boolean fitsBcrypt(String password) {
+        return password.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72;
+    }
 
     public record RegisterRequest(@NotBlank @Size(max=120) String name, @NotBlank @Email @Size(max=320) String email,
             @NotBlank @Size(min=8, max=72) String password, AccountRole role) { }

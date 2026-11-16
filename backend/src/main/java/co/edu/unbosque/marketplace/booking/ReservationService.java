@@ -129,6 +129,9 @@ public class ReservationService {
         requireGuest(guest);
         Reservation reservation = reservations.findByIdAndGuest_Id(reservationId, guest.getId())
                 .orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "NOT_FOUND", "No se encontró la reserva."));
+        if (reservation.getPaymentReference().startsWith("pi_")) {
+            throw new DomainException(HttpStatus.SERVICE_UNAVAILABLE, "PAYMENT_NOT_CONFIGURED", "El reembolso del proveedor no está configurado.");
+        }
         if (reservation.getStatus() != ReservationStatus.CONFIRMED) {
             throw conflict("La reserva ya no se puede cancelar.");
         }
@@ -203,7 +206,7 @@ public class ReservationService {
         return List.copyOf(lines);
     }
 
-    private String fingerprint(ReservationRequest request) {
+    String fingerprint(ReservationRequest request) {
         String extras = request.extras() == null ? "" : request.extras().stream()
                 .sorted(Comparator.comparing(ExtraQuantity::extraId))
                 .map(item -> item.extraId() + ":" + item.quantity()).reduce((left, right) -> left + "," + right).orElse("");
@@ -245,9 +248,9 @@ public class ReservationService {
 
     public record ExtraQuantity(@NotBlank @Size(max=36) String extraId, @Min(1) @Max(99) int quantity) { }
     public record QuoteRequest(@NotNull LocalDate checkIn, @NotNull LocalDate checkOut, @Min(1) int guests,
-            @Valid List<ExtraQuantity> extras) { }
+            List<@NotNull @Valid ExtraQuantity> extras) { }
     public record ReservationRequest(@NotNull UUID listingId, @NotNull LocalDate checkIn, @NotNull LocalDate checkOut,
-            @Min(1) int guests, @Valid List<ExtraQuantity> extras) {
+            @Min(1) int guests, List<@NotNull @Valid ExtraQuantity> extras) {
         QuoteRequest toQuoteRequest() { return new QuoteRequest(checkIn, checkOut, guests, extras); }
     }
     public record CancelRequest(@NotBlank @Size(max=1000) String reason) { }

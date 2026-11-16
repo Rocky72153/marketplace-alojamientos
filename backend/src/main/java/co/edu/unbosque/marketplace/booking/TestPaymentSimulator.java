@@ -14,7 +14,8 @@ public class TestPaymentSimulator {
 
     public String authorize() {
         if (!"SIMULATED_TEST".equals(mode)) {
-            throw new IllegalStateException("El flujo de reservas solo admite pagos de prueba simulados.");
+            throw new co.edu.unbosque.marketplace.api.DomainException(org.springframework.http.HttpStatus.CONFLICT,
+                    "PAYMENT_MODE_MISMATCH", "Usa el flujo de pago de prueba configurado.");
         }
         return "TEST-" + UUID.randomUUID();
     }
