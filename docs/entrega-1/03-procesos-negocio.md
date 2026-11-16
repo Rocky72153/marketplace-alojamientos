@@ -56,7 +56,9 @@ flowchart TD
   N --> O[Registrar auditoría y notificar huésped/anfitrión]
 ```
 
-**Nota de diseño:** el enunciado requiere confirmar consistencia y evitar duplicados; no precisa exactamente el comportamiento transaccional frente a un fallo de Stripe test. La política de estado ante pago fallido debe acordarse y documentarse antes de implementarse.  
+**Nota de diseño:** el enunciado requiere confirmar consistencia y evitar duplicados; no precisa exactamente el comportamiento transaccional frente a un fallo de Stripe test. La política de estado ante pago fallido debe acordarse y documentarse antes de implementarse.
+
+**Implementado (16/11/2026):** el [BPMN de búsqueda y reserva](bpmn/busqueda-reserva-cancelacion.bpmn) incluye a Stripe sandbox como participante externo con dos flujos de mensaje: crear la sesión de Checkout y recibir el evento firmado del pago. Un pago fallido o vencido libera las fechas y cancela la reserva pendiente; un pago recibido fuera de plazo se reembolsa. El detalle está en [SD-04](14-secuencias.md) y en la [máquina de estados del intento de pago](20-diseno-detallado.md#203-diagramas-de-máquina-de-estados).  
 **Salida:** reserva y estado consultables, periodo bloqueado si se confirma, notificaciones y auditoría.  
 **Indicadores:** reservas por estado, conversión de búsqueda a reserva, fallos por falta de disponibilidad, ingresos estimados (no cobros reales).
 
