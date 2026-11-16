@@ -31,6 +31,7 @@ test('loads a listing detail from a direct URL and renders its fields', async ()
   globalThis.window = { location: { search: '?listing=listing-123' } };
   globalThis.fetch = async (url) => {
     requestedUrls.push(url.toString());
+    if (url.pathname === '/api/payments/config') return { ok: true, async json() { return { mode: 'SIMULATED_TEST' }; } };
     if (url.pathname.endsWith('/reviews')) return { ok: true, async json() { return []; } };
     return { ok: true, async json() {
       return { id: 'listing-123', title: 'Casa segura', description: 'Cerca del parque', city: 'Bogotá',
@@ -42,6 +43,7 @@ test('loads a listing detail from a direct URL and renders its fields', async ()
     await import('../src/main.js?direct-detail-route-test');
     await new Promise(setImmediate);
     assert.deepEqual(requestedUrls, [
+      'http://localhost:8080/api/payments/config',
       'http://localhost:8080/api/listings/listing-123',
       'http://localhost:8080/api/listings/listing-123/reviews',
     ]);

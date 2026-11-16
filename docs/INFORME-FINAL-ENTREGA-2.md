@@ -1,6 +1,7 @@
 # Informe de preparación de la Entrega 2
 
 **Corte:** 12 de noviembre de 2026, hora de Bogotá.
+**Actualización del 14 de noviembre de 2026:** se publicó la demostración en [moralesforero.lol](http://moralesforero.lol/) con el catálogo ficticio y se comprobó Stripe sandbox mediante pago, evento firmado, confirmación, cancelación y reembolso. La [evidencia](evidencias/stripe-sandbox-2026-11-14.json) y [configuración de Stripe](STRIPE-PRUEBAS.md) actualizan los pendientes de pagos y despliegue que se describen en el corte histórico siguiente. La revisión humana y las actividades de entrega del equipo siguen requiriendo evidencia propia.
 **Fuente de requisitos:** guía «Proyecto de Curso: Marketplace Alojamientos» facilitada por el equipo; las referencias a páginas corresponden a ese PDF. Este informe reúne lo comprobado y lo pendiente. No constituye aceptación del profesor ni de los integrantes del equipo.
 
 ## Alcance y estado de implementación

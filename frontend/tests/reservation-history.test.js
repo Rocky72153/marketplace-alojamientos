@@ -70,7 +70,7 @@ test('muestra el historial, el reembolso y refresca la lista después de cancela
 
   assert.equal(fixture.container.hidden, false);
   assert.equal(fixture.items.children.length, 2);
-  assert.match(find(fixture.items, (node) => /Reembolso simulado/.test(node.textContent))?.textContent, /100%/);
+  assert.match(find(fixture.items, (node) => /Reembolso de prueba/.test(node.textContent))?.textContent, /100%/);
   const form = find(fixture.items, (node) => node.tagName === 'form');
   const reason = find(form, (node) => node.tagName === 'textarea');
   reason.value = 'Cambio de planes';
@@ -82,6 +82,18 @@ test('muestra el historial, el reembolso y refresca la lista después de cancela
   assert.equal(fixture.items.children.length, 1);
   assert.match(fixture.items.children[0].textContent, /Aún no tienes reservas/i);
   assert.match(fixture.feedback.textContent, /Cancelación registrada/i);
+});
+
+test('describe en español reembolsos pendientes y en revisión sin decir que están confirmados', async () => {
+  const pending = { ...reservation('pendiente', 'CANCELLED'), paymentStatus: 'TEST_REFUND_PENDING' };
+  const review = { ...reservation('revisión', 'CANCELLED'), paymentStatus: 'TEST_REFUND_REVIEW' };
+  const expired = { ...reservation('vencido', 'CANCELLED'), paymentStatus: 'TEST_EXPIRED', refundPercentage: null, refundAmount: null };
+  const fixture = historyFixture(async () => ({ ok: true, async json() { return [pending, review, expired]; } }));
+  await renderReservationHistory(fixture.container, 'http://localhost:8080', 'guest-token', fixture.fetchImpl, fixture.documentRef);
+  assert.ok(find(fixture.items.children[0], (node) => /reembolso de prueba pendiente/.test(node.textContent)));
+  assert.ok(find(fixture.items.children[1], (node) => /reembolso de prueba requiere revisión/.test(node.textContent)));
+  assert.ok(find(fixture.items.children[2], (node) => /pago de prueba vencido/.test(node.textContent)));
+  assert.equal(find(fixture.items.children[2], (node) => /Reembolso de prueba:/.test(node.textContent)), null);
 });
 
 test('mantiene el formulario disponible y explica el error si la cancelación falla', async () => {

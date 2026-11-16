@@ -1,0 +1,43 @@
+{
+  "date_utc": "2026-11-15T15:30:11.646Z",
+  "site": "http://moralesforero.lol",
+  "mode": "STRIPE_TEST",
+  "listing_id": "76a69629-28fc-4a52-b772-f52660475fcd",
+  "attempt_id": "99e59511-50d2-4348-9a23-f912f57bafaf",
+  "session_id": "cs_test_a0ACnWwlnJpM94YOpo9CVUNvbCPgzfpXwhDqw59bJIRxOleTMYDa4KB3ie",
+  "reservation_id": "fa6bcd60-c07b-4a3b-8917-c168711d6ad3",
+  "checkout_created": true,
+  "complete_checkout_url_preserved": true,
+  "idempotent_retry": true,
+  "unauthenticated_status": 401,
+  "reservation_status": "PENDING_PAYMENT",
+  "total_cop": 654850,
+  "new_payment_executed": false,
+  "verified_utc": "2026-11-15T15:38:19.017Z",
+  "frontend_release": "6006e79a47c4d669",
+  "frontend_tests": {
+    "passed": 94,
+    "failed": 0,
+    "framework": "Node test runner; page integration uses jsdom with the actual index.html"
+  },
+  "public_assets": {
+    "javascript_modules": 14,
+    "stylesheet": true,
+    "byte_identical_to_build": true,
+    "revalidation": true,
+    "missing_module_status": 404,
+    "www_same_version": true
+  },
+  "cleanup": {
+    "stripe_session": "expired, unpaid, livemode=false",
+    "signed_event_attempt": "EXPIRED",
+    "reservation": "CANCELLED",
+    "payment": "TEST_EXPIRED",
+    "synthetic_account": "deactivated"
+  },
+  "active_listings": 10000,
+  "backend_unchanged": true,
+  "public_webhook_status": 404,
+  "previous_completed_payment_evidence": "stripe-sandbox-2026-11-14.json",
+  "limitations": "No new card payment was executed; the prior completed sandbox payment and refund remain documented separately. Browser UI access was blocked, so these page integration checks use a DOM emulator, not a visual browser run."
+}
