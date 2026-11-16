@@ -11,6 +11,7 @@ import { initHostWorkspace } from './host.js';
 import { renderHomeSuggestions } from './home-suggestions.js';
 import { fetchPaymentMode, initStripeReturn } from './stripe-checkout.js';
 import { initNavigation } from './navigation.js';
+import { initShell } from './ui.js';
 
 function initializeCitySuggestions(cityInput, citySuggestions, apiBase, documentRef) {
   if (!cityInput || !citySuggestions) return Promise.resolve();
@@ -94,6 +95,7 @@ function initializeCitySuggestions(cityInput, citySuggestions, apiBase, document
 }
 
 if (typeof document !== 'undefined') {
+  initShell(document, typeof window === 'undefined' ? null : window);
   const detailSection = document.querySelector('#listing-detail');
   const detailFeedback = document.querySelector('#detail-feedback');
   const detailContent = document.querySelector('#detail-content');
@@ -202,7 +204,8 @@ if (typeof document !== 'undefined') {
       bookingFlow = initBooking(detailContent, listing, apiBase, () => currentToken, () => {
         void refreshHistory();
         void notifications?.refresh();
-      }, document, globalThis.fetch, { getPaymentMode: () => paymentMode, onRequireAccount: () => navigation?.requireAccountForBooking() });
+      }, document, globalThis.fetch, { getPaymentMode: () => paymentMode, getRole: () => currentRole,
+        onRequireAccount: () => navigation?.requireAccountForBooking() });
       reviewList = initReviewList(detailContent, listing, apiBase, document, globalThis.fetch);
       bookingFlow?.syncAccount();
       detailFeedback.textContent = '';
