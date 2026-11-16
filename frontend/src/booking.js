@@ -102,9 +102,15 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
   container.append(section);
 
   const current = { payload: null, idempotencyKey: null };
+  let quoteRevision = 0;
+  let accountRevision = 0;
+  let accountToken = getToken();
+  let reservationInFlight = false;
   function clearQuote() {
+    quoteRevision += 1;
     current.payload = null;
     current.idempotencyKey = null;
+    quoteButton.disabled = reservationInFlight;
     quoteSummary.replaceChildren();
     quoteSummary.hidden = true;
     reserveButton.hidden = true;
@@ -114,11 +120,14 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
     checkOut.min = checkIn.value || bogotaToday();
     if (checkOut.value && checkOut.value <= checkIn.value) checkOut.value = '';
   };
-  checkIn.addEventListener?.('change', () => { updateCheckoutMinimum(); clearQuote(); });
-  checkOut.addEventListener?.('change', clearQuote);
-  guests.addEventListener?.('change', clearQuote);
+  for (const eventName of ['input', 'change']) {
+    checkIn.addEventListener?.(eventName, () => { updateCheckoutMinimum(); clearQuote(); });
+    checkOut.addEventListener?.(eventName, clearQuote);
+    guests.addEventListener?.(eventName, clearQuote);
+  }
   for (const item of extraInputs) {
     item.checkbox.addEventListener?.('change', clearQuote);
+    item.quantity.addEventListener?.('input', clearQuote);
     item.quantity.addEventListener?.('change', clearQuote);
   }
 
@@ -154,7 +163,7 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
       `Política del alojamiento: 100% desde ${quote.freeRefundDays} días; ${quote.partialRefundPercentage}% entre ${quote.partialRefundDays} y ${quote.freeRefundDays - 1} días; 0% con menos de ${quote.partialRefundDays} días.`));
     reserveButton.hidden = false;
     reserveButton.textContent = getToken() ? 'Confirmar reserva · pago de prueba' : 'Iniciar sesión para reservar';
-    reserveButton.disabled = false;
+    reserveButton.disabled = reservationInFlight;
     if (!getToken()) feedback.textContent = 'Inicia sesión o crea una cuenta de huésped para confirmar la reserva.';
   }
 
@@ -163,6 +172,7 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
     updateCheckoutMinimum();
     if (!form.reportValidity?.()) return;
     clearQuote();
+    const revision = quoteRevision;
     quoteButton.disabled = true;
     feedback.textContent = 'Calculando con precios y disponibilidad actuales…';
     const payload = selectedPayload();
@@ -171,19 +181,21 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
       });
       const result = await response.json().catch(() => ({}));
+      if (revision !== quoteRevision) return;
       if (!response.ok) throw new Error(result.message || 'No fue posible cotizar estas fechas.');
       current.payload = payload;
       current.idempotencyKey = makeIdempotencyKey();
       feedback.textContent = 'Cotización actualizada. Confirma para bloquear las fechas.';
       renderQuote(result);
     } catch (error) {
-      feedback.textContent = error.message || 'No fue posible cotizar estas fechas.';
+      if (revision === quoteRevision) feedback.textContent = error.message || 'No fue posible cotizar estas fechas.';
     } finally {
-      quoteButton.disabled = false;
+      if (revision === quoteRevision) quoteButton.disabled = false;
     }
   });
 
   reserveButton.addEventListener?.('click', async () => {
+    if (reservationInFlight) return;
     const token = getToken();
     if (!token) {
       feedback.textContent = 'Inicia sesión como huésped para confirmar la reserva.';
@@ -193,6 +205,11 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
       return;
     }
     if (!current.payload || !current.idempotencyKey) return;
+    const revision = accountRevision;
+    reservationInFlight = true;
+    const controls = [checkIn, checkOut, guests, quoteButton, ...extraInputs.flatMap(({ checkbox, quantity }) => [checkbox, quantity])];
+    const disabledBeforeReservation = controls.map((control) => control.disabled);
+    controls.forEach((control) => { control.disabled = true; });
     reserveButton.disabled = true;
     feedback.textContent = 'Confirmando reserva con el proveedor de pago simulado…';
     const requestBody = { listingId: listing.id, ...current.payload };
@@ -202,22 +219,38 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
           'Idempotency-Key': current.idempotencyKey }, body: JSON.stringify(requestBody),
       });
       const result = await response.json().catch(() => ({}));
+      if (revision !== accountRevision || token !== getToken()) return;
       if (!response.ok) throw new Error(result.message || 'No fue posible confirmar la reserva.');
       current.payload = null; current.idempotencyKey = null;
       reserveButton.hidden = true;
       feedback.textContent = `Reserva confirmada. Código ${result.id}. Pago simulado aprobado; no se realizó ningún cobro real.`;
-      await Promise.resolve(onReservationChanged());
+      try {
+        await Promise.resolve(onReservationChanged());
+      } catch {
+        if (revision === accountRevision && token === getToken()) {
+          feedback.textContent = `Reserva confirmada. Código ${result.id}. Pago simulado aprobado; no se realizó ningún cobro real. No fue posible actualizar el historial.`;
+        }
+      }
     } catch (error) {
-      feedback.textContent = error.message || 'No fue posible confirmar la reserva.';
-      reserveButton.disabled = false;
+      if (revision === accountRevision && token === getToken()) feedback.textContent = error.message || 'No fue posible confirmar la reserva.';
+    } finally {
+      reservationInFlight = false;
+      controls.forEach((control, index) => { control.disabled = disabledBeforeReservation[index]; });
+      if (current.payload) reserveButton.disabled = false;
     }
   });
   return {
     section, form, quoteButton, reserveButton,
     syncAccount() {
+      const nextToken = getToken();
+      if (nextToken !== accountToken) {
+        accountToken = nextToken;
+        accountRevision += 1;
+        if (reservationInFlight) clearQuote();
+      }
       if (!current.payload) return;
-      reserveButton.textContent = getToken() ? 'Confirmar reserva · pago de prueba' : 'Iniciar sesión para reservar';
-      reserveButton.disabled = false;
+      reserveButton.textContent = nextToken ? 'Confirmar reserva · pago de prueba' : 'Iniciar sesión para reservar';
+      reserveButton.disabled = reservationInFlight;
     },
   };
 }

@@ -1,8 +1,10 @@
 package co.edu.unbosque.marketplace.listing;
 
 import co.edu.unbosque.marketplace.api.DomainException;
+import co.edu.unbosque.marketplace.listing.ListingService.AvailabilityInput;
 import co.edu.unbosque.marketplace.security.MarketplaceUser;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -84,7 +86,7 @@ public class ListingController {
 
     public record ChangeStateRequest(@jakarta.validation.constraints.NotNull ListingStatus status,
             @jakarta.validation.constraints.Size(max=1000) String reason) { }
-    public record AvailabilityRequest(@Valid List<ListingService.AvailabilityInput> periods) { }
+    public record AvailabilityRequest(@NotNull List<@NotNull @Valid AvailabilityInput> periods) { }
     public record SearchResponse(List<ListingView> items, int total) { }
     public record ListingView(UUID id, UUID hostId, String hostName, String title, String description, String city,
             String location, String type, int capacity, BigDecimal pricePerNight, Set<String> amenityIds,
