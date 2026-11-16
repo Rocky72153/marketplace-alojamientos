@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: marketplace
       POSTGRES_PASSWORD: marketplace_local
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - marketplace-postgres-data:/var/lib/postgresql/data
     healthcheck:
