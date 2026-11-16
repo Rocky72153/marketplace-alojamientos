@@ -50,6 +50,8 @@ public class SecurityConfiguration {
                                 response, objectMapper, logger, 403, "FORBIDDEN", "No tienes permiso para realizar esta operación.", request)))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/health").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/payments/config").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/stripe-test/webhook").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/listings/cities").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/listings/*/quotes").permitAll()

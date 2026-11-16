@@ -40,26 +40,101 @@ export function initAdministration(container, apiBase, getToken, doc = globalThi
   const dashboard = el(doc, 'div', undefined, 'admin-dashboard');
   const reportActions = el(doc, 'div', undefined, 'admin-actions');
   const reportFeedback = status(doc);
-  const users = group('Cuentas');
-  const listings = group('Publicaciones');
-  const reviewQueue = group('Reservas para revisión manual');
-  const audit = group('Auditoría');
-  section.append(introduction, filters, feedback, dashboard, reportActions, reportFeedback,
-    users.section, listings.section, reviewQueue.section, audit.section);
+  const users = group('Cuentas', 'users', ['Persona', 'Rol', 'Estado', 'Acciones'], 'accountState');
+  const listings = group('Publicaciones', 'listings', ['Alojamiento', 'Ciudad', 'Estado', 'Acciones'], 'status');
+  const reviewQueue = group('Reservas para revisión manual', 'review', ['Reserva', 'Estadía', 'Estado', 'Acciones'], 'status');
+  const audit = group('Auditoría', 'audit', ['Fecha', 'Evento', 'Actor', 'Entidad', 'Resultado', 'Detalle'], 'result');
+  const overview = el(doc, 'section', undefined, 'workspace-panel'); overview.id = 'admin-overview';
+  overview.append(introduction, filters, feedback, dashboard, reportActions, reportFeedback);
+  const tabs = el(doc, 'div', undefined, 'workspace-tabs'); tabs.setAttribute('role', 'tablist');
+  tabs.setAttribute('aria-label', 'Secciones de administración');
+  const panels = [['Resumen', overview], ['Cuentas', users.section], ['Publicaciones', listings.section],
+    ['Revisión manual', reviewQueue.section], ['Auditoría', audit.section]];
+  const tabButtons = panels.map(([label, panel]) => {
+    const tab = button(doc, label, () => selectPanel(panel));
+    tab.className = 'workspace-tab'; tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-controls', panel.id); panel.setAttribute('role', 'tabpanel');
+    return tab;
+  });
+  function selectPanel(selected) {
+    panels.forEach(([, panel], index) => {
+      panel.hidden = panel !== selected;
+      tabButtons[index].setAttribute('aria-selected', String(panel === selected));
+      tabButtons[index].setAttribute('tabindex', panel === selected ? '0' : '-1');
+    });
+  }
+  tabButtons.forEach((tab, index) => tab.addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? panels.length - 1
+      : (index + (event.key === 'ArrowRight' ? 1 : -1) + panels.length) % panels.length;
+    selectPanel(panels[next][1]); tabButtons[next].focus?.();
+  }));
+  tabs.append(...tabButtons);
+  section.append(tabs, overview, users.section, listings.section, reviewQueue.section, audit.section);
+  selectPanel(overview);
   container.append(section);
   let revision = 0;
   let dashboardRevision = 0;
   let appliedDates = null;
   let userPage = 0; let listingPage = 0; let auditPage = 0;
 
-  function group(title) {
-    const panel = el(doc, 'section', undefined, 'admin-group');
+  function group(title, key, columns, stateKey) {
+    const panel = el(doc, 'section', undefined, 'admin-group workspace-panel'); panel.id = `admin-${key}`;
     const heading = el(doc, 'h3', title);
     const info = status(doc);
-    const items = el(doc, 'div', undefined, 'admin-items');
-    const paging = el(doc, 'div', undefined, 'admin-actions');
-    panel.append(heading, info, items, paging);
-    return { section: panel, info, items, paging, request: 0 };
+    const toolbar = el(doc, 'div', undefined, 'workspace-toolbar');
+    const label = el(doc, 'label', key === 'review' ? 'Buscar reserva' : 'Buscar en esta página');
+    const search = el(doc, 'input'); search.type = 'search'; search.name = `admin-${key}-query`;
+    label.append(search);
+    const stateLabel = el(doc, 'label', key === 'audit' ? 'Resultado en esta página' : 'Estado en esta página');
+    const state = el(doc, 'select'); state.name = `admin-${key}-state`; stateLabel.append(state);
+    toolbar.append(label, stateLabel);
+    const items = el(doc, 'div', undefined, 'table-scroll');
+    const paging = el(doc, 'div', undefined, 'admin-actions workspace-pagination');
+    panel.append(heading, toolbar, info, items, paging);
+    const result = { section: panel, title, columns, stateKey, search, state, info, items, paging, request: 0, draw: () => {} };
+    search.addEventListener('input', () => result.draw()); state.addEventListener('change', () => result.draw());
+    return result;
+  }
+
+  const stateLabels = { ACTIVE: 'Activo', DRAFT: 'Borrador', PAUSED: 'Pausado', BLOCKED: 'Bloqueado',
+    RESTRICTED: 'Restringida', DEACTIVATED: 'Desactivada', CONFIRMED: 'Confirmada', COMPLETED: 'Completada',
+    CANCELLED: 'Cancelada', PENDING_PAYMENT: 'Pendiente de pago', SUCCESS: 'Correcto', FAILURE: 'Fallido' };
+  const badge = (value) => el(doc, 'span', stateLabels[value] || value || 'No disponible', `status-badge status-${String(value || 'unknown').toLowerCase()}`);
+  const cell = (...children) => { const node = el(doc, 'td'); node.append(...children); return node; };
+  const textCell = (text) => cell(el(doc, 'span', text ?? '—'));
+  function drawTable(group, data, token, request, renderItem, page = 0, total = data.length, pages = 1) {
+    const selectedState = group.state.value;
+    group.state.replaceChildren();
+    const values = [...new Set([...data.map((item) => item[group.stateKey]), selectedState].filter(Boolean))]
+      .sort((left, right) => String(stateLabels[left] || left).localeCompare(String(stateLabels[right] || right), 'es'));
+    for (const value of ['', ...values]) {
+      const option = el(doc, 'option', value ? stateLabels[value] || value : 'Todos'); option.value = value;
+      group.state.append(option);
+    }
+    group.state.value = selectedState || '';
+    group.draw = () => {
+      if (!current(token, request)) return;
+      const normalize = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const term = normalize(group.search.value).trim();
+      const selected = data.filter((item) => (!group.state.value || item[group.stateKey] === group.state.value)
+        && normalize(Object.values(item).join(' ')).includes(term));
+      const table = el(doc, 'table', undefined, 'workspace-table');
+      table.append(el(doc, 'caption', group.title));
+      const head = el(doc, 'thead'); const headings = el(doc, 'tr');
+      for (const name of group.columns) { const th = el(doc, 'th', name); th.setAttribute('scope', 'col'); headings.append(th); }
+      head.append(headings); const body = el(doc, 'tbody');
+      for (const item of selected) body.append(renderItem(item, token, request));
+      if (!selected.length) {
+        const row = el(doc, 'tr'); const empty = el(doc, 'td', data.length ? 'No hay coincidencias con estos filtros.' : 'No hay registros.', 'empty-state');
+        empty.colSpan = group.columns.length; row.append(empty); body.append(row);
+      }
+      table.append(head, body); group.items.replaceChildren(table);
+      group.info.textContent = `${selected.length} de ${data.length} en esta página · ${total} registros en total`;
+      if (group !== reviewQueue) group.info.textContent += ` · Página ${page + 1} de ${Math.max(1, pages)}`;
+    };
+    group.draw();
   }
 
   function url(path, query = {}) {
@@ -99,7 +174,7 @@ export function initAdministration(container, apiBase, getToken, doc = globalThi
       }
       const bookings = el(doc, 'article', undefined, 'admin-metric');
       bookings.append(el(doc, 'h4', 'Reservas por estado'));
-      for (const [name, count] of Object.entries(data.bookingsByStatus || {})) bookings.append(el(doc, 'p', `${name}: ${count}`));
+      for (const [name, count] of Object.entries(data.bookingsByStatus || {})) bookings.append(el(doc, 'p', `${stateLabels[name] || name}: ${count}`));
       const cities = el(doc, 'article', undefined, 'admin-metric');
       cities.append(el(doc, 'h4', 'Ciudades con mayor demanda'));
       for (const city of data.topCities || []) cities.append(el(doc, 'p', `${city.city}: ${city.bookings} reserva(s)`));
@@ -109,7 +184,10 @@ export function initAdministration(container, apiBase, getToken, doc = globalThi
       definitions.append(el(doc, 'summary', 'Cómo se calculan los indicadores'));
       for (const [key, definition] of Object.entries(data.definitions || {})) definitions.append(el(doc, 'p', `${key}: ${definition}`));
       dashboard.append(definitions);
-      feedback.textContent = `Fecha de corte: ${data.generatedAt || 'actual'} · Zona horaria: ${data.timezone || 'America/Bogota'}. Los ingresos son estimados.`;
+      const generatedAt = new Date(data.generatedAt);
+      const cutoff = Number.isFinite(generatedAt.getTime())
+        ? new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Bogota' }).format(generatedAt) : 'actual';
+      feedback.textContent = `Fecha de corte: ${cutoff} · Horario de Colombia. Los ingresos son estimados.`;
     } catch (error) {
       if (!current(token, request) || currentDashboard !== dashboardRevision) return;
       appliedDates = null; dashboard.replaceChildren(); feedback.textContent = error.message || 'No fue posible consultar los indicadores.';
@@ -118,14 +196,14 @@ export function initAdministration(container, apiBase, getToken, doc = globalThi
 
   async function loadPage(group, path, page, token, request, renderItem, setPage) {
     const currentPageRequest = ++group.request;
+    group.draw = () => {};
     group.info.textContent = 'Cargando…';
     try {
       const data = await jsonRequest(path, token, { page, size: 20 });
       if (!current(token, request) || currentPageRequest !== group.request) return;
       if (!Array.isArray(data.content)) throw new Error('La respuesta no tiene el formato esperado.');
       group.items.replaceChildren(); group.paging.replaceChildren();
-      group.info.textContent = data.content.length ? `${data.totalElements ?? data.content.length} registro(s).` : 'No hay registros.';
-      for (const item of data.content) group.items.append(renderItem(item, token, request));
+      drawTable(group, data.content, token, request, renderItem, page, data.totalElements ?? data.content.length, Number(data.totalPages || 1));
       if (page > 0) group.paging.append(button(doc, 'Anterior', () => { setPage(page - 1); void loadPage(group, path, page - 1, token, request, renderItem, setPage); }));
       if (page + 1 < Number(data.totalPages || 0)) group.paging.append(button(doc, 'Siguiente', () => { setPage(page + 1); void loadPage(group, path, page + 1, token, request, renderItem, setPage); }));
     } catch (error) {
@@ -160,11 +238,19 @@ export function initAdministration(container, apiBase, getToken, doc = globalThi
     return form;
   }
 
+  function actionDisclosure(label, action, token, request, onSuccess) {
+    const details = el(doc, 'details', undefined, 'action-disclosure');
+    details.append(el(doc, 'summary', label), moderationForm(label, action, token, request, onSuccess));
+    return details;
+  }
+
   function userCard(user, token, request) {
-    const card = el(doc, 'article', undefined, 'admin-card');
-    card.append(el(doc, 'h4', user.name || 'Usuario'), el(doc, 'p', `${user.email || ''} · ${user.role || ''} · ${user.accountState || ''}`));
+    const card = el(doc, 'tr');
+    const identity = cell(el(doc, 'h4', user.name || 'Usuario'), el(doc, 'p', user.email || ''));
+    const actions = cell(); actions.className = 'row-actions';
+    card.append(identity, textCell({ HOST: 'Anfitrión', GUEST: 'Huésped', ADMIN: 'Administrador' }[user.role] || user.role), cell(badge(user.accountState)), actions);
     if (user.accountState === 'ACTIVE') {
-      card.append(moderationForm('Restringir cuenta', (reason) => jsonRequest(`/api/admin/users/${encodeURIComponent(user.id)}/restrict`, token, {}, {
+      actions.append(actionDisclosure('Restringir cuenta', (reason) => jsonRequest(`/api/admin/users/${encodeURIComponent(user.id)}/restrict`, token, {}, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason }),
       }), token, request, async () => { await loadUsers(token, request); await loadAudit(token, request); }));
     }
@@ -172,10 +258,10 @@ export function initAdministration(container, apiBase, getToken, doc = globalThi
   }
 
   function listingCard(listing, token, request) {
-    const card = el(doc, 'article', undefined, 'admin-card');
-    card.append(el(doc, 'h4', listing.title || 'Publicación'), el(doc, 'p', `${listing.city || ''} · ${listing.status || ''}`));
+    const card = el(doc, 'tr'); const actions = cell(); actions.className = 'row-actions';
+    card.append(cell(el(doc, 'h4', listing.title || 'Publicación')), textCell(listing.city), cell(badge(listing.status)), actions);
     if (listing.status !== 'BLOCKED') {
-      card.append(moderationForm('Bloquear publicación', (reason) => jsonRequest(`/api/listings/${encodeURIComponent(listing.id)}/state`, token, {}, {
+      actions.append(actionDisclosure('Bloquear publicación', (reason) => jsonRequest(`/api/listings/${encodeURIComponent(listing.id)}/state`, token, {}, {
         method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'BLOCKED', reason }),
       }), token, request, async () => { await loadListings(token, request); await loadQueue(token, request); await loadAudit(token, request); }));
     }
@@ -183,12 +269,11 @@ export function initAdministration(container, apiBase, getToken, doc = globalThi
   }
 
   function auditCard(event) {
-    const card = el(doc, 'article', undefined, 'admin-card');
-    card.append(el(doc, 'h4', `${event.eventType || 'Acción'} · ${event.result || ''}`));
-    card.append(el(doc, 'p', `Fecha: ${event.occurredAt || 'No disponible'} · Actor: ${event.actorId || 'Sistema'}`));
-    card.append(el(doc, 'p', `Entidad: ${event.entityType || ''} ${event.entityId || ''}`));
-    if (event.correlationId) card.append(el(doc, 'p', `Referencia de solicitud: ${event.correlationId}`));
-    if (event.reason) card.append(el(doc, 'p', `Motivo: ${event.reason}`));
+    const card = el(doc, 'tr'); const detail = cell();
+    if (event.correlationId) detail.append(el(doc, 'p', `Referencia de solicitud: ${event.correlationId}`));
+    if (event.reason) detail.append(el(doc, 'p', `Motivo: ${event.reason}`));
+    card.append(textCell(event.occurredAt), textCell(event.eventType || 'Acción'), textCell(event.actorId || 'Sistema'),
+      textCell(`${event.entityType || ''} ${event.entityId || ''}`), cell(badge(event.result)), detail);
     return card;
   }
 
@@ -196,24 +281,25 @@ export function initAdministration(container, apiBase, getToken, doc = globalThi
   const loadListings = (token, request) => loadPage(listings, '/api/admin/listings', listingPage, token, request, listingCard, (page) => { listingPage = page; });
   const loadAudit = (token, request) => loadPage(audit, '/api/admin/audit', auditPage, token, request, auditCard, (page) => { auditPage = page; });
   async function loadQueue(token, request) {
+    const queueRequest = ++reviewQueue.request;
+    reviewQueue.draw = () => {};
     reviewQueue.info.textContent = 'Cargando…';
     try {
       const data = await jsonRequest('/api/admin/reservations/manual-review', token);
-      if (!current(token, request)) return;
+      if (!current(token, request) || queueRequest !== reviewQueue.request) return;
       if (!Array.isArray(data)) throw new Error('La respuesta no tiene el formato esperado.');
       reviewQueue.items.replaceChildren();
-      reviewQueue.info.textContent = data.length ? `${data.length} reserva(s) para revisión manual.` : 'No hay reservas para revisión manual.';
-      for (const item of data) {
-        const card = el(doc, 'article', undefined, 'admin-card');
-        card.append(el(doc, 'h4', item.listingTitle || 'Reserva'), el(doc, 'p', `${item.checkIn} a ${item.checkOut} · ${item.status}`));
-        card.append(el(doc, 'p', `Reserva: ${item.id}`));
-        card.append(moderationForm('Marcar como revisada', (reason) => jsonRequest(`/api/admin/reservations/${encodeURIComponent(item.id)}/resolve-review`, token, {}, {
+      drawTable(reviewQueue, data, token, request, (item) => {
+        const card = el(doc, 'tr'); const actions = cell(); actions.className = 'row-actions';
+        card.append(cell(el(doc, 'h4', item.listingTitle || 'Reserva'), el(doc, 'p', `Reserva: ${item.id}`)),
+          textCell(`${item.checkIn} a ${item.checkOut}`), cell(badge(item.status)), actions);
+        actions.append(actionDisclosure('Marcar como revisada', (reason) => jsonRequest(`/api/admin/reservations/${encodeURIComponent(item.id)}/resolve-review`, token, {}, {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason }),
         }), token, request, async () => { await loadQueue(token, request); await loadAudit(token, request); }));
-        reviewQueue.items.append(card);
-      }
+        return card;
+      });
     } catch (error) {
-      if (!current(token, request)) return;
+      if (!current(token, request) || queueRequest !== reviewQueue.request) return;
       reviewQueue.items.replaceChildren(); reviewQueue.info.textContent = error.message || 'No fue posible consultar las reservas.';
     }
   }
@@ -271,7 +357,9 @@ export function initAdministration(container, apiBase, getToken, doc = globalThi
     dashboard.replaceChildren(); feedback.textContent = ''; reportFeedback.textContent = '';
     for (const group of [users, listings, reviewQueue, audit]) {
       group.items.replaceChildren(); group.paging.replaceChildren(); group.info.textContent = '';
+      group.search.value = ''; group.state.replaceChildren(); group.state.value = ''; group.draw = () => {};
     }
+    selectPanel(overview);
     userPage = 0; listingPage = 0; auditPage = 0; from.value = ''; to.value = '';
   }
   clear();

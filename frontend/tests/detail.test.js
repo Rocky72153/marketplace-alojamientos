@@ -1,20 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { JSDOM } from 'jsdom';
 import { buildListingDetailUrl, fetchListingDetail, renderListingDetail, renderListingDetailError } from '../src/detail.js';
 
-function element(tagName) {
-  return {
-    tagName, children: [], className: '', textContent: '',
-    append(...children) { this.children.push(...children); },
-    replaceChildren(...children) { this.children = children; },
-  };
+function fixture(t) {
+  const dom = new JSDOM('<main id="detail"></main>', { url: 'http://marketplace.test/' });
+  t.after(() => dom.window.close());
+  return { doc: dom.window.document, win: dom.window, container: dom.window.document.querySelector('#detail') };
 }
-
-const documentRef = { createElement: element };
-
-function textContentTree(node) {
-  return [node.textContent, ...node.children.map(textContentTree)].join(' ');
-}
+const listing = { title: 'Casa segura', description: 'Alojamiento con patio.', city: 'Bogotá', location: 'Chapinero',
+  type: 'APARTMENT', capacity: 4, pricePerNight: 180000, hostName: 'Anfitrión', amenityIds: ['WIFI', 'POOL'],
+  rules: 'No fumar', cancellationPolicy: { freeRefundDays: 7, partialRefundDays: 2, partialRefundPercentage: 50 },
+  imageReferences: ['/casa.jpg', 'https://images.example.test/casa-2.jpg', 'javascript:alert(1)', 'data:image/svg+xml,unsafe'] };
 
 test('builds a shareable detail URL for a result card', () => {
   assert.equal(buildListingDetailUrl('listing 1'), '/?listing=listing%201');
@@ -32,28 +29,59 @@ test('fetches listing detail and gives a public unavailable message for hidden l
   await assert.rejects(fetchListingDetail('hidden-id', 'http://localhost:8080', async () => ({ ok: false, status: 404 })), /no está disponible/i);
 });
 
-test('renders comparison details, amenity labels, rules and safe image references', () => {
-  const container = element('div');
-  renderListingDetail(container, {
-    title: 'Casa segura', description: 'Alojamiento con patio.', city: 'Bogotá', location: 'Chapinero',
-    type: 'APARTMENT', capacity: 4, pricePerNight: 180000, hostName: 'Anfitrión',
-    amenityIds: ['WIFI'], rules: 'No fumar', imageReferences: ['/casa.jpg', 'javascript:alert(1)'],
-  }, documentRef);
-  const article = container.children[0];
-  const gallery = article.children[0];
-  const content = article.children[1];
-  assert.equal(gallery.children.length, 1);
-  assert.equal(gallery.children[0].src, '/casa.jpg');
-  const text = textContentTree(content);
-  assert.match(text, /Casa segura/);
-  assert.match(text, /Chapinero · Bogotá/);
-  assert.match(text, /Apartamento/);
-  assert.match(text, /Wi-Fi/);
-  assert.match(text, /No fumar/);
+test('renders real details, services, rules, cancellation policy and safe photographs', (t) => {
+  const f = fixture(t);
+  renderListingDetail(f.container, listing, f.doc);
+  assert.equal(f.doc.querySelector('#detail-title').textContent, 'Casa segura');
+  assert.match(f.doc.querySelector('.detail-location').textContent, /Chapinero · Bogotá/);
+  assert.match(f.doc.querySelector('.detail-facts').textContent, /Apartamento.*Hasta 4 huéspedes.*Anfitrión/);
+  assert.match(f.doc.querySelector('.detail-description').textContent, /con patio/);
+  assert.deepEqual([...f.doc.querySelectorAll('.detail-amenity')].map((node) => node.textContent), ['Wi-Fi', 'Piscina']);
+  assert.equal(f.doc.querySelector('.detail-rules').textContent, 'No fumar');
+  assert.match(f.doc.querySelector('.detail-cancellation').textContent, /100 % con 7 días.*50 %.*48 horas.*Sin reembolso/);
+  assert.equal(f.doc.querySelector('.detail-main-image').getAttribute('src'), '/casa.jpg');
+  assert.equal(f.doc.querySelectorAll('.detail-thumbnail').length, 2);
+  assert.equal([...f.doc.querySelectorAll('img')].some((image) => /^(javascript|data):/.test(image.getAttribute('src'))), false);
+  assert.equal(f.doc.querySelectorAll('[class*=rating]').length, 0);
 });
 
-test('renders a friendly public detail error', () => {
-  const container = element('div');
-  renderListingDetailError(container, 'Este alojamiento no está disponible.', documentRef);
-  assert.equal(container.children[0].textContent, 'Este alojamiento no está disponible.');
+test('gallery supports thumbnails, keyboard selection and a recoverable broken photograph', (t) => {
+  const f = fixture(t);
+  renderListingDetail(f.container, listing, f.doc);
+  const image = f.doc.querySelector('.detail-main-image');
+  const buttons = [...f.doc.querySelectorAll('.detail-thumbnail')];
+  assert.equal(buttons[0].getAttribute('aria-pressed'), 'true');
+  buttons[1].click();
+  assert.match(image.src, /casa-2.jpg$/);
+  assert.match(image.alt, /fotografía 2 de 2/);
+  assert.equal(buttons[0].getAttribute('aria-pressed'), 'false');
+  assert.equal(buttons[1].getAttribute('aria-pressed'), 'true');
+  image.dispatchEvent(new f.win.Event('error'));
+  assert.equal(image.hidden, true);
+  assert.equal(f.doc.querySelector('.detail-gallery-stage .detail-no-image').hidden, false);
+  buttons[1].dispatchEvent(new f.win.KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+  assert.equal(f.doc.activeElement, buttons[0]);
+  assert.match(image.src, /casa.jpg$/);
+  assert.equal(image.hidden, false);
+  assert.equal(f.doc.querySelector('.detail-gallery-stage .detail-no-image').hidden, true);
+  assert.equal(f.doc.querySelector('.detail-gallery-caption').textContent, 'Fotografía 1 de 2');
+});
+
+test('missing photos and policy stay honest and display a local illustration for the listing type', (t) => {
+  const f = fixture(t);
+  renderListingDetail(f.container, { type: 'CABIN', title: '<img src=x onerror=alert(1)>' }, f.doc);
+  assert.match(f.doc.querySelector('.detail-no-image').textContent, /Ilustración.*Sin fotos publicadas/);
+  assert.match(f.doc.querySelector('.listing-photo-illustration').src, /assets\/listing-cabin.svg$/);
+  assert.equal(f.doc.querySelector('#detail-title').textContent, '<img src=x onerror=alert(1)>');
+  assert.equal(f.doc.querySelector('#detail-title img'), null);
+  assert.equal(f.doc.querySelector('.detail-price').textContent, 'Precio no disponible');
+  assert.match(f.doc.querySelector('.detail-cancellation').textContent, /Consulta la política vigente/);
+  assert.equal(f.doc.querySelector('.detail-cancellation-rules'), null);
+});
+
+test('renders a friendly public detail error', (t) => {
+  const f = fixture(t);
+  renderListingDetailError(f.container, 'Este alojamiento no está disponible.', f.doc);
+  assert.equal(f.container.firstElementChild.textContent, 'Este alojamiento no está disponible.');
+  assert.equal(f.container.firstElementChild.getAttribute('role'), 'status');
 });
