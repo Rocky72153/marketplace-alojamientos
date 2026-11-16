@@ -27,12 +27,12 @@ docker compose up -d db
 docker compose ps
 ```
 
-Espera a que el servicio `db` figure como saludable. Compose conserva la información en el volumen `marketplace-postgres-data`, aun después de detener el contenedor. Su configuración predeterminada es PostgreSQL local en el puerto 5432, base y usuario `marketplace` y contraseña de ejemplo `marketplace_local`; corresponde solo a desarrollo.
+Espera a que el servicio `db` figure como saludable. Compose conserva la información en el volumen `marketplace-postgres-data`, aun después de detener el contenedor. Su configuración predeterminada es PostgreSQL accesible solo desde este equipo en el puerto 5432, base y usuario `marketplace` y contraseña de ejemplo `marketplace_local`; corresponde solo a desarrollo.
 
 Para verificar un clon con una base vacía sin modificar un volumen existente, puedes usar en su lugar un contenedor temporal aislado. Estos datos se eliminan al detener ese contenedor; no lo uses para información que quieras conservar:
 
 ```powershell
-docker run --rm -d --name marketplace-validacion-db -e POSTGRES_DB=marketplace -e POSTGRES_USER=marketplace -e POSTGRES_PASSWORD=marketplace_local -p 15433:5432 postgres:17-alpine
+docker run --rm -d --name marketplace-validacion-db -e POSTGRES_DB=marketplace -e POSTGRES_USER=marketplace -e POSTGRES_PASSWORD=marketplace_local -p 127.0.0.1:15433:5432 postgres:17-alpine
 ```
 
 En la terminal del backend, antes de arrancarlo, usa `$env:DB_URL = "jdbc:postgresql://localhost:15433/marketplace"`. Al terminar, `docker stop marketplace-validacion-db` elimina solo ese contenedor temporal y sus datos, no el volumen de Compose.
@@ -48,7 +48,7 @@ $env:DEMO_SEED_PASSWORD = "<tu-clave-local-de-demostracion>"
 mvn -f backend/pom.xml spring-boot:run
 ```
 
-Si no se define `AUTH_TOKEN_SECRET`, el backend genera un secreto temporal: las sesiones existentes dejan de ser válidas al reiniciar. Si se proporciona, debe tener al menos 32 bytes. La clave `ADMIN_BOOTSTRAP_KEY` es opcional y permite registrar un administrador mediante la API; sin ella el registro público admite huéspedes y anfitriones. Para un frontend en otro origen, configura `CORS_ALLOWED_ORIGINS`. La dirección de la base, el usuario, la contraseña y el puerto pueden ajustarse con `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` y `PORT`.
+Si no se define `AUTH_TOKEN_SECRET`, el backend genera un secreto temporal: las sesiones existentes dejan de ser válidas al reiniciar. Si se proporciona, debe tener al menos 32 bytes. La clave `ADMIN_BOOTSTRAP_KEY` es opcional y permite registrar un administrador mediante la API; sin ella el registro público admite huéspedes y anfitriones. El backend escucha por defecto solo en `127.0.0.1`; `SERVER_ADDRESS` permite cambiar la interfaz de escucha si el entorno lo necesita. Para un frontend en otro origen, configura `CORS_ALLOWED_ORIGINS`. La dirección de la base, el usuario, la contraseña y el puerto pueden ajustarse con `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` y `PORT`.
 
 El perfil predeterminado `local` carga hasta 10.000 alojamientos ficticios en Colombia y 1.001 cuentas de muestra en PostgreSQL local. La primera carga puede tardar; espera a que finalice antes de comprobar el catálogo. Sin `DEMO_SEED_PASSWORD`, las cuentas demo reciben una contraseña aleatoria desconocida. Definirla después no cambia contraseñas ya creadas; puedes registrar tu propia cuenta de huésped. `DEMO_SEED_ENABLED=false` desactiva la carga y `DEMO_SEED_LISTING_COUNT` ajusta su tamaño. Una base con el catálogo anterior se amplía conservando los registros; las entradas antiguas editadas o eliminadas que no puedan identificarse se omiten. Si el catálogo es demasiado ambiguo, la carga se detiene sin modificarlo.
 

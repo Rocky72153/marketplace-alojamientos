@@ -2,6 +2,8 @@
 
 El siguiente modelo expresa las entidades y asociaciones principales deducidas del glosario y reglas del enunciado. Los tipos/campos son una propuesta conceptual y deben ajustarse al modelo de datos físico y a los servicios finalmente aprobados.
 
+Para el modelo de clases de la implementación actual, consulta el [diagrama editable del backend](../DIAGRAMA-CLASES.md).
+
 ```mermaid
 classDiagram
     class Usuario {

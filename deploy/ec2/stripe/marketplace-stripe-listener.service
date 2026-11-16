@@ -1,0 +1,26 @@
+[Unit]
+Description=Marketplace Stripe sandbox listener
+After=network-online.target
+ConditionPathExists=/etc/marketplace/stripe-sandbox-enabled
+
+[Service]
+Type=simple
+User=marketplace-stripe
+Group=marketplace-stripe
+Environment=XDG_CONFIG_HOME=/var/lib/marketplace-stripe/config
+Environment=STRIPE_NO_AUTO_UPDATE=1
+UnsetEnvironment=STRIPE_API_KEY
+ExecStartPre=/usr/local/libexec/marketplace/verify-stripe-sandbox
+ExecStart=/opt/marketplace/stripe-cli/stripe listen --events checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed,checkout.session.expired --forward-to http://127.0.0.1:8080/api/stripe-test/webhook
+Restart=on-failure
+RestartSec=10
+StandardOutput=null
+StandardError=null
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/marketplace-stripe
+IPAddressDeny=169.254.169.254/32
+IPAddressDeny=fd00:ec2::254/128
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
