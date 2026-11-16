@@ -39,6 +39,7 @@ Estas tecnologías están implementadas en el repositorio; su alcance y validaci
 - docs/GITHUB_SETUP.md: configuración administrativa de GitHub y SonarCloud.
 - docs/TRACEABILITY_TEMPLATE.csv: matriz inicial de trazabilidad.
 - docs/DECISIONS.md: decisiones técnicas y asuntos por validar.
+- [Diagrama de clases implementadas](docs/DIAGRAMA-CLASES.md): modelo editable en blanco y negro del backend, relaciones y estados.
 - docs/EP07-EP08-EVIDENCE.md: alcance y comprobaciones de notificaciones y reseñas.
 - docs/EP09-administracion-reportes.md: reglas del panel, administración, exportaciones y evidencias.
 - docs/EP10-observabilidad.md: referencias de solicitud, auditoría y evidencia de registros seguros.
