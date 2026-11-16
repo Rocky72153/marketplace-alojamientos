@@ -1,12 +1,7 @@
 import { buildListingDetailUrl } from './detail.js';
+import { renderListingCard } from './listing-card.js';
 
 const activeRequests = new WeakMap();
-const TYPE_NAMES = {
-  APARTMENT: 'Apartamento',
-  HOUSE: 'Casa',
-  ROOM: 'Habitación',
-  CABIN: 'Cabaña',
-};
 
 function element(doc, tag, className, text) {
   const node = doc.createElement(tag);
@@ -42,16 +37,7 @@ export async function renderHomeSuggestions(container, apiBase, doc = globalThis
 
     for (const listing of body.items.slice(0, 8)) {
       if (!listing.id) continue;
-      const card = element(doc, 'article', 'listing-card');
-      const title = element(doc, 'h3', '', listing.title || 'Alojamiento');
-      const type = TYPE_NAMES[listing.type] || 'Alojamiento';
-      const location = element(doc, 'p', '', `${listing.city || ''} · ${type} · Hasta ${listing.capacity} huéspedes`);
-      const price = element(doc, 'p', 'listing-price',
-        `$${Number(listing.pricePerNight).toLocaleString('es-CO')} por noche`);
-      const detail = element(doc, 'a', 'listing-detail-link', 'Ver alojamiento');
-      detail.href = buildListingDetailUrl(listing.id);
-      card.append(title, location, price, detail);
-      items.append(card);
+      items.append(renderListingCard(doc, listing, { href: buildListingDetailUrl(listing.id) }));
     }
     feedback.textContent = items.children.length ? '' : 'Aún no hay alojamientos sugeridos.';
   } catch {
