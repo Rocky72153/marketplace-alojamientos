@@ -2,6 +2,7 @@ import { initReviewForm } from './reviews.js';
 
 const SESSION_KEY = 'marketplace-session';
 const historyRequests = new WeakMap();
+const historyViews = new WeakMap();
 
 function readSession() {
   try {
@@ -34,6 +35,7 @@ export function initAccount(documentRef = globalThis.document, apiBase = 'http:/
   let session = readSession();
   let authenticationRevision = 0;
   let registrationPending = false;
+  const pendingForms = new WeakMap();
   const panel = documentRef?.querySelector('#account-panel');
   const accountLink = documentRef?.querySelector('#account-link');
   const reservationLink = documentRef?.querySelector('#reservation-link');
@@ -44,6 +46,14 @@ export function initAccount(documentRef = globalThis.document, apiBase = 'http:/
   const sessionSummary = documentRef?.querySelector('#session-summary');
   const feedback = documentRef?.querySelector('#account-feedback');
   const logoutButton = documentRef?.querySelector('#logout-button');
+
+  function finishForm(form, revision) {
+    const pending = pendingForms.get(form);
+    if (!pending || (revision !== undefined && pending.revision !== revision)) return;
+    if (pending.button) { pending.button.disabled = false; pending.button.textContent = pending.label; }
+    form.setAttribute?.('aria-busy', 'false');
+    pendingForms.delete(form);
+  }
 
   function draw(message = '') {
     if (forms) forms.hidden = Boolean(session);
@@ -58,13 +68,16 @@ export function initAccount(documentRef = globalThis.document, apiBase = 'http:/
   async function authenticate(form, path) {
     if (!form || typeof FormData === 'undefined') return;
     if (path === 'register' && registrationPending) return;
-    const registerButton = path === 'register' ? form.querySelector?.('button[type="submit"]') : null;
+    const submitButton = form.querySelector?.('button[type="submit"]');
     if (path === 'register') {
       registrationPending = true;
-      if (registerButton) registerButton.disabled = true;
     }
     const revision = ++authenticationRevision;
-    if (feedback) feedback.textContent = 'Procesando…';
+    const label = pendingForms.get(form)?.label ?? submitButton?.textContent;
+    pendingForms.set(form, { revision, button: submitButton, label });
+    if (submitButton) { submitButton.disabled = true; submitButton.textContent = path === 'register' ? 'Creando cuenta…' : 'Iniciando sesión…'; }
+    form.setAttribute?.('aria-busy', 'true');
+    if (feedback) { feedback.textContent = 'Procesando…'; feedback.setAttribute?.('data-status', 'loading'); }
     try {
       const nextSession = await sendAuthRequest(path, formValues(form), apiBase, fetchImpl);
       if (revision !== authenticationRevision) return;
@@ -72,13 +85,15 @@ export function initAccount(documentRef = globalThis.document, apiBase = 'http:/
       try { globalThis.localStorage?.setItem(SESSION_KEY, JSON.stringify(session)); } catch { /* Storage may be unavailable in private mode. */ }
       form.reset();
       draw(path === 'register' ? 'Cuenta creada e ingreso completado.' : 'Sesión iniciada.');
+      feedback?.setAttribute?.('data-status', 'success');
     } catch (error) {
-      if (revision === authenticationRevision && feedback) feedback.textContent = error.message || 'No fue posible iniciar sesión.';
-    } finally {
-      if (path === 'register') {
-        registrationPending = false;
-        if (registerButton) registerButton.disabled = false;
+      if (revision === authenticationRevision && feedback) {
+        feedback.textContent = error.message || 'No fue posible iniciar sesión.';
+        feedback.setAttribute?.('data-status', 'error');
       }
+    } finally {
+      if (path === 'register' && pendingForms.get(form)?.revision === revision) registrationPending = false;
+      finishForm(form, revision);
     }
   }
 
@@ -104,9 +119,13 @@ export function initAccount(documentRef = globalThis.document, apiBase = 'http:/
   });
   function logout(message = 'Sesión cerrada.') {
     authenticationRevision += 1;
+    if (loginForm) finishForm(loginForm);
+    if (registerForm) finishForm(registerForm);
+    registrationPending = false;
     session = null;
     try { globalThis.localStorage?.removeItem(SESSION_KEY); } catch { /* Storage may be unavailable in private mode. */ }
     draw(message);
+    feedback?.setAttribute?.('data-status', 'idle');
   }
   logoutButton?.addEventListener?.('click', () => logout());
 
@@ -164,17 +183,26 @@ function reservationCard(documentRef, reservation, cancelContext) {
   card.append(element(documentRef, 'p', 'reservation-total', `Total: ${money(reservation.total)} COP`));
   const status = RESERVATION_STATES[reservation.status] || 'no disponible';
   const payment = PAYMENT_STATES[reservation.paymentStatus] || 'estado de pago no disponible';
-  card.append(element(documentRef, 'p', '', `Estado: ${status} · ${payment}`));
+  card.append(element(documentRef, 'span', `status-badge status-${String(reservation.status || 'unknown').toLowerCase()}`, status));
+  card.append(element(documentRef, 'p', 'reservation-payment', payment));
+  card.append(element(documentRef, 'p', 'reservation-reference', `Reserva: ${reservation.id}`));
   if (reservation.status === 'CANCELLED' && reservation.refundPercentage != null && reservation.refundAmount != null) {
     card.append(element(documentRef, 'p', '', `Reembolso de prueba: ${reservation.refundPercentage}% · ${money(reservation.refundAmount)} COP`));
   }
-  if (reservation.status === 'CONFIRMED') card.append(cancellationForm(documentRef, reservation, cancelContext));
+  if (reservation.status === 'CONFIRMED') {
+    const action = element(documentRef, 'details', 'action-disclosure');
+    action.append(element(documentRef, 'summary', '', 'Cancelar reserva'), cancellationForm(documentRef, reservation, cancelContext));
+    card.append(action);
+  }
   if (reservation.status === 'COMPLETED') {
     if (reservation.reviewed) {
       card.append(element(documentRef, 'p', '', 'Ya escribiste una reseña para esta reserva.'));
     } else {
       const { apiBase, token, fetchImpl, callbacks } = cancelContext;
-      initReviewForm(card, reservation, apiBase, callbacks.getToken || (() => token),
+      const action = element(documentRef, 'details', 'action-disclosure');
+      action.append(element(documentRef, 'summary', '', 'Escribir una reseña'));
+      card.append(action);
+      initReviewForm(action, reservation, apiBase, callbacks.getToken || (() => token),
         () => callbacks.onReviewCreated?.(reservation), documentRef, fetchImpl);
     }
   }
@@ -221,11 +249,36 @@ async function cancelReservation(reservation, reason, button, context) {
   }
 }
 
-function renderReservationCards(items, documentRef, reservations, cancelContext) {
+function renderReservationCards(items, documentRef, reservations, cancelContext, emptyMessage = 'Aún no tienes reservas.') {
   items.replaceChildren();
-  if (!reservations.length) items.append(element(documentRef, 'p', '', 'Aún no tienes reservas.'));
+  if (!reservations.length) items.append(element(documentRef, 'p', 'empty-state', emptyMessage));
   for (const reservation of reservations) items.append(reservationCard(documentRef, reservation, cancelContext));
 }
+
+function historyView(container, documentRef, feedback) {
+  if (historyViews.has(container)) return historyViews.get(container);
+  const toolbar = element(documentRef, 'div', 'workspace-toolbar reservation-filters');
+  const queryLabel = element(documentRef, 'label', '', 'Buscar reserva');
+  const query = element(documentRef, 'input'); query.type = 'search'; query.name = 'reservationQuery';
+  query.placeholder = 'Alojamiento o código de reserva'; queryLabel.append(query);
+  const stateLabel = element(documentRef, 'label', '', 'Estado');
+  const state = element(documentRef, 'select'); state.name = 'reservationStatus';
+  for (const [value, label] of [['', 'Todos los estados'], ...Object.entries(RESERVATION_STATES)]) {
+    const option = element(documentRef, 'option', '', value ? label.charAt(0).toUpperCase() + label.slice(1) : label);
+    option.value = value; state.append(option);
+  }
+  state.value = '';
+  const count = element(documentRef, 'p', 'workspace-count'); count.setAttribute?.('role', 'status');
+  toolbar.append(queryLabel, stateLabel, count); stateLabel.append(state);
+  if (feedback?.before) feedback.before(toolbar); else container.append(toolbar);
+  const view = { toolbar, query, state, count, token: null, draw: () => {} };
+  query.addEventListener('input', () => view.draw());
+  state.addEventListener('change', () => view.draw());
+  historyViews.set(container, view);
+  return view;
+}
+
+function normalized(value) { return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 
 export async function renderReservationHistory(container, apiBase, token, fetchImpl = globalThis.fetch,
   documentRef = globalThis.document, notice = '', callbacks = {}) {
@@ -235,6 +288,11 @@ export async function renderReservationHistory(container, apiBase, token, fetchI
   container.hidden = !token;
   const feedback = documentRef.querySelector('#reservation-history-feedback');
   const items = documentRef.querySelector('#reservation-history-items');
+  const view = historyView(container, documentRef, feedback);
+  view.toolbar.hidden = !token;
+  view.draw = () => {};
+  view.count.textContent = '';
+  if (view.token !== token) { view.query.value = ''; view.state.value = ''; view.token = token; }
   if (!token) {
     items?.replaceChildren();
     setFeedback(feedback, '');
@@ -250,8 +308,18 @@ export async function renderReservationHistory(container, apiBase, token, fetchI
     const reservations = await response.json().catch(() => []);
     if (historyRequests.get(container) !== request) return;
     if (!response.ok) throw new Error(reservations.message || 'No fue posible consultar tus reservas.');
+    if (!Array.isArray(reservations)) throw new Error('No fue posible consultar tus reservas.');
     const cancelContext = { apiBase, token, fetchImpl, documentRef, container, feedback, callbacks };
-    renderReservationCards(items, documentRef, reservations, cancelContext);
+    view.draw = () => {
+      if (historyRequests.get(container) !== request) return;
+      const term = normalized(view.query.value).trim();
+      const selected = reservations.filter((reservation) => (!view.state.value || reservation.status === view.state.value)
+        && normalized(`${reservation.listingTitle} ${reservation.id}`).includes(term));
+      view.count.textContent = `${selected.length} de ${reservations.length} reservas`;
+      renderReservationCards(items, documentRef, selected, cancelContext,
+        reservations.length ? 'No hay reservas que coincidan con estos filtros.' : 'Aún no tienes reservas.');
+    };
+    view.draw();
     setFeedback(feedback, notice || (reservations.length ? '' : 'Aún no tienes reservas.'));
   } catch (error) {
     if (historyRequests.get(container) === request) setFeedback(feedback, error.message);

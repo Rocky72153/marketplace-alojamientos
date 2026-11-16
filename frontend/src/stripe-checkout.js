@@ -1,3 +1,5 @@
+import { createBookingProgress } from './booking-progress.js';
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // Never navigate to a URL merely because it came back from the API.
@@ -27,16 +29,20 @@ export function initStripeReturn(container, attemptId, apiBase, getToken,
   const message = doc.createElement('p'); message.setAttribute('role', 'status'); message.setAttribute('aria-live', 'polite');
   const retry = doc.createElement('button'); retry.type = 'button'; retry.className = 'secondary-button'; retry.textContent = 'Consultar estado';
   const resume = doc.createElement('a'); resume.className = 'listing-detail-link'; resume.textContent = 'Continuar pago de prueba'; resume.hidden = true;
-  container.replaceChildren(heading, message, retry, resume);
+  const progress = createBookingProgress(doc, 'STRIPE_TEST');
+  progress.setStep(2, 'STRIPE_TEST');
+  container.replaceChildren(heading, message, retry, resume, progress.element);
   let revision = 0;
   let confirmedToken = null;
   async function refresh() {
     const request = ++revision;
     const token = getToken();
+    progress.setStep(2, 'STRIPE_TEST');
+    message.setAttribute('data-status', 'loading');
     resume.hidden = true;
     resume.removeAttribute?.('href');
-    if (!UUID.test(attemptId)) { message.textContent = 'El identificador del pago no es válido.'; retry.hidden = true; return; }
-    if (!token) { message.textContent = 'Inicia sesión con la cuenta que inició el pago para consultar su estado.'; retry.hidden = true; return; }
+    if (!UUID.test(attemptId)) { message.setAttribute('data-status', 'error'); message.textContent = 'El identificador del pago no es válido. Consulta tus reservas o inicia una nueva búsqueda.'; retry.hidden = true; return; }
+    if (!token) { message.setAttribute('data-status', 'idle'); message.textContent = 'Inicia sesión con la cuenta que inició el pago para consultar su estado.'; retry.hidden = true; return; }
     retry.hidden = false; retry.disabled = true;
     message.textContent = 'Consultando el estado del pago de prueba…';
     try {
@@ -46,8 +52,11 @@ export function initStripeReturn(container, attemptId, apiBase, getToken,
       if (request !== revision || token !== getToken()) return;
       if (!response.ok) throw new Error(data.message || 'No fue posible consultar el pago.');
       if (data.attemptId !== attemptId) throw new Error('La respuesta del pago no corresponde a la solicitud.');
+      message.setAttribute('data-status', 'idle');
       switch (data.status) {
         case 'PAID':
+          progress.setStep(3, 'STRIPE_TEST');
+          message.setAttribute('data-status', 'success');
           message.textContent = 'Pago de prueba confirmado por el servidor. La reserva está confirmada.';
           if (confirmedToken !== token) { confirmedToken = token; onConfirmed(); }
           break;
@@ -58,7 +67,7 @@ export function initStripeReturn(container, attemptId, apiBase, getToken,
           if (url) { resume.href = url; resume.hidden = false; }
           break;
         }
-        case 'EXPIRED': message.textContent = 'El pago de prueba venció. La reserva no se confirmó.'; break;
+        case 'EXPIRED': message.textContent = 'El pago de prueba venció. La reserva no se confirmó. Busca nuevas fechas para intentarlo de nuevo.'; break;
         case 'REFUND_PENDING': message.textContent = 'El pago de prueba está en revisión o pendiente de reembolso. Consulta tu historial de reservas.'; break;
         case 'REFUND_FAILED': message.textContent = 'El reembolso de prueba falló y requiere revisión. Consulta tu historial de reservas.'; break;
         case 'REFUND_REVIEW': message.textContent = 'El estado del reembolso de prueba requiere revisión. Consulta tu historial de reservas.'; break;
@@ -67,7 +76,10 @@ export function initStripeReturn(container, attemptId, apiBase, getToken,
         default: message.textContent = 'El estado del pago no está disponible. Consulta nuevamente.';
       }
     } catch (error) {
-      if (request === revision && token === getToken()) message.textContent = error.message || 'No fue posible consultar el pago.';
+      if (request === revision && token === getToken()) {
+        message.setAttribute('data-status', 'error');
+        message.textContent = `${error.message || 'No fue posible consultar el pago.'} Puedes consultar el estado de nuevo.`;
+      }
     } finally {
       if (request === revision && token === getToken()) retry.disabled = false;
     }

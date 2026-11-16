@@ -10,9 +10,11 @@
     <script type="module" src="/src/main.js"></script>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Saltar al contenido</a>
     <header class="site-header">
-      <a class="brand" href="#explorar" data-view-link="explore" aria-label="Marketplace de Alojamientos, inicio">Aloja<span>Marketplace</span></a>
-      <nav aria-label="Navegación principal">
+      <a class="brand" href="#explorar" data-view-link="explore" aria-label="Marketplace de Alojamientos, inicio"><span class="brand-symbol" aria-hidden="true">⌂</span><span class="brand-name">Aloja<small>Colombia, a tu manera</small></span></a>
+      <button id="menu-toggle" class="menu-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false"><span aria-hidden="true">☰</span> Menú</button>
+      <nav id="primary-navigation" aria-label="Navegación principal">
         <a href="#explorar" data-view-link="explore">Explorar</a>
         <a id="host-link" href="#anfitrion" data-view-link="host">Soy anfitrión</a>
         <a id="reservation-link" href="#reservas" data-view-link="reservations">Mis reservas</a>
@@ -22,7 +24,7 @@
         <a id="account-link" class="nav-login" href="#mi-cuenta" data-view-link="account">Iniciar sesión</a>
       </nav>
     </header>
-    <main>
+    <main id="main-content" tabindex="-1">
       <div id="view-account" class="app-view" data-view="account" tabindex="-1" hidden>
       <section id="account-panel" class="account-panel" aria-labelledby="account-title" hidden>
         <div class="account-shell">
@@ -111,18 +113,28 @@
       </div>
       <div id="view-explore" class="app-view" data-view="explore" tabindex="-1">
       <section class="hero">
+        <div class="hero-heading">
+        <div>
         <p class="eyebrow hero-eyebrow">TU PRÓXIMO DESTINO ESTÁ EN COLOMBIA</p>
-        <h1>Encuentra un lugar<br />para sentirte en casa.</h1>
-        <p class="hero-copy">Una escapada, un nuevo destino, un lugar para ti.<br />Compara opciones y planea tu próxima estancia.</p>
+        <h1>Un nuevo destino.<br /><em>Un lugar para ti.</em></h1>
+        <p class="hero-copy">De la montaña al mar: encuentra dónde quedarte y empieza a planear tu próxima historia.</p>
         <div class="hero-highlights" aria-label="Explora a tu manera">
-          <span>Destinos en Colombia</span><span>Opciones para cada viaje</span><span>Explora sin iniciar sesión</span>
+          <span>Explora sin registrarte</span><span>Precios en pesos colombianos</span>
+        </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <svg viewBox="0 0 460 290" focusable="false"><rect width="460" height="290" rx="32" fill="#e6ecdc"/><circle cx="365" cy="66" r="33" fill="#e8ba70"/><path d="M0 220 120 64 257 222 337 122 460 246V290H0Z" fill="#b7cbb1"/><path d="m0 249 151-98 151 98 158-62v103H0Z" fill="#729983"/><path d="M182 140h130v123H182z" fill="#fbf4e4"/><path d="m160 148 88-65 87 65z" fill="#b27150"/><rect x="233" y="192" width="30" height="71" rx="15" fill="#345d4a"/><path d="M201 166h22v27h-22zm75 0h22v27h-22z" fill="#c3d7c9"/><path d="M251 263c-9 13-32 17-46 27h88c-11-13-26-16-29-27" fill="#d6c7a3"/><path d="M68 218v43m-21-22 21-39 21 39m285-11v41m-21-19 21-40 21 40" stroke="#345d4a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          <span class="hero-art-caption">Un lugar para cada forma de viajar</span>
+        </div>
         </div>
         <form id="search-form" class="search-card" aria-label="Buscar alojamientos">
           <div class="city-field"><label for="city">Ciudad</label><input id="city" name="city" placeholder="¿A dónde vas?" /><ul id="city-suggestions" class="city-suggestions" role="listbox" aria-label="Ciudades sugeridas" hidden></ul></div>
           <label>Llegada<input id="checkin" name="checkin" type="date" /></label>
           <label>Salida<input id="checkout" name="checkout" type="date" /></label>
           <label>Huéspedes<input id="guests" name="guests" type="number" min="1" value="2" /></label>
-          <button type="submit">Buscar</button>
+          <button type="submit" class="search-submit">Buscar alojamientos <span aria-hidden="true">↗</span></button>
+          <details id="search-filter-disclosure" class="search-filter-disclosure">
+          <summary>Filtros <span id="active-filter-count" class="filter-count" hidden></span></summary>
           <div class="search-filters">
             <label>Tipo<select name="type"><option value="">Cualquier tipo</option><option value="APARTMENT">Apartamento</option><option value="HOUSE">Casa</option><option value="ROOM">Habitación</option><option value="CABIN">Cabaña</option></select></label>
             <label>Precio mínimo<input name="minPrice" type="number" min="0" placeholder="COP" /></label>
@@ -133,8 +145,12 @@
               <label><input name="amenityIds" type="checkbox" value="POOL" /> Piscina</label>
               <label><input name="amenityIds" type="checkbox" value="AIR_CONDITIONING" /> Aire acondicionado</label>
             </fieldset>
+            <div class="filter-actions"><button type="submit">Aplicar filtros</button><button id="clear-search-filters" type="button" class="text-button">Limpiar filtros</button><span>Se conservan tu destino, fechas y huéspedes.</span></div>
           </div>
+          </details>
         </form>
+        <div class="destination-shortcuts" aria-label="Destinos para explorar"><span>¿Buscas inspiración?</span><button type="button" data-destination="Bogotá">Bogotá</button><button type="button" data-destination="Medellín">Medellín</button><button type="button" data-destination="Cartagena de Indias">Cartagena de Indias</button><button type="button" data-destination="Santa Marta">Santa Marta</button></div>
+        <div id="search-results-heading" class="search-results-heading" hidden><div><p class="eyebrow">TU BÚSQUEDA</p><h2>Alojamientos para tu viaje</h2><p id="search-summary" class="search-summary"></p></div><button id="edit-search" type="button" class="secondary-button">Cambiar búsqueda</button></div>
         <p id="search-feedback" class="feedback" role="status" aria-live="polite"></p>
         <div id="search-results" class="listing-results" aria-live="polite"></div>
       </section>
