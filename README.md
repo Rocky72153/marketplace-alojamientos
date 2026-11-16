@@ -4,7 +4,9 @@ Proyecto de curso de Ingeniería de Software I — Universidad El Bosque, period
 
 Marketplace web para conectar anfitriones con huéspedes y permitir publicación, búsqueda, disponibilidad, cotización, reserva y cancelación de alojamientos temporales.
 
-**Demostración publicada:** [moralesforero.lol](http://moralesforero.lol/), con 10.000 alojamientos ficticios colombianos y Stripe sandbox. Se comprobó una reserva, la confirmación por evento firmado y su reembolso de prueba; consulta [configuración y evidencia](docs/STRIPE-PRUEBAS.md). Usar solo cuentas y datos ficticios en esta demostración HTTP. Los cambios recientes se revisan en [PR #36](https://github.com/Rocky72153/marketplace-alojamientos/pull/36).
+**Demostración publicada:** [moralesforero.lol](http://moralesforero.lol/), con 10.000 alojamientos ficticios colombianos y Stripe en modo de prueba. Se comprobó una reserva, la confirmación por evento firmado y su reembolso de prueba; consulta [configuración y evidencia](docs/STRIPE-PRUEBAS.md). Usar solo cuentas y datos ficticios en esta demostración HTTP. La depuración y la renovación de la interfaz se integraron mediante los [PR #35](https://github.com/Rocky72153/marketplace-alojamientos/pull/35) y [PR #36](https://github.com/Rocky72153/marketplace-alojamientos/pull/36).
+
+Las [mejoras de interfaz y capturas](docs/FRONTEND-MEJORAS.md) están relacionadas con [MARKET-70](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-70) y con la [documentación de la interfaz publicada en Confluence](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/12255234).
 
 ## Alcance implementado
 
