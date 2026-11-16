@@ -1,4 +1,5 @@
 import { stripeCheckoutUrl } from './stripe-checkout.js';
+import { createBookingProgress } from './booking-progress.js';
 
 function el(documentRef, tag, className, text) {
   const node = documentRef.createElement(tag);
@@ -54,7 +55,9 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
   section.setAttribute?.('aria-labelledby', 'booking-title');
   const title = el(documentRef, 'h2', '', 'Cotiza y reserva');
   title.id = 'booking-title';
-  section.append(title, el(documentRef, 'p', 'booking-intro', 'Confirma primero las fechas. Los importes se recalculan con la tarifa y los extras vigentes del alojamiento.'));
+  title.setAttribute?.('tabindex', '-1');
+  const progress = createBookingProgress(documentRef, options.getPaymentMode?.());
+  section.append(title, el(documentRef, 'p', 'booking-intro', 'Elige tus fechas y revisa el total antes de continuar. El pago es de prueba.'), progress.element);
 
   const form = el(documentRef, 'form', 'booking-form');
   form.id = 'quote-form';
@@ -116,28 +119,49 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
   feedback.role = 'status'; feedback.setAttribute?.('aria-live', 'polite');
   const quoteSummary = el(documentRef, 'div', 'quote-summary');
   quoteSummary.hidden = true;
+  const staySummary = el(documentRef, 'p', 'booking-stay-summary');
+  staySummary.hidden = true;
+  const editQuoteButton = el(documentRef, 'button', 'secondary-button booking-edit', 'Cambiar fechas y extras');
+  editQuoteButton.type = 'button'; editQuoteButton.hidden = true;
   const reserveButton = el(documentRef, 'button', 'primary-button reserve-button', 'Confirmar reserva · pago de prueba');
   reserveButton.type = 'button'; reserveButton.hidden = true;
-  section.append(form, feedback, quoteSummary, reserveButton);
+  const paymentStatusLink = el(documentRef, 'a', 'listing-detail-link booking-payment-status', 'Consultar estado del pago');
+  paymentStatusLink.hidden = true;
+  section.append(form, staySummary, editQuoteButton, feedback, quoteSummary, reserveButton, paymentStatusLink);
   container.append(section);
 
-  const current = { payload: null, idempotencyKey: null };
+  const current = { payload: null, idempotencyKey: null, total: null };
   let quoteRevision = 0;
   let accountRevision = 0;
   let accountToken = getToken();
   let reservationInFlight = false;
   const getPaymentMode = options.getPaymentMode || (() => 'SIMULATED_TEST');
+  const blockedRole = () => Boolean(getToken() && options.getRole && options.getRole() !== 'GUEST');
   const navigate = options.navigate || ((url) => globalThis.location.assign(url));
+  let progressStep = 0;
+  function setStep(step) {
+    progressStep = step;
+    progress.setStep(step, getPaymentMode());
+  }
   function clearQuote() {
     quoteRevision += 1;
     current.payload = null;
     current.idempotencyKey = null;
+    current.total = null;
+    setStep(0);
+    feedback.setAttribute?.('data-status', 'idle');
     quoteButton.disabled = reservationInFlight;
     quoteSummary.replaceChildren();
     quoteSummary.hidden = true;
     reserveButton.hidden = true;
+    paymentStatusLink.hidden = true;
+    paymentStatusLink.removeAttribute?.('href');
     feedback.textContent = '';
+    form.hidden = false;
+    staySummary.hidden = true;
+    editQuoteButton.hidden = true;
   }
+  editQuoteButton.addEventListener?.('click', () => { clearQuote(); checkIn.focus?.(); });
   const updateCheckoutMinimum = () => {
     checkOut.min = checkIn.value || bogotaToday();
     if (checkOut.value && checkOut.value <= checkIn.value) checkOut.value = '';
@@ -164,6 +188,12 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
   }
 
   function renderQuote(quote) {
+    form.hidden = true;
+    staySummary.hidden = false;
+    editQuoteButton.hidden = false;
+    const dateLabel = (value) => new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'short', timeZone: 'America/Bogota' })
+      .format(new Date(`${value}T12:00:00-05:00`));
+    staySummary.textContent = `${dateLabel(current.payload.checkIn)} – ${dateLabel(current.payload.checkOut)} · ${current.payload.guests} huésped${current.payload.guests === 1 ? '' : 'es'}`;
     quoteSummary.replaceChildren();
     quoteSummary.hidden = false;
     quoteSummary.append(el(documentRef, 'h3', '', 'Desglose de la estadía'));
@@ -190,11 +220,17 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
 
   function syncPaymentMode() {
     const mode = getPaymentMode();
-    if (mode === 'STRIPE_TEST') reserveButton.textContent = getToken() ? 'Continuar a Stripe · modo de prueba' : 'Iniciar sesión para reservar';
-    else if (mode === 'SIMULATED_TEST') reserveButton.textContent = getToken() ? 'Confirmar reserva · pago de prueba' : 'Iniciar sesión para reservar';
+    progress.setStep(progressStep, mode);
+    const amount = current.total == null ? '' : ` · ${formatMoney(current.total)}`;
+    if (mode === 'STRIPE_TEST') reserveButton.textContent = getToken() ? `Continuar a Stripe de prueba${amount}` : 'Iniciar sesión para reservar';
+    else if (mode === 'SIMULATED_TEST') reserveButton.textContent = getToken() ? `Confirmar reserva de prueba${amount}` : 'Iniciar sesión para reservar';
     else reserveButton.textContent = 'Opciones de pago no disponibles';
-    reserveButton.disabled = reservationInFlight || !['STRIPE_TEST', 'SIMULATED_TEST'].includes(mode);
+    reserveButton.disabled = reservationInFlight || blockedRole() || !['STRIPE_TEST', 'SIMULATED_TEST'].includes(mode);
     if (mode === 'UNAVAILABLE' && current.payload) feedback.textContent = 'No fue posible consultar las opciones de pago. Recarga la página para reintentar.';
+    if (blockedRole()) {
+      reserveButton.textContent = 'Reservas disponibles para huéspedes';
+      feedback.textContent = 'Para reservar, usa una cuenta de huésped. Con tu cuenta actual puedes explorar y cotizar.';
+    }
   }
 
   form.addEventListener?.('submit', async (event) => {
@@ -203,6 +239,8 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
     if (!form.reportValidity?.()) return;
     clearQuote();
     const revision = quoteRevision;
+    setStep(1);
+    feedback.setAttribute?.('data-status', 'loading');
     quoteButton.disabled = true;
     feedback.textContent = 'Calculando con precios y disponibilidad actuales…';
     const payload = selectedPayload();
@@ -215,10 +253,15 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
       if (!response.ok) throw new Error(result.message || 'No fue posible cotizar estas fechas.');
       current.payload = payload;
       current.idempotencyKey = makeIdempotencyKey();
+      current.total = result.total;
+      feedback.setAttribute?.('data-status', 'success');
       feedback.textContent = 'Cotización actualizada. Confirma para bloquear las fechas.';
       renderQuote(result);
     } catch (error) {
-      if (revision === quoteRevision) feedback.textContent = error.message || 'No fue posible cotizar estas fechas.';
+      if (revision === quoteRevision) {
+        feedback.setAttribute?.('data-status', 'error');
+        feedback.textContent = `${error.message || 'No fue posible cotizar estas fechas.'} Revisa los datos y vuelve a calcular.`;
+      }
     } finally {
       if (revision === quoteRevision) quoteButton.disabled = false;
     }
@@ -227,6 +270,7 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
   reserveButton.addEventListener?.('click', async () => {
     if (reservationInFlight) return;
     const token = getToken();
+    if (blockedRole()) { syncPaymentMode(); return; }
     if (!token) {
       feedback.textContent = 'Inicia sesión como huésped para confirmar la reserva.';
       if (win?.location?.href && win?.history?.replaceState) {
@@ -250,7 +294,9 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
     }
     const revision = accountRevision;
     reservationInFlight = true;
-    const controls = [checkIn, checkOut, guests, quoteButton, ...extraInputs.flatMap(({ checkbox, quantity }) => [checkbox, quantity])];
+    setStep(2);
+    feedback.setAttribute?.('data-status', 'loading');
+    const controls = [checkIn, checkOut, guests, quoteButton, editQuoteButton, ...extraInputs.flatMap(({ checkbox, quantity }) => [checkbox, quantity])];
     const disabledBeforeReservation = controls.map((control) => control.disabled);
     controls.forEach((control) => { control.disabled = true; });
     reserveButton.disabled = true;
@@ -266,11 +312,19 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
       if (!response.ok) throw new Error(result.message || 'No fue posible confirmar la reserva.');
       if (mode === 'STRIPE_TEST') {
         if (result.status === 'PREPARING') {
+          feedback.setAttribute?.('data-status', 'idle');
           feedback.textContent = 'El pago de prueba se está preparando. Vuelve a intentarlo para continuar.';
           return;
         }
         if (result.status !== 'OPEN') {
-          feedback.textContent = 'Consulta el estado del pago desde el enlace de retorno. La reserva aún no se confirma desde esta pantalla.';
+          feedback.setAttribute?.('data-status', 'idle');
+          if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(result.attemptId || '')) {
+            paymentStatusLink.href = `?stripe_checkout=${encodeURIComponent(result.attemptId)}#pago`;
+            paymentStatusLink.hidden = false;
+            feedback.textContent = 'Consulta el estado del pago. La reserva aún no se confirma desde esta pantalla.';
+          } else {
+            feedback.textContent = 'Consulta tus reservas para conocer el estado. La reserva aún no se confirma desde esta pantalla.';
+          }
           return;
         }
         const url = stripeCheckoutUrl(result.checkoutUrl);
@@ -281,6 +335,8 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
       }
       current.payload = null; current.idempotencyKey = null;
       reserveButton.hidden = true;
+      setStep(3);
+      feedback.setAttribute?.('data-status', 'success');
       feedback.textContent = `Reserva confirmada. Código ${result.id}. Pago simulado aprobado; no se realizó ningún cobro real.`;
       try {
         await Promise.resolve(onReservationChanged());
@@ -290,7 +346,10 @@ export function initBooking(container, listing, apiBase, getToken, onReservation
         }
       }
     } catch (error) {
-      if (revision === accountRevision && token === getToken()) feedback.textContent = error.message || 'No fue posible confirmar la reserva.';
+      if (revision === accountRevision && token === getToken()) {
+        feedback.setAttribute?.('data-status', 'error');
+        feedback.textContent = `${error.message || 'No fue posible confirmar la reserva.'} Puedes intentarlo de nuevo.`;
+      }
     } finally {
       reservationInFlight = false;
       controls.forEach((control, index) => { control.disabled = disabledBeforeReservation[index]; });

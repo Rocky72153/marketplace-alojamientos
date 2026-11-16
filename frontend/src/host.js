@@ -31,13 +31,30 @@ export function initHostWorkspace(container, apiBase, getSession, doc = globalTh
   const intro = element(doc, 'p', 'Crea tus anuncios y administra sus fechas disponibles.');
   const feedback = element(doc, 'p', '', 'feedback');
   feedback.setAttribute('role', 'status');
+  const toolbar = element(doc, 'div', undefined, 'workspace-toolbar');
+  const searchLabel = element(doc, 'label', 'Buscar en esta página');
+  const search = element(doc, 'input'); search.type = 'search'; search.name = 'hostQuery';
+  search.placeholder = 'Título o ciudad'; searchLabel.append(search);
+  const stateLabel = element(doc, 'label', 'Estado en esta página');
+  const state = element(doc, 'select'); state.name = 'hostStatus';
+  const states = { DRAFT: 'Borrador', ACTIVE: 'Activo', PAUSED: 'Pausado', BLOCKED: 'Bloqueado' };
+  for (const [value, text] of [['', 'Todos'], ...Object.entries(states)]) {
+    const option = element(doc, 'option', text); option.value = value; state.append(option);
+  }
+  state.value = ''; stateLabel.append(state);
+  const count = element(doc, 'p', '', 'workspace-count'); count.setAttribute('role', 'status');
+  toolbar.append(searchLabel, stateLabel, button(doc, 'Crear alojamiento', () => showEditor()), count);
+  toolbar.hidden = true;
   const editor = element(doc, 'div');
   const items = element(doc, 'div', undefined, 'host-list');
-  const paging = element(doc, 'div', undefined, 'host-actions');
-  section.append(heading, intro, feedback, editor, items, paging);
+  const paging = element(doc, 'div', undefined, 'host-actions workspace-pagination');
+  section.append(heading, intro, toolbar, feedback, editor, items, paging);
   container.append(section);
   let revision = 0;
   let page = 0;
+  let draw = () => {};
+  search.addEventListener('input', () => draw());
+  state.addEventListener('change', () => draw());
   const token = () => getSession()?.user?.role === 'HOST' ? getSession()?.accessToken : null;
   const current = (captured, request) => captured && captured === token() && request === revision;
   function clear() {
@@ -47,6 +64,8 @@ export function initHostWorkspace(container, apiBase, getSession, doc = globalTh
     items.replaceChildren();
     paging.replaceChildren();
     feedback.textContent = '';
+    count.textContent = ''; toolbar.hidden = true;
+    search.value = ''; state.value = ''; draw = () => {};
   }
   async function api(path, captured, options = {}) {
     const response = await fetchImpl(new URL(path, apiBase), {
@@ -146,6 +165,7 @@ export function initHostWorkspace(container, apiBase, getSession, doc = globalTh
       }
     });
     editor.append(form);
+    editor.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
   }
   async function stateChange(listing, status, captured, request) {
     try {
@@ -201,15 +221,22 @@ export function initHostWorkspace(container, apiBase, getSession, doc = globalTh
   }
   function renderListing(listing, captured, request) {
     const card = element(doc, 'article', undefined, 'host-card');
-    card.append(element(doc, 'h3', listing.title), element(doc, 'p', `${listing.city} · ${listing.status}`));
+    card.append(element(doc, 'h3', listing.title), element(doc, 'p', listing.city),
+      element(doc, 'span', states[listing.status] || listing.status, `status-badge status-${String(listing.status).toLowerCase()}`),
+      element(doc, 'p', `${Number(listing.pricePerNight || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 })} por noche · ${listing.capacity} huéspedes`));
     const actions = element(doc, 'div', undefined, 'host-actions');
     if (listing.status !== 'BLOCKED') {
       actions.append(button(doc, 'Editar', () => showEditor(listing)));
       if (['DRAFT', 'PAUSED'].includes(listing.status)) actions.append(button(doc, 'Activar', () => stateChange(listing, 'ACTIVE', captured, request)));
       if (listing.status === 'ACTIVE') actions.append(button(doc, 'Pausar', () => stateChange(listing, 'PAUSED', captured, request)));
-      const availability = element(doc, 'div');
-      actions.append(button(doc, 'Administrar disponibilidad', () => availabilityEditor(listing, availability, captured, request)));
-      card.append(actions, availability);
+      actions.append(button(doc, 'Administrar disponibilidad', () => {
+        editor.replaceChildren();
+        const availability = element(doc, 'div');
+        editor.append(button(doc, 'Cerrar disponibilidad', () => editor.replaceChildren()), availability);
+        editor.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+        return availabilityEditor(listing, availability, captured, request);
+      }));
+      card.append(actions);
     } else {
       card.append(element(doc, 'p', 'Esta publicación fue bloqueada por administración.'));
     }
@@ -218,15 +245,29 @@ export function initHostWorkspace(container, apiBase, getSession, doc = globalTh
   async function refresh(notice = '') {
     const captured = token(); const request = ++revision;
     items.replaceChildren(); paging.replaceChildren(); editor.replaceChildren();
+    draw = () => {}; count.textContent = ''; toolbar.hidden = !captured;
     if (!captured) { feedback.textContent = ''; return; }
     feedback.textContent = 'Cargando tus alojamientos…';
     try {
       const result = await api(`/api/host/listings?page=${page}&size=20`, captured);
       if (!current(captured, request)) return;
+      if (!Array.isArray(result.content)) throw new Error('No fue posible cargar tus alojamientos.');
       feedback.textContent = notice || (result.content?.length ? '' : 'Aún no tienes alojamientos.');
-      items.append(button(doc, 'Crear alojamiento', () => showEditor()));
-      for (const listing of result.content || []) items.append(renderListing(listing, captured, request));
+      draw = () => {
+        if (!current(captured, request)) return;
+        const normalize = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        const term = normalize(search.value).trim();
+        const selected = result.content.filter((listing) => (!state.value || listing.status === state.value)
+          && normalize(`${listing.title} ${listing.city}`).includes(term));
+        items.replaceChildren();
+        for (const listing of selected) items.append(renderListing(listing, captured, request));
+        if (!selected.length) items.append(element(doc, 'p', result.content.length
+          ? 'No hay alojamientos que coincidan en esta página.' : 'Crea tu primer alojamiento para empezar.', 'empty-state'));
+        count.textContent = `${selected.length} de ${result.content.length} en esta página · ${result.totalElements ?? result.content.length} alojamientos en total`;
+      };
+      draw();
       if (page > 0) paging.append(button(doc, 'Anterior', () => { page -= 1; void refresh(); }));
+      paging.append(element(doc, 'span', `Página ${page + 1} de ${Math.max(1, Number(result.totalPages) || 1)}`));
       if (page + 1 < result.totalPages) paging.append(button(doc, 'Siguiente', () => { page += 1; void refresh(); }));
     } catch (error) { if (current(captured, request)) feedback.textContent = error.message; }
   }

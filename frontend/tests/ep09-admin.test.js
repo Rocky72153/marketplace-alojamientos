@@ -19,6 +19,7 @@ function find(node, predicate) {
   return null;
 }
 function byText(node, text) { return find(node, (element) => element.textContent === text); }
+const containingRow = (root, child) => find(root, (node) => node.tagName === 'tr' && find(node, (candidate) => candidate === child));
 const dashboard = { generatedAt: '2026-11-11', timezone: 'America/Bogota', users: 2, activeListings: 1,
   estimatedRevenue: 120000, currency: 'COP', bookingsByStatus: { CONFIRMED: 1 },
   topCities: [{ city: 'Bogotá', bookings: 1 }], definitions: { estimatedRevenue: 'Cobros simulados' } };
@@ -53,7 +54,7 @@ test('restringir cuenta y bloquear publicación requiere motivo y envía estado 
   const panel = initAdministration(new Element('div'), 'http://localhost:8080', () => 'admin', doc, backend(requests));
   await panel.refresh();
   const user = byText(panel.section, 'Ana');
-  const userCard = find(panel.section, (node) => node.children.includes(user));
+  const userCard = containingRow(panel.section, user);
   const form = find(userCard, (node) => node.tagName === 'form');
   await form.dispatch('submit');
   assert.ok(byText(form, 'Indica un motivo.'));
@@ -64,7 +65,7 @@ test('restringir cuenta y bloquear publicación requiere motivo y envía estado 
   assert.deepEqual(JSON.parse(restriction.options.body), { reason: 'Incumplimiento' });
   assert.equal(requests.filter((r) => r.path === '/api/admin/audit').length, beforeUserAudit + 1);
   const listingTitle = byText(panel.section, 'Casa');
-  const listingCard = find(panel.section, (node) => node.children.includes(listingTitle));
+  const listingCard = containingRow(panel.section, listingTitle);
   const listingForm = find(listingCard, (node) => node.tagName === 'form');
   find(listingForm, (node) => node.tagName === 'textarea').value = 'Información incorrecta';
   const beforeListingAudit = requests.filter((r) => r.path === '/api/admin/audit').length;
@@ -109,7 +110,7 @@ test('una cuenta desactivada no ofrece una restricción que el servidor rechazar
       : base(url, options));
   await panel.refresh();
   const label = byText(panel.section, 'Luisa');
-  const card = find(panel.section, (node) => node.children.includes(label));
+  const card = containingRow(panel.section, label);
   assert.equal(byText(card, 'Restringir cuenta'), null);
 });
 
@@ -183,7 +184,7 @@ test('permite registrar revisión manual y rechaza exportación con fechas invá
   const panel = initAdministration(new Element('div'), 'http://localhost:8080', () => 'admin', doc, backend(requests));
   await panel.refresh();
   const label = byText(panel.section, 'Reserva: b1');
-  const card = find(panel.section, (node) => node.children.includes(label));
+  const card = containingRow(panel.section, label);
   const form = find(card, (node) => node.tagName === 'form');
   find(form, (node) => node.tagName === 'textarea').value = 'Revisada con el anfitrión';
   await form.dispatch('submit');

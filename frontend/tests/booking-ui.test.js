@@ -19,6 +19,7 @@ class MockElement {
   prepend(...nodes) { this.children.unshift(...nodes); }
   replaceChildren(...nodes) { this.children = nodes; }
   setAttribute(name, value) { this.attributes[name] = value; }
+  removeAttribute(name) { delete this.attributes[name]; }
   addEventListener(name, handler) { this.listeners[name] = handler; }
   reportValidity() { return true; }
   async dispatch(name, event = {}) {
@@ -35,6 +36,58 @@ function find(node, predicate) {
   }
   return null;
 }
+
+test('cuentas de anfitrión y administrador pueden cotizar sin ofrecer una reserva que el servidor rechazaría', async () => {
+  for (const role of ['HOST', 'ADMIN']) {
+    let requests = 0;
+    const container = new MockElement('div');
+    const flow = initBooking(container, { id: 'listing', capacity: 4 }, 'http://localhost:8080', () => 'token', () => {},
+      { createElement: (tag) => new MockElement(tag) }, async () => {
+        requests += 1;
+        return { ok: true, json: async () => ({ nights: 2, pricePerNight: 100000, nightlySubtotal: 200000,
+          cleaningFee: 0, serviceFee: 0, discountAmount: 0, total: 200000, extras: [],
+          freeRefundDays: 7, partialRefundDays: 2, partialRefundPercentage: 50 }) };
+      }, { getRole: () => role, getPaymentMode: () => 'STRIPE_TEST' });
+    await flow.form.dispatch('submit');
+    assert.equal(flow.form.hidden, true);
+    assert.equal(flow.reserveButton.disabled, true);
+    await flow.reserveButton.dispatch('click');
+    assert.equal(requests, 1);
+    assert.match(find(container, (item) => item.className === 'booking-feedback').textContent, /cuenta de huésped/);
+    await find(container, (item) => item.className?.includes('booking-edit')).dispatch('click');
+    assert.equal(flow.form.hidden, false);
+    assert.equal(flow.reserveButton.hidden, true);
+  }
+});
+
+test('la guía avanza al cotizar, permite reintentar un error y solo confirma tras éxito', async () => {
+  const doc = { createElement: (tag) => new MockElement(tag) };
+  let fail = true;
+  const fetchImpl = async (url) => url.pathname.endsWith('/quotes')
+    ? { ok: true, json: async () => ({ nights: 2, pricePerNight: 100000, nightlySubtotal: 200000,
+      cleaningFee: 0, serviceFee: 0, discountAmount: 0, total: 200000, extras: [],
+      freeRefundDays: 7, partialRefundDays: 2, partialRefundPercentage: 50 }) }
+    : fail ? { ok: false, json: async () => ({ message: 'Error temporal.' }) }
+      : { ok: true, json: async () => ({ id: 'reserva' }) };
+  const flow = initBooking(new MockElement('div'), { id: 'listing', capacity: 4 }, 'http://localhost:8080',
+    () => 'guest-token', () => {}, doc, fetchImpl);
+  const progress = find(flow.section, (node) => node.className === 'booking-progress');
+  const steps = progress.children[0].children;
+  assert.equal(steps[0].attributes['aria-current'], 'step');
+  assert.equal(steps[2].textContent, '3. Pago de prueba');
+  await flow.form.dispatch('submit');
+  assert.equal(steps[1].attributes['aria-current'], 'step');
+  assert.match(flow.reserveButton.textContent, /200\.000/);
+  await flow.reserveButton.dispatch('click');
+  assert.equal(steps[2].attributes['aria-current'], 'step');
+  assert.equal(steps[3].attributes['data-state'], 'upcoming');
+  assert.equal(flow.reserveButton.disabled, false);
+  assert.match(find(flow.section, (node) => node.className === 'booking-feedback').textContent, /intentarlo de nuevo/i);
+  fail = false;
+  await flow.reserveButton.dispatch('click');
+  assert.equal(steps[3].attributes['aria-current'], 'step');
+  assert.equal(steps[2].attributes['aria-current'], undefined);
+});
 
 test('recupera fechas y huéspedes de búsqueda y conserva cambios al solicitar acceso', async () => {
   const win = { location: new URL('http://localhost/?listing=listing-1&checkin=2099-12-10&checkout=2099-12-12&guests=3') };

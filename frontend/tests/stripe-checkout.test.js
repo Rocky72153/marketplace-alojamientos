@@ -9,7 +9,7 @@ class Element {
   prepend(...items) { this.children.unshift(...items); }
   replaceChildren(...items) { this.children = items; }
   setAttribute(key, value) { this.attributes[key] = value; }
-  removeAttribute(key) { delete this[key]; }
+  removeAttribute(key) { delete this[key]; delete this.attributes[key]; }
   addEventListener(name, fn) { this.listeners[name] = fn; }
   reportValidity() { return true; }
   async dispatch(name) { return this.listeners[name]?.({ preventDefault() {} }); }
@@ -82,16 +82,33 @@ test('no navega a una URL ajena aunque el servidor la devuelva', async () => {
   assert.match(find(flow.section, (node) => node.className === 'booking-feedback').textContent, /página de pago válida/i);
 });
 
+test('un intento no abierto ofrece consultar el estado sin afirmar confirmación', async () => {
+  const fetch = async (url) => url.pathname.endsWith('/quotes') ? response(quote)
+    : response({ attemptId, status: 'PAID' });
+  const flow = initBooking(new Element('div'), { id: 'listing', capacity: 4 }, 'http://localhost:8080', () => 'guest',
+    () => {}, doc, fetch, { getPaymentMode: () => 'STRIPE_TEST' });
+  await flow.form.dispatch('submit'); await flow.reserveButton.dispatch('click');
+  const link = find(flow.section, (node) => node.className?.includes('booking-payment-status'));
+  assert.equal(link.hidden, false);
+  assert.equal(link.href, `?stripe_checkout=${attemptId}#pago`);
+  assert.match(find(flow.section, (node) => node.className === 'booking-feedback').textContent, /aún no se confirma/);
+});
+
 test('el retorno consulta el servidor y solo confirma con estado PAID', async () => {
   const container = new Element('section');
   let state = 'OPEN'; let confirmed = 0; const calls = [];
   const view = initStripeReturn(container, attemptId, 'http://localhost:8080', () => 'guest', () => { confirmed += 1; }, doc,
     async (url, options) => { calls.push({ url, options }); return response({ attemptId, status: state, checkoutUrl: 'https://checkout.stripe.com/c/pay/cs_test_123' }); });
   await view.refresh();
+  const steps = find(container, (node) => node.className === 'booking-progress').children[0].children;
+  assert.equal(steps[2].attributes['aria-current'], 'step');
+  assert.equal(steps[3].attributes['data-state'], 'upcoming');
   assert.equal(calls[0].options.headers.Authorization, 'Bearer guest');
   assert.match(container.children[1].textContent, /pendiente/);
   assert.equal(confirmed, 0);
   state = 'PAID'; await view.refresh();
+  assert.equal(steps[3].attributes['aria-current'], 'step');
+  assert.equal(steps[2].attributes['aria-current'], undefined);
   assert.match(container.children[1].textContent, /confirmado por el servidor/i);
   assert.equal(confirmed, 1);
   await view.refresh();
