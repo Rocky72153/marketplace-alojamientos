@@ -107,7 +107,8 @@ export function initAdministration(container, apiBase, getToken, doc = globalThi
   function drawTable(group, data, token, request, renderItem, page = 0, total = data.length, pages = 1) {
     const selectedState = group.state.value;
     group.state.replaceChildren();
-    const values = [...new Set([...data.map((item) => item[group.stateKey]), selectedState].filter(Boolean))].sort();
+    const values = [...new Set([...data.map((item) => item[group.stateKey]), selectedState].filter(Boolean))]
+      .sort((left, right) => String(stateLabels[left] || left).localeCompare(String(stateLabels[right] || right), 'es'));
     for (const value of ['', ...values]) {
       const option = el(doc, 'option', value ? stateLabels[value] || value : 'Todos'); option.value = value;
       group.state.append(option);
