@@ -1,4 +1,4 @@
-# Evidencia de validación local de la entrega
+# Evidencia de validación de la entrega
 
 Registro de trabajo del 12 de noviembre de 2026. Esta validación local no constituye una aprobación del profesor ni garantiza el comportamiento de un despliegue de producción.
 
@@ -24,11 +24,15 @@ En el commit `2a35047` se completaron correctamente `mvn verify` con **33 prueba
 
 Se usó la alternativa aislada documentada con `docker run`: **no se probó el comando predeterminado `docker compose up -d db`** ni se utilizó el volumen habitual de Compose en esta comprobación.
 
+En una comprobación posterior, el 12 de noviembre de 2026, se ejecutó también `docker compose up -d db` con el volumen habitual ya existente. El servicio quedó saludable, conservó 10.000 anuncios activos y 1.001 cuentas de muestra y publicó PostgreSQL solo en `127.0.0.1:5432`. Esta comprobación adicional no es un segundo clon limpio ni una prueba de despliegue de producción.
+
 ## Rendimiento de búsqueda
 
 La medición final del escenario de búsqueda con 10.000 alojamientos activos registró **50 solicitudes exitosas y 0 fallos**, con 5 clientes concurrentes. El percentil 50 fue de **0,069932 segundos**, el percentil 95 de **0,854151 segundos** y el máximo de **1,201424 segundos**. Se cumplió el objetivo inicial para MARKET-69 aprobado por Juan: percentil 95 de hasta 3 segundos con 50 solicitudes y 5 clientes simultáneos. No se presenta ese objetivo como una aprobación del profesor ni como un acuerdo de servicio de producción.
 
 El detalle de la medición se conserva en [medicion-market-69-final.json](evidencias/medicion-market-69-final.json); el procedimiento está documentado en la [prueba reproducible](PRUEBA-RENDIMIENTO.md). La medición anterior sobre el commit `6f9194b` fue preliminar: 50 de 50 solicitudes exitosas y percentil 95 de 0,971388 segundos.
+
+El 14 de noviembre de 2026 se repitió el escenario en la instancia EC2 `t3.small` de demostración, con 2 vCPU y 2 GB de memoria, PostgreSQL local y 10.000 alojamientos activos ficticios. El backend probado correspondía al artefacto preparado desde `d5d713f`. Tras un calentamiento, el script ejecutó 50 búsquedas con 5 clientes simultáneos contra `127.0.0.1`: **50 respuestas válidas, 0 fallos, p95 de 0,206649 segundos y máximo de 0,262913 segundos**. La medición cumple el objetivo acordado en esas condiciones. No incluye latencia de Internet, ni demuestra el rendimiento con otra carga, ni prueba pagos. El resultado completo se encuentra en [medicion-aws-t3-small-2026-11-14.json](evidencias/medicion-aws-t3-small-2026-11-14.json); el propio archivo no identifica el commit porque se ejecutó fuera de un clon de Git.
 
 ## Capturas
 

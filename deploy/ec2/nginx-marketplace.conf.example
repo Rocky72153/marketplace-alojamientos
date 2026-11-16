@@ -1,0 +1,42 @@
+# Plantilla: sustituir MARKETPLACE_DOMAIN por el dominio autorizado antes de instalar.
+# El certificado y la clave deben existir antes de activar esta configuración.
+server {
+    listen 80;
+    server_name MARKETPLACE_DOMAIN;
+    server_tokens off;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/letsencrypt;
+        try_files $uri =404;
+    }
+    location / { return 308 https://$host$request_uri; }
+}
+
+server {
+    listen 443 ssl;
+    server_name MARKETPLACE_DOMAIN;
+    server_tokens off;
+    ssl_certificate /etc/letsencrypt/live/MARKETPLACE_DOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/MARKETPLACE_DOMAIN/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    root /srv/marketplace/current/frontend;
+    index index.html;
+    client_max_body_size 2m;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy same-origin always;
+
+    location ^~ /api/ {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 60s;
+    }
+    location / { try_files $uri $uri/ /index.html; }
+    location ~ /\. { deny all; }
+}
