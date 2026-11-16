@@ -6,7 +6,7 @@ Proyecto: [Marketplace de Alojamientos (MARKET)](https://unbosque-team-zeutvqmy.
 
 Las 19 historias `MARKET-5` a `MARKET-23` tienen dos subtareas hijas cada una: una de implementación y otra de pruebas/validación. Las claves que se listan a continuación se crearon directamente en Jira y son enlaces navegables. Las subtareas describen trabajo pendiente; su creación no significa que esté implementado o probado.
 
-| Historia | Subtarea de implementación | Subtarea de pruebas/validación | Sprint en Jira (08/11/2026) |
+| Historia | Subtarea de implementación | Subtarea de pruebas/validación | Sprint en Jira (16/11/2026) |
 |---|---|---|---|
 | HU-01 / MARKET-5 | [MARKET-30](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-30) | [MARKET-31](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-31) | MARKET Sprint 1 |
 | HU-02 / MARKET-6 | [MARKET-32](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-32) | [MARKET-33](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-33) | MARKET Sprint 1 |
@@ -20,13 +20,13 @@ Las 19 historias `MARKET-5` a `MARKET-23` tienen dos subtareas hijas cada una: u
 | HU-10 / MARKET-14 | [MARKET-48](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-48) | [MARKET-49](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-49) | MARKET Sprint 4 |
 | HU-11 / MARKET-15 | [MARKET-50](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-50) | [MARKET-51](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-51) | MARKET Sprint 4 |
 | HU-12 / MARKET-16 | [MARKET-52](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-52) | [MARKET-53](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-53) | MARKET Sprint 4 |
-| HU-13 / MARKET-17 | [MARKET-54](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-54) | [MARKET-55](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-55) | MARKET Sprint 5 |
-| HU-14 / MARKET-18 | [MARKET-56](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-56) | [MARKET-57](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-57) | MARKET Sprint 5 |
-| HU-15 / MARKET-19 | [MARKET-58](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-58) | [MARKET-59](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-59) | MARKET Sprint 5 |
-| HU-16 / MARKET-20 | [MARKET-60](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-60) | [MARKET-61](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-61) | MARKET Sprint 5 |
-| HU-17 / MARKET-21 | [MARKET-62](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-62) | [MARKET-63](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-63) | MARKET Sprint 5 |
-| HU-18 / MARKET-22 | [MARKET-64](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-64) | [MARKET-65](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-65) | MARKET Sprint 6 |
-| HU-19 / MARKET-23 | [MARKET-66](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-66) | [MARKET-67](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-67) | MARKET Sprint 5 |
+| HU-13 / MARKET-17 | [MARKET-54](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-54) | [MARKET-55](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-55) | MARKET Sprint 4 |
+| HU-14 / MARKET-18 | [MARKET-56](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-56) | [MARKET-57](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-57) | MARKET Sprint 4 |
+| HU-15 / MARKET-19 | [MARKET-58](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-58) | [MARKET-59](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-59) | MARKET Sprint 4 |
+| HU-16 / MARKET-20 | [MARKET-60](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-60) | [MARKET-61](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-61) | MARKET Sprint 4 |
+| HU-17 / MARKET-21 | [MARKET-62](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-62) | [MARKET-63](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-63) | MARKET Sprint 4 |
+| HU-18 / MARKET-22 | [MARKET-64](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-64) | [MARKET-65](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-65) | MARKET Sprint 4 |
+| HU-19 / MARKET-23 | [MARKET-66](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-66) | [MARKET-67](https://unbosque-team-zeutvqmy.atlassian.net/browse/MARKET-67) | MARKET Sprint 4 |
 
 ## 18.2 Estimaciones y sprints
 
@@ -37,12 +37,14 @@ La entrega final es el 26/11/2026. Desde el 08/11/2026 las historias están en s
 | MARKET Sprint 1 | 19 al 26 oct 2026 | Identidad, publicaciones, disponibilidad y búsqueda | HU-01 a HU-07 | 37 terminados | Cerrado |
 | MARKET Sprint 2 | 26 oct al 2 nov 2026 | Detalle de alojamiento | HU-08 | 3 terminados | Cerrado |
 | MARKET Sprint 3 | 2 al 9 nov 2026 | Terminar e integrar HU-09 a HU-12 | Ninguna terminada (PR #15 sin revisar) | 0 | Cerrado |
-| MARKET Sprint 4 | 9 al 16 nov 2026 | Revisar, integrar y validar cotización, reserva, historial y cancelación | HU-09 a HU-12 | 29 | Activo |
-| MARKET Sprint 5 | 16 al 23 nov 2026 | Notificaciones, reseñas, moderación, administración, dashboard y trazas | HU-13 a HU-17 y HU-19 | 29 | Futuro |
-| MARKET Sprint 6 | 23 al 26 nov 2026 | Exportación de reportes, integración final, pruebas, release y entrega | HU-18 | 8 | Futuro |
-| **Total** | **19 oct al 26 nov 2026** | **Backlog completo para la entrega final** | **19 historias** | **106 (40 terminados)** | |
+| MARKET Sprint 4 | 9 al 16 nov 2026 | Integrar en main HU-09 a HU-19 | HU-09 a HU-19 (PR #15, #26, #29 y #31) | 66 terminados | Cerrado |
+| MARKET Sprint 5 | 16 al 23 nov 2026 | Revisión de los PR #35 a #37, diagramas que faltan, demostración estable y registro de eventos Scrum | Tareas MARKET-70 a MARKET-79 | - | Activo |
+| MARKET Sprint 6 | 23 al 26 nov 2026 | Release v1.0, demostración final, sustentación y acta de cierre | Tareas MARKET-80 y MARKET-81 | - | Futuro |
+| **Total** | **19 oct al 26 nov 2026** | **Backlog completo para la entrega final** | **19 historias** | **106 (106 terminados)** | |
 
-Con una disponibilidad estimada de 4 a 6 horas semanales por persona y una velocidad promedio de 13,3 puntos, los 29 puntos de los sprints 4 y 5 son un compromiso exigente. Si no alcanza, se recorta primero HU-18 (COULD) y después las SHOULD, sin degradar la Definition of Done.
+HU-13 a HU-19 estaban planeadas para los sprints 5 y 6, pero se terminaron el 11 y 12 de noviembre, dentro del Sprint 4. El 16/11/2026 se pasaron al Sprint 4 antes de cerrarlo; en el reporte de Jira aparecen como alcance agregado durante el sprint. Los sprints 5 y 6 quedaron para tareas de revisión, diagramas, release y cierre, que no se estiman en puntos.
+
+Con una disponibilidad estimada de 4 a 6 horas semanales por persona, el equipo terminó las 19 historias y las 38 subtareas en los sprints 1 a 4 (106 puntos). Las tareas que quedan (MARKET-70 a MARKET-81) no tienen subtareas ni story points.
 
 ## 18.3 Responsables asignados en Jira
 

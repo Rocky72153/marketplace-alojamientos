@@ -30,17 +30,19 @@ Los dos integrantes participan en desarrollo y pruebas. Para fomentar calidad y 
 
 Los sprints están configurados en Jira con inicio y fin los lunes a las 09:00, hora de Bogotá. El final de uno coincide con el inicio del siguiente. La entrega final es el 26/11/2026, así que el Sprint 6 va del lunes 23 al jueves 26 de noviembre. Los sprints 1 a 3 quedaron cerrados con 37, 3 y 0 puntos terminados, y HU-09 a HU-12 pasaron al Sprint 4. El detalle de cada sprint está en Jira y en Confluence (página 4.3 Sprints).
 
-**Plan vigente (08/11/2026)**
+**Plan vigente (actualizado el 16/11/2026)**
 
 | Sprint | Fechas | Objetivo | Historias | Puntos | Estado en Jira |
 |---|---|---|---|---:|---|
 | MARKET Sprint 1 | 19 al 26 oct 2026 | Identidad, publicaciones, disponibilidad y búsqueda | HU-01 a HU-07 | 37 terminados | Cerrado |
 | MARKET Sprint 2 | 26 oct al 2 nov 2026 | Detalle de alojamiento | HU-08 | 3 terminados | Cerrado |
 | MARKET Sprint 3 | 2 al 9 nov 2026 | Terminar e integrar HU-09 a HU-12 | Ninguna terminada (PR #15 sin revisar) | 0 | Cerrado |
-| MARKET Sprint 4 | 9 al 16 nov 2026 | Revisar, integrar y validar cotización, reserva, historial y cancelación | HU-09 a HU-12 | 29 | Activo |
-| MARKET Sprint 5 | 16 al 23 nov 2026 | Notificaciones, reseñas, moderación, administración, dashboard y trazas | HU-13 a HU-17 y HU-19 | 29 | Futuro |
-| MARKET Sprint 6 | 23 al 26 nov 2026 | Exportación de reportes, integración final, pruebas, release y entrega | HU-18 | 8 | Futuro |
-| **Total** | **19 oct al 26 nov 2026** | **Backlog completo para la entrega final** | **19 historias** | **106 (40 terminados)** | |
+| MARKET Sprint 4 | 9 al 16 nov 2026 | Integrar en main HU-09 a HU-19 | HU-09 a HU-19 (PR #15, #26, #29 y #31) | 66 terminados | Cerrado |
+| MARKET Sprint 5 | 16 al 23 nov 2026 | Revisión de los PR #35 a #37, diagramas que faltan, demostración estable y registro de eventos Scrum | Tareas MARKET-70 a MARKET-79 | - | Activo |
+| MARKET Sprint 6 | 23 al 26 nov 2026 | Release v1.0, demostración final, sustentación y acta de cierre | Tareas MARKET-80 y MARKET-81 | - | Futuro |
+| **Total** | **19 oct al 26 nov 2026** | **Backlog completo para la entrega final** | **19 historias** | **106 (106 terminados)** | |
+
+HU-13 a HU-19 estaban planeadas para los sprints 5 y 6, pero se terminaron el 11 y 12 de noviembre, dentro del Sprint 4. El 16/11/2026 se pasaron al Sprint 4 antes de cerrarlo; en el reporte de Jira aparecen como alcance agregado durante el sprint. Los sprints 5 y 6 quedaron para tareas de revisión, diagramas, release y cierre, que no se estiman en puntos.
 
 **Plan inicial (14/10/2026, reemplazado el 08/11/2026)**
 
@@ -56,7 +58,7 @@ Los sprints están configurados en Jira con inicio y fin los lunes a las 09:00, 
 | MARKET Sprint 8 | 7–14 dic 2026 | Exportación de reportes y trazabilidad técnica | HU-18 a HU-19 | 13 |
 | **Total** | **8 semanas** | **Backlog completo propuesto; MVP obligatorio definido por MoSCoW** | **HU-01 a HU-19** | **106** |
 
-La capacidad conocida es de aproximadamente 4 a 6 horas semanales por integrante (8 a 12 horas combinadas) y la velocidad promedio de los sprints 1 a 3 es de 13,3 puntos. Los sprints 4 y 5 piden 29 puntos cada uno, más del doble, por eso el riesgo R-12 del documento 12 queda en probabilidad alta. Antes de comprometer cada sprint, el equipo revisa disponibilidad, dependencias y tamaño de historias. Si el trabajo no alcanza, se recorta primero HU-18 (COULD) y después las SHOULD, sin bajar la Definition of Done.
+La capacidad conocida es de aproximadamente 4 a 6 horas semanales por integrante (8 a 12 horas combinadas). La velocidad real de los sprints 1 a 4 fue de 37, 3, 0 y 66 puntos: todo el backlog quedó terminado en el Sprint 4, por lo que el riesgo R-12 del documento 12 quedó superado. Antes de comprometer cada sprint, el equipo revisa disponibilidad, dependencias y tamaño del trabajo, sin bajar la Definition of Done.
 
 ## 19.4 Eventos de Scrum
 
