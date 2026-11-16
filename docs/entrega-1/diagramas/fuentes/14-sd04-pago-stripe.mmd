@@ -1,0 +1,47 @@
+sequenceDiagram
+    autonumber
+    actor H as Huésped
+    participant W as Aplicación web
+    participant C as StripeCheckoutController
+    participant T as StripeCheckoutTransactions
+    participant L as ListingService
+    participant DB as PostgreSQL
+    participant G as StripeSdkTestGateway
+    participant S as Stripe (sandbox)
+    participant CLI as Stripe CLI
+    participant E as StripeEventTransactions
+
+    H->>W: Confirma la reserva cotizada
+    W->>C: POST /api/stripe-test/checkouts (JWT, Idempotency-Key)
+    C->>T: prepare(huésped, solicitud, clave)
+    T->>L: confirmReservation(fechas)
+    L->>DB: Bloquear periodo (RESERVED)
+    T->>DB: Reserva PENDING_PAYMENT e intento PREPARING
+    T-->>C: intento PREPARING
+    C->>G: createCheckout(intento, importe, vencimiento)
+    G->>S: Crear sesión de Checkout (HTTPS)
+    S-->>G: sesión cs_test y URL
+    C->>T: bind(intento, sesión)
+    T->>DB: Intento OPEN
+    C-->>W: 200 {attemptId, status OPEN, checkoutUrl}
+    W->>H: Redirige a Stripe Checkout
+    H->>S: Paga con tarjeta de prueba
+    S-->>CLI: Evento checkout.session.completed
+    CLI->>C: POST /api/stripe-test/webhook (Stripe-Signature)
+    C->>G: verifyWebhook(payload, firma)
+    G-->>C: evento verificado
+    C->>E: process(evento)
+    E->>DB: Bloquear intento y comprobar si el evento ya se procesó
+    alt Pagado dentro del plazo, cuenta y publicación activas
+        E->>DB: Reserva CONFIRMED, intento PAID
+        E->>DB: Notificación y auditoría STRIPE_TEST_PAYMENT_CONFIRMED
+    else Fuera de plazo o cuenta/publicación no activa
+        E->>L: releaseReservation (libera fechas)
+        E->>DB: Reserva CANCELLED (TEST_EXPIRED), intento REFUND_PENDING
+    end
+    E->>DB: Guardar id del evento (idempotencia)
+    C-->>CLI: 200
+    S-->>H: Vuelve a la aplicación
+    W->>C: GET /api/stripe-test/checkouts/{id}
+    C-->>W: status PAID
+    W-->>H: Reserva confirmada

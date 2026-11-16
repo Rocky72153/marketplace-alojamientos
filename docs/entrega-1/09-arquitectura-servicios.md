@@ -6,19 +6,37 @@ La guía exige una aplicación web, frontend que consume servicios REST del back
 
 Para un proyecto académico, los límites lógicos pueden implementarse inicialmente en una aplicación Spring Boot modular con controladores/servicios/repositorios; separar procesos en microservicios físicos solo se justifica si los requisitos de despliegue/independencia lo demandan y el equipo puede operarlos.
 
-## 9.2 Diagrama de contexto
+## 9.2 Diagrama de contexto (C4 nivel 1)
 
-```mermaid
-flowchart LR
-  Guest[Huésped] --> Web[Frontend web]
-  Host[Anfitrión] --> Web
-  Admin[Administrador] --> Web
-  Web --> API[API REST Marketplace]
-  API --> DB[(Base de datos relacional)]
-  API --> Pay[Proveedor de pagos en modo de pruebas]
-  API --> Audit[Auditoría y logs]
-  API --> Export[Generación de reportes PDF/Excel]
-```
+El sistema se representa como una sola unidad. Alrededor están los actores y sistemas externos y la información que intercambian con él. Los datos salen del código integrado en `main`: controladores REST, `StripeSdkTestGateway` y la configuración de `deploy/ec2/stripe`.
+
+![Diagrama de contexto C4 nivel 1](diagramas/09-c4-contexto.png)
+
+Fuente: [diagramas/fuentes/09-c4-contexto.dot](diagramas/fuentes/09-c4-contexto.dot).
+
+| Elemento externo | Envía al sistema | Recibe del sistema |
+|---|---|---|
+| Huésped | Criterios de búsqueda, fechas, huéspedes, solicitud de reserva, motivo de cancelación y reseñas. | Resultados, cotización desglosada, confirmación de la reserva y notificaciones internas. |
+| Anfitrión | Datos de la publicación, precio, extras, política de cancelación y periodos de disponibilidad. | Estado de sus publicaciones, reservas recibidas y notificaciones. |
+| Administrador | Acciones de moderación con motivo y filtros de reporte. | Dashboard, eventos de auditoría y archivos PDF o XLSX. |
+| Stripe (sandbox) | Eventos firmados `checkout.session.*`. | Solicitudes para crear sesiones de Checkout y reembolsos de prueba. |
+
+La recuperación de contraseña es simulada: no hay proveedor de correo. Por eso no aparece como sistema externo.
+
+### Diagrama de contenedores (C4 nivel 2)
+
+![Diagrama de contenedores C4 nivel 2](diagramas/09-c4-contenedores.png)
+
+Fuente: [diagramas/fuentes/09-c4-contenedores.dot](diagramas/fuentes/09-c4-contenedores.dot).
+
+| Contenedor | Tecnología | Responsabilidad |
+|---|---|---|
+| Aplicación web (SPA) | HTML, CSS y JavaScript con módulos ES, sin framework (`frontend/`) | Pantallas de huésped, anfitrión y administrador; guarda el token JWT y consume la API. |
+| Servidor web | Nginx | Entrega los archivos estáticos y reenvía `/api/` al backend; bloquea el webhook público. |
+| API REST | Java 21, Spring Boot 4.1, Spring Security, Spring Data JPA, PDFBox, Apache POI, stripe-java | Reglas de negocio, seguridad, auditoría, reportes y pagos de prueba. |
+| Base de datos | PostgreSQL | Persistencia de todas las entidades (ver [modelo físico](08-modelo-datos.md)). |
+| Receptor de eventos de pago | Stripe CLI como servicio systemd | Recibe los eventos de la cuenta sandbox y los reenvía a `127.0.0.1:8080/api/stripe-test/webhook`. |
+| Preparación de credenciales | Script de systemd | Lee la clave restringida de AWS Systems Manager y la entrega al backend en `/run`. |
 
 ## 9.3 Límites lógicos propuestos
 
@@ -126,26 +144,29 @@ La persistencia única dibujada facilita el primer despliegue académico; el own
 La matriz completa debe mantenerse en Jira/Confluence y `docs/TRACEABILITY_TEMPLATE.csv`. Como mínimo, cada servicio lógico se relaciona con sus RF/ RN, procesos PB, historias HU, contrato API, propietario lógico de los datos y pruebas end-to-end. Antes de implementación, el equipo debe acordar si los servicios son módulos del mismo backend o despliegues independientes.
 
 
-## 9.8 Diagrama de despliegue propuesto
+## 9.8 Diagrama de despliegue
 
-Esta vista muestra los nodos lógicos de ejecución para la demostración. El proveedor y la URL de alojamiento todavía no están seleccionados, por lo que el diagrama no afirma que exista un despliegue publicado. GitHub Actions compila y verifica; no se representa como despliegue automático.
+Esta vista reemplaza la propuesta inicial, que dejaba el proveedor sin seleccionar. Representa el entorno publicado en [moralesforero.lol](http://moralesforero.lol/): una instancia EC2 `t3.small` (Ubuntu, 2 vCPU, 2 GB) con Nginx, la aplicación Java y PostgreSQL en la misma máquina, más los servicios de Stripe sandbox. Los datos salen de [DESPLIEGUE-EC2.md](../DESPLIEGUE-EC2.md), [deploy/ec2](../../deploy/ec2/), [STRIPE-PRUEBAS.md](../STRIPE-PRUEBAS.md) y [EVIDENCIA-ENTREGA-FINAL.md](../EVIDENCIA-ENTREGA-FINAL.md).
 
-```mermaid
-flowchart LR
-  User[Huésped anfitrión o administrador]
-  Browser[Navegador web]
-  subgraph Hosting[Todavía por seleccionar]
-    Web[Frontend web estático]
-    API[Backend REST Marketplace Spring Boot]
-    DB[(PostgreSQL)]
-  end
-  Payment[Proveedor de pagos en modo test]
-  CI[GitHub Actions CI]
-  User --> Browser
-  Browser -->|HTTPS| Web
-  Web -->|REST JSON HTTPS| API
-  API --> DB
-  API -->|API de prueba| Payment
-  CI -.compila y verifica el código.-> Web
-  CI -.compila y verifica el código.-> API
-```
+![Diagrama de despliegue en AWS](diagramas/09-despliegue.png)
+
+Fuente: [diagramas/fuentes/09-despliegue.dot](diagramas/fuentes/09-despliegue.dot).
+
+| Nodo | Artefactos y entornos | Comunicación |
+|---|---|---|
+| Equipo del usuario | Navegador con la SPA | HTTP al puerto 80 de la instancia; HTTPS a Stripe Checkout. |
+| Instancia EC2 | Nginx con `frontend/`; JVM con `marketplace.jar` (`marketplace.service`); PostgreSQL local; Stripe CLI (`marketplace-stripe-listener`); `marketplace-stripe-credentials` | Nginx a la JVM por `127.0.0.1:8080`; JVM a PostgreSQL por `127.0.0.1:5432`. Los puertos 8080 y 5432 no se publican. |
+| Systems Manager Parameter Store (us-east-2) | Parámetro SecureString `/marketplace/demo/stripe-test-key` | Lectura con `ssm:GetParameter` mediante el perfil IAM de la instancia. |
+| Stripe sandbox | API, Checkout y eventos de la cuenta de pruebas | HTTPS saliente desde la JVM y desde Stripe CLI. |
+
+Limitaciones conocidas: el sitio usa HTTP sin cifrado y solo admite datos ficticios; base, aplicación y servidor web comparten un único nodo, por lo que la instancia es un punto único de falla. La publicación de versiones es manual (ver [pipeline CI/CD](20-diseno-detallado.md#204-pipeline-cicd)).
+
+## 9.9 Diagrama de componentes de la API
+
+Cada componente agrupa los controladores, servicios y repositorios de un paquete del backend. Los círculos son las interfaces provistas, es decir, las rutas REST reales. Las flechas discontinuas son dependencias de uso obtenidas de los `import` del código.
+
+![Diagrama de componentes de la API REST](diagramas/09-componentes.png)
+
+Fuente: [diagramas/fuentes/09-componentes.dot](diagramas/fuentes/09-componentes.dot).
+
+Los límites lógicos de la sección 9.3 se implementaron como módulos de una sola aplicación Spring Boot, no como microservicios desplegados por separado. La relación entre paquetes y sus dependencias circulares se documenta en el [diagrama de paquetes](20-diseno-detallado.md#201-diagrama-de-paquetes).

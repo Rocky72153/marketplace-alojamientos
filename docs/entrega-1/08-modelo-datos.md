@@ -1,4 +1,220 @@
-# 8. Modelo lógico de datos
+# 8. Modelo de datos
+
+Este documento tiene dos partes. La sección 8.1 es el **modelo físico implementado**: las 14 tablas que Hibernate crea en PostgreSQL a partir de las entidades JPA de `main`. La sección 8.2 conserva el **modelo lógico de diseño** de la Entrega 1 y explica en qué cambió al implementarse.
+
+## 8.1 Modelo físico implementado
+
+Fuente: anotaciones `@Entity`, `@Table`, `@ElementCollection`, `@JoinColumn` y `@UniqueConstraint` de `backend/src/main/java` (con `ddl-auto: update`) y el script [20261114-reservation-pending-payment.sql](../../backend/deploy/postgresql/20261114-reservation-pending-payment.sql), que amplía la restricción de estados de `reservations`. Son 10 tablas de entidad y 4 tablas de colección (`listing_amenities`, `listing_images`, `listing_extra_options` y `reservation_extras`).
+
+![Modelo físico implementado](diagramas/08-modelo-fisico-er.png)
+
+<details>
+<summary>Código fuente del diagrama (Mermaid)</summary>
+
+```mermaid
+erDiagram
+    marketplace_users ||--o{ listings : "host_id"
+    marketplace_users ||--o{ reservations : "guest_id"
+    marketplace_users ||--o{ notifications : "recipient_id"
+    marketplace_users ||--o{ reviews : "guest_id"
+    listings ||--o{ listing_amenities : "listing_id"
+    listings ||--o{ listing_images : "listing_id"
+    listings ||--o{ listing_extra_options : "listing_id"
+    listings ||--o{ availability_periods : "listing_id"
+    listings ||--o{ reservations : "listing_id"
+    listings ||--o{ reviews : "listing_id"
+    reservations ||--o{ reservation_extras : "reservation_id"
+    reservations ||--o| reviews : "booking_id (UK)"
+    reservations ||--o| stripe_test_checkout_attempts : "reservation_id (UK, sin FK)"
+    listings |o--o| demo_seed_entries : "listing_id (UK, sin FK)"
+
+    marketplace_users {
+        uuid id PK
+        varchar name
+        varchar email UK
+        varchar password_hash
+        varchar role "GUEST, HOST, ADMIN"
+        varchar account_state "ACTIVE, DEACTIVATED, RESTRICTED"
+        varchar phone
+        varchar photo_reference
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    listings {
+        uuid id PK
+        uuid host_id FK
+        varchar title
+        varchar description
+        varchar city
+        varchar location
+        varchar listing_type
+        int capacity
+        numeric price_per_night
+        varchar rules
+        varchar status "DRAFT a BLOCKED"
+        int cancellation_free_refund_days
+        int cancellation_partial_refund_days
+        numeric cancellation_partial_refund_percentage
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    listing_amenities {
+        uuid listing_id FK
+        varchar amenity_id
+    }
+    listing_images {
+        uuid listing_id FK
+        varchar image_reference
+    }
+    listing_extra_options {
+        uuid listing_id FK
+        int extra_position
+        varchar extra_id
+        varchar extra_name
+        numeric unit_price
+    }
+    availability_periods {
+        uuid id PK
+        uuid listing_id FK
+        date start_date
+        date end_date
+        varchar type "AVAILABLE, BLOCKED, RESERVED"
+        varchar reservation_reference
+    }
+    reservations {
+        uuid id PK
+        uuid guest_id FK
+        uuid listing_id FK
+        varchar idempotency_key "UK con guest_id"
+        varchar request_fingerprint
+        date check_in
+        date check_out
+        int nights
+        int guests
+        numeric price_per_night
+        numeric nightly_subtotal
+        numeric cleaning_fee
+        numeric service_fee
+        numeric discount_amount
+        numeric extras_total
+        numeric total
+        varchar currency
+        varchar payment_status
+        varchar payment_reference
+        varchar status "PENDING_PAYMENT a COMPLETED"
+        varchar cancellation_reason
+        timestamptz cancelled_at
+        numeric refund_percentage
+        numeric refund_amount
+        int policy_free_refund_days
+        int policy_partial_refund_days
+        numeric policy_partial_refund_percentage
+        boolean manual_review_required
+        timestamptz created_at
+    }
+    reservation_extras {
+        uuid reservation_id FK
+        int line_number
+        varchar extra_id
+        varchar extra_name
+        int quantity
+        numeric unit_price
+        numeric line_total
+    }
+    stripe_test_checkout_attempts {
+        uuid id PK
+        uuid reservation_id UK
+        uuid guest_id
+        uuid listing_id
+        bigint amount_minor
+        varchar currency
+        timestamptz expires_at
+        varchar session_id UK
+        varchar checkout_url
+        varchar payment_intent_id
+        bigint refund_amount_minor
+        timestamptz refund_retry_deadline
+        varchar state "PREPARING a CANCELLED"
+    }
+    stripe_test_processed_events {
+        varchar id PK "id del evento de Stripe"
+        timestamptz processed_at
+    }
+    notifications {
+        uuid id PK
+        uuid recipient_id FK
+        varchar type
+        varchar message
+        varchar reference_type
+        uuid reference_id
+        timestamptz created_at
+        timestamptz read_at
+    }
+    reviews {
+        uuid id PK
+        uuid booking_id FK "UK"
+        uuid listing_id FK
+        uuid guest_id FK
+        int rating
+        varchar content
+        boolean hidden
+        timestamptz hidden_at
+        uuid hidden_by
+        varchar hidden_reason
+        timestamptz created_at
+    }
+    audit_events {
+        uuid id PK
+        varchar event_type
+        uuid actor_id
+        varchar entity_type
+        uuid entity_id
+        varchar result
+        varchar reason
+        timestamptz occurred_at
+        varchar correlation_id
+    }
+    demo_seed_entries {
+        int seed_number PK
+        uuid listing_id UK
+    }
+```
+
+</details>
+
+Restricciones relevantes del código:
+
+- `marketplace_users.email` es único; la contraseña se guarda como hash BCrypt en `password_hash`.
+- `reservations` tiene la clave única `uk_reservation_guest_idempotency` (`guest_id`, `idempotency_key`): un reintento con la misma clave devuelve la misma reserva.
+- `reviews.booking_id` es único (`uk_review_booking`): una reseña por reserva.
+- `stripe_test_checkout_attempts` tiene únicos `reservation_id` y `session_id`; guarda `guest_id`, `listing_id` y `reservation_id` como valores sin clave foránea.
+- `stripe_test_processed_events` registra el id de cada evento de Stripe ya procesado para no aplicarlo dos veces.
+- `audit_events` guarda `actor_id` y `entity_id` sin clave foránea, para que el historial sobreviva a cambios en las entidades.
+- El solapamiento de reservas se controla en el servicio con bloqueo pesimista de la publicación y los periodos `RESERVED` de `availability_periods`, no con una restricción de exclusión en la base.
+
+### Correspondencia entre diseño e implementación
+
+| Entidad del diseño (8.2) | Implementación | Cambio |
+|---|---|---|
+| USUARIO, PERFIL | `marketplace_users` | El perfil (teléfono y foto) se fusionó en la tabla de usuarios. |
+| ALOJAMIENTO | `listings` | Igual; la política de cancelación quedó como columnas de la publicación. |
+| ALOJAMIENTO_IMAGEN | `listing_images` | Tabla de colección con la referencia de imagen. |
+| SERVICIO_CATALOGO, ALOJAMIENTO_SERVICIO | `listing_amenities` | No hay catálogo en base: los servicios son identificadores de texto. |
+| ALOJAMIENTO_REGLA | `listings.rules` | Texto en la publicación. |
+| (no estaba) | `listing_extra_options`, `reservation_extras` | Extras con precio por publicación y su copia en cada reserva. |
+| PERIODO_DISPONIBILIDAD | `availability_periods` | Igual, con `reservation_reference` para los periodos reservados. |
+| POLITICA_CANCELACION, ALOJAMIENTO_POLITICA | Columnas `cancellation_*` de `listings` y `policy_*` de `reservations` | La reserva conserva la política vigente al reservar. |
+| COTIZACION | Columnas de desglose de `reservations` | La cotización no se guarda; la reserva congela el desglose aceptado. |
+| RESERVA | `reservations` | Igual, con idempotencia y revisión manual. |
+| PAGO_SIMULADO | `payment_status` y `payment_reference` de `reservations`; `stripe_test_checkout_attempts`; `stripe_test_processed_events` | El pago simulado vive en la reserva; Stripe sandbox tiene sus propias tablas. |
+| CANCELACION | Columnas `cancellation_reason`, `cancelled_at`, `refund_*` de `reservations` | Se guarda en la misma reserva. |
+| NOTIFICACION | `notifications` | Igual. |
+| RESENA | `reviews` | Igual, con ocultamiento por moderación. |
+| EVENTO_AUDITORIA | `audit_events` | Igual, con `correlation_id`. |
+| EXPORTACION_REPORTE | `audit_events` con `event_type = REPORT_EXPORT` | No hay tabla propia; cada exportación queda como evento de auditoría. |
+| (no estaba) | `demo_seed_entries` | Control de la carga de 10.000 alojamientos de demostración. |
+
+## 8.2 Modelo lógico de diseño (Entrega 1)
 
 El diagrama propone un modelo relacional conceptual compatible con PostgreSQL. Los nombres finales, tipos y normalización deben validarse frente a los servicios y el diseño físico. `UUID` y `TIMESTAMPTZ` son propuestas técnicas, no restricciones del enunciado.
 

@@ -1,0 +1,76 @@
+// Diagrama UML de actividad con particiones: reservar y pagar un alojamiento.
+// Fuente: ReservationController/Service, StripeCheckoutController, StripeCheckoutTransactions,
+// StripeEventTransactions, StripeCheckoutEventDecision y PaymentConfigurationController en main.
+// Generar: dot -Tpng -Gdpi=110 20-actividad-reserva.dot -o ../20-actividad-reserva.png
+digraph Actividad {
+  graph [rankdir=TB, fontname="DejaVu Sans", fontsize=20, pad=0.4, nodesep=0.35, ranksep=0.32, newrank=true,
+         label=<<B>Diagrama de actividad (UML) - Cotizar, reservar y pagar</B><BR/><FONT POINT-SIZE="13">Una partición por participante. Incluye los dos modos de pago del sistema: SIMULATED_TEST y STRIPE_TEST.</FONT>>,
+         labelloc=t];
+  node [fontname="DejaVu Sans", fontsize=10, shape=box, style="rounded,filled", fillcolor="#FFFFFF", color="#333333"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#333333", arrowsize=0.7];
+
+  subgraph cluster_h {
+    label=<<B>Huésped</B>>; style=filled; fillcolor="#F2F6FB"; color="#7A9CC6";
+    ini [shape=circle, style=filled, fillcolor=black, label="", width=0.25, fixedsize=true];
+    h1 [label="Buscar por ciudad, fechas\ny número de huéspedes"];
+    h2 [label="Abrir el detalle y elegir\nfechas, huéspedes y extras"];
+    h3 [label="Revisar el desglose\ny confirmar la reserva"];
+    h4 [label="Pagar con tarjeta de prueba\no abandonar el Checkout"];
+    h5 [label="Ver la reserva en\nel historial"];
+    fin [shape=doublecircle, style=filled, fillcolor=black, label="", width=0.2, fixedsize=true];
+    finx [shape=doublecircle, style=filled, fillcolor=black, label="", width=0.2, fixedsize=true];
+  }
+
+  subgraph cluster_f {
+    label=<<B>Aplicación web (SPA)</B>>; style=filled; fillcolor="#F4F9F0"; color="#88A86A";
+    f1 [label="POST /api/listings/{id}/quotes"];
+    f2 [label="Mostrar error de\ndisponibilidad o validación"];
+    f3 [label="Mostrar cotización:\nnoches, limpieza, servicio,\ndescuento, extras y total"];
+    f4 [label="GET /api/payments/config"];
+    dmodo [shape=diamond, label="¿Modo\nde pago?", fillcolor="#FFF7D6"];
+    f5 [label="POST /api/reservations\ncon Idempotency-Key"];
+    f6 [label="POST /api/stripe-test/checkouts\ncon Idempotency-Key"];
+    f7 [label="Redirigir a la URL\nde Stripe Checkout"];
+    f8 [label="Consultar el intento\nGET /checkouts/{id}"];
+    dpaid [shape=diamond, label="¿Estado PAID?", fillcolor="#FFF7D6"];
+    f9 [label="Mostrar reserva confirmada"];
+    f10 [label="Mostrar pago no completado"];
+  }
+
+  subgraph cluster_b {
+    label=<<B>API REST (backend)</B>>; style=filled; fillcolor="#FBF6EE"; color="#C79A5A";
+    b1 [label="Validar fechas, capacidad y\nperiodos disponibles; calcular\ndesglose (BookingPricePolicy)"];
+    ddisp [shape=diamond, label="¿Disponible?", fillcolor="#FFF7D6"];
+    b2 [label="Crear reserva CONFIRMED\ncon pago simulado,\nbloquear fechas, auditar\ny notificar"];
+    b3 [label="Crear reserva PENDING_PAYMENT,\nbloquear fechas e intento\nPREPARING (una transacción)"];
+    b4 [label="Guardar sesión en el\nintento (estado OPEN)"];
+    b5 [label="Verificar firma, importe,\nmoneda y sesión del evento"];
+    devt [shape=diamond, label="¿Tipo de\nevento?", fillcolor="#FFF7D6"];
+    b6 [label="Confirmar reserva (CONFIRMED),\nintento PAID, notificar y auditar"];
+    b7 [label="Liberar fechas, cancelar reserva\n(TEST_EXPIRED), intento EXPIRED"];
+    b8 [label="Registrar el evento como\nprocesado (idempotencia)"];
+  }
+
+  subgraph cluster_s {
+    label=<<B>Stripe (sandbox)</B>>; style=filled; fillcolor="#F4F4F4"; color="#999999";
+    s1 [label="Generar sesión cs_test\ncon vencimiento"];
+    s2 [label="Emitir evento\ncheckout.session.*\n(reenviado por Stripe CLI)"];
+  }
+
+  ini -> h1 -> h2 -> f1 -> b1 -> ddisp;
+  ddisp -> f2 [label="No"]; f2 -> finx;
+  ddisp -> f3 [label="Sí"]; f3 -> h3 -> f4 -> dmodo;
+  dmodo -> f5 [label="SIMULATED_TEST"]; f5 -> b2 -> f9;
+  dmodo -> f6 [label="STRIPE_TEST"]; f6 -> b3;
+  b3 -> s1 [label="crear sesión\n(API de Stripe)"]; s1 -> b4 [label="sesión cs_test y URL"];
+  b4 -> f7 -> h4 -> s2 -> b5 -> devt;
+  devt -> b6 [label="pagado y dentro\ndel plazo"];
+  devt -> b7 [label="expirado, fallido o\nfuera de plazo (*)"];
+  b6 -> b8; b7 -> b8;
+  b8 -> f8 -> dpaid;
+  dpaid -> f9 [label="Sí"]; dpaid -> f10 [label="No"];
+  f9 -> h5 -> fin; f10 -> fin;
+
+  nota [shape=note, fillcolor="#F5F5F5", color="#999999", fontsize=9, label=<(*) Si llega un pago después del vencimiento, la reserva<BR ALIGN="LEFT"/>no se confirma: el intento pasa a REFUND_PENDING y<BR ALIGN="LEFT"/>se reembolsa. Una tarea programada cada minuto<BR ALIGN="LEFT"/>(StripeCheckoutMaintenance) vence intentos abiertos.<BR ALIGN="LEFT"/>>];
+  b8 -> nota [style=invis];
+}

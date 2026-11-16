@@ -1,0 +1,48 @@
+// Diagrama UML de despliegue de la demostración publicada (moralesforero.lol).
+// Fuente: docs/DESPLIEGUE-EC2.md, deploy/ec2/*, deploy/ec2/stripe/*, docs/EVIDENCIA-ENTREGA-FINAL.md y docs/STRIPE-PRUEBAS.md.
+// Generar: dot -Tpng -Gdpi=110 09-despliegue.dot -o ../09-despliegue.png
+digraph Despliegue {
+  graph [rankdir=LR, fontname="DejaVu Sans", fontsize=20, pad=0.4, nodesep=0.5, ranksep=1.1, compound=true, newrank=true,
+         label=<<B>Diagrama de despliegue (UML) - demostración en AWS</B><BR/><FONT POINT-SIZE="13">Nodos, entornos de ejecución y artefactos reales del entorno publicado en http://moralesforero.lol/ (sin HTTPS, solo datos ficticios).</FONT>>,
+         labelloc=t];
+  node [fontname="DejaVu Sans", fontsize=10, shape=box3d, style=filled, fillcolor="#EAF2E3", color="#3E6B23"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#444444", fontcolor="#333333", arrowsize=0.7];
+
+  subgraph cluster_cliente {
+    label=<«device»<BR/><B>Equipo del usuario</B>>; fontsize=11; style=filled; fillcolor="#F4F4F4"; color="#666666";
+    navegador [label=<«execution environment»<BR/><B>Navegador web</B><BR/><BR/>Ejecuta la SPA descargada<BR/>(index.html, src/*.js, styles.css)>];
+  }
+
+  subgraph cluster_aws {
+    label=<<B>Amazon Web Services</B>>; fontsize=13; style="rounded"; color="#E07B00"; margin=20;
+
+    subgraph cluster_ec2 {
+      label=<«device»<BR/><B>Instancia EC2 t3.small</B><BR/>Ubuntu, 2 vCPU, 2 GB de memoria<BR/>Puertos 5432 y 8080 sin exposición pública>; fontsize=11; style=filled; fillcolor="#FBFBF5"; color="#3E6B23";
+
+      nginx [label=<«execution environment»<BR/><B>Nginx</B> (puerto 80)<BR/><BR/>«artifact» frontend/ estático<BR/>/srv/marketplace/current/frontend<BR/>«artifact» nginx-marketplace-http-demo.conf<BR/>Webhook público bloqueado (404)>];
+      jvm [label=<«execution environment»<BR/><B>JVM Java 21</B> (127.0.0.1:8080)<BR/>«service» marketplace.service (systemd)<BR/><BR/>«artifact» marketplace.jar<BR/>(marketplace-backend-0.1.0-SNAPSHOT)<BR/>PAYMENT_MODE=STRIPE_TEST>];
+      pg [shape=cylinder, label=<«execution environment»<BR/><B>PostgreSQL</B> (127.0.0.1:5432)<BR/><BR/>«artifact» base marketplace<BR/>10.000 alojamientos ficticios>];
+      cli [label=<«execution environment»<BR/><B>Stripe CLI</B><BR/>«service» marketplace-stripe-listener<BR/>usuario marketplace-stripe>];
+      creds [label=<«service»<BR/><B>marketplace-stripe-credentials</B><BR/>usuario marketplace-secrets<BR/>«artifact» prepare-stripe-credentials<BR/>Clave solo en /run (tmpfs, 0600)>];
+    }
+
+    ssm [label=<«device»<BR/><B>Systems Manager Parameter Store</B><BR/>us-east-2<BR/><BR/>«artifact» /marketplace/demo/stripe-test-key<BR/>SecureString, clave KMS aws/ssm>];
+    iam [shape=note, fillcolor="#FFF4E0", color="#E07B00", label=<<B>Perfil de instancia IAM</B><BR/>Solo ssm:GetParameter sobre<BR/>ese único parámetro>];
+  }
+
+  dns [shape=note, fillcolor="#F4F4F4", color="#666666", label=<<B>DNS</B><BR/>moralesforero.lol<BR/>apunta a la IP pública de la instancia>];
+
+  stripe [label=<«device»<BR/><B>Stripe (sandbox)</B><BR/>api.stripe.com, checkout.stripe.com<BR/>Cuenta de pruebas autorizada>, fillcolor="#EEEEEE", color="#6B6B6B"];
+
+  navegador -> nginx [label="HTTP :80\nGET / y /api/*", penwidth=1.3];
+  navegador -> stripe [label="HTTPS :443\nStripe Checkout", style=dashed];
+  nginx -> jvm [label="proxy_pass /api/\nHTTP 127.0.0.1:8080"];
+  jvm -> pg [label="JDBC\n127.0.0.1:5432"];
+  jvm -> stripe [label="HTTPS :443\nstripe-java"];
+  cli -> stripe [label="HTTPS :443\nstripe listen"];
+  cli -> jvm [label="POST /api/stripe-test/webhook\nHTTP 127.0.0.1:8080"];
+  creds -> ssm [label="HTTPS :443\nssm:GetParameter"];
+  creds -> jvm [label="LoadCredential\n(/run)", style=dashed];
+  iam -> ssm [style=dotted, arrowhead=none];
+  dns -> navegador [style=invis];
+}

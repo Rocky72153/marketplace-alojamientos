@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_Moderacion" targetNamespace="https://unbosque.edu.co/marketplace/bpmn">
+  <bpmn:collaboration id="Collab_Moderacion"><bpmn:participant id="Part_Moderacion" name="Moderación, auditoría y reportes (PB-04)" processRef="Proceso_Moderacion"/></bpmn:collaboration>
+  <bpmn:process id="Proceso_Moderacion" name="Moderación, auditoría y reportes (PB-04)" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Moderacion">
+      <bpmn:lane id="Lane_Administrador" name="Administrador"><bpmn:flowNodeRef>Start_Moderacion</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Elegir</bpmn:flowNodeRef><bpmn:flowNodeRef>End_Rechazo</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Revisar</bpmn:flowNodeRef><bpmn:flowNodeRef>End_Registrada</bpmn:flowNodeRef></bpmn:lane>
+      <bpmn:lane id="Lane_Marketplace" name="Marketplace"><bpmn:flowNodeRef>Task_ValidarRol</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_Autorizado</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Rechazar</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_Operacion</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Restringir</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Bloquear</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_MarcarReservas</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_NotificarAnfitrion</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_OcultarResena</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_ResolverRevision</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Indicadores</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Generar</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_Union</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Auditar</bpmn:flowNodeRef></bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Moderacion" name="Administrador abre el panel de administración"><bpmn:outgoing>M01</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:task id="Task_Elegir" name="Elegir operación e indicar motivo, periodo o formato"><bpmn:incoming>M01</bpmn:incoming><bpmn:outgoing>M02</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_ValidarRol" name="Validar token y rol ADMIN"><bpmn:incoming>M02</bpmn:incoming><bpmn:outgoing>M03</bpmn:outgoing></bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Autorizado" name="¿Autorizado?"><bpmn:incoming>M03</bpmn:incoming><bpmn:outgoing>M04</bpmn:outgoing><bpmn:outgoing>M06</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Rechazar" name="Responder 403 sin cambios"><bpmn:incoming>M04</bpmn:incoming><bpmn:outgoing>M05</bpmn:outgoing></bpmn:task>
+    <bpmn:endEvent id="End_Rechazo" name="Operación rechazada"><bpmn:incoming>M05</bpmn:incoming></bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_Operacion" name="¿Tipo de operación?"><bpmn:incoming>M06</bpmn:incoming><bpmn:outgoing>M07</bpmn:outgoing><bpmn:outgoing>M08</bpmn:outgoing><bpmn:outgoing>M09</bpmn:outgoing><bpmn:outgoing>M10</bpmn:outgoing><bpmn:outgoing>M11</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Restringir" name="Restringir cuenta activa (RESTRICTED); no la propia"><bpmn:incoming>M07</bpmn:incoming><bpmn:outgoing>M15</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_Bloquear" name="Cambiar publicación a BLOCKED con motivo"><bpmn:incoming>M08</bpmn:incoming><bpmn:outgoing>M12</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_MarcarReservas" name="Marcar reservas futuras confirmadas para revisión manual"><bpmn:incoming>M12</bpmn:incoming><bpmn:outgoing>M13</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_NotificarAnfitrion" name="Notificar el cambio de estado al anfitrión"><bpmn:incoming>M13</bpmn:incoming><bpmn:outgoing>M16</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_OcultarResena" name="Ocultar reseña con motivo"><bpmn:incoming>M09</bpmn:incoming><bpmn:outgoing>M17</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_ResolverRevision" name="Resolver revisión manual de una reserva"><bpmn:incoming>M10</bpmn:incoming><bpmn:outgoing>M18</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_Indicadores" name="Calcular indicadores del periodo (dashboard)"><bpmn:incoming>M11</bpmn:incoming><bpmn:outgoing>M14</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_Generar" name="Generar archivo PDF o XLSX"><bpmn:incoming>M14</bpmn:incoming><bpmn:outgoing>M19</bpmn:outgoing></bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Union" name=""><bpmn:incoming>M15</bpmn:incoming><bpmn:incoming>M16</bpmn:incoming><bpmn:incoming>M17</bpmn:incoming><bpmn:incoming>M18</bpmn:incoming><bpmn:incoming>M19</bpmn:incoming><bpmn:outgoing>M20</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Auditar" name="Registrar evento de auditoría: actor, entidad, resultado, motivo y correlationId"><bpmn:incoming>M20</bpmn:incoming><bpmn:outgoing>M21</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_Revisar" name="Revisar resultado o descargar el reporte"><bpmn:incoming>M21</bpmn:incoming><bpmn:outgoing>M22</bpmn:outgoing></bpmn:task>
+    <bpmn:endEvent id="End_Registrada" name="Operación registrada y auditable"><bpmn:incoming>M22</bpmn:incoming></bpmn:endEvent>
+    <bpmn:sequenceFlow id="M01" sourceRef="Start_Moderacion" targetRef="Task_Elegir"/>
+    <bpmn:sequenceFlow id="M02" sourceRef="Task_Elegir" targetRef="Task_ValidarRol"/>
+    <bpmn:sequenceFlow id="M03" sourceRef="Task_ValidarRol" targetRef="Gateway_Autorizado"/>
+    <bpmn:sequenceFlow id="M04" name="No" sourceRef="Gateway_Autorizado" targetRef="Task_Rechazar"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">noAutorizado</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="M05" sourceRef="Task_Rechazar" targetRef="End_Rechazo"/>
+    <bpmn:sequenceFlow id="M06" name="Sí" sourceRef="Gateway_Autorizado" targetRef="Gateway_Operacion"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">autorizado</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="M07" name="Restringir cuenta" sourceRef="Gateway_Operacion" targetRef="Task_Restringir"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">restringir</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="M08" name="Bloquear publicación" sourceRef="Gateway_Operacion" targetRef="Task_Bloquear"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">bloquear</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="M09" name="Ocultar reseña" sourceRef="Gateway_Operacion" targetRef="Task_OcultarResena"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">ocultar</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="M10" name="Resolver revisión" sourceRef="Gateway_Operacion" targetRef="Task_ResolverRevision"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">resolver</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="M11" name="Exportar reporte" sourceRef="Gateway_Operacion" targetRef="Task_Indicadores"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">exportar</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="M12" sourceRef="Task_Bloquear" targetRef="Task_MarcarReservas"/>
+    <bpmn:sequenceFlow id="M13" sourceRef="Task_MarcarReservas" targetRef="Task_NotificarAnfitrion"/>
+    <bpmn:sequenceFlow id="M14" sourceRef="Task_Indicadores" targetRef="Task_Generar"/>
+    <bpmn:sequenceFlow id="M15" sourceRef="Task_Restringir" targetRef="Gateway_Union"/>
+    <bpmn:sequenceFlow id="M16" sourceRef="Task_NotificarAnfitrion" targetRef="Gateway_Union"/>
+    <bpmn:sequenceFlow id="M17" sourceRef="Task_OcultarResena" targetRef="Gateway_Union"/>
+    <bpmn:sequenceFlow id="M18" sourceRef="Task_ResolverRevision" targetRef="Gateway_Union"/>
+    <bpmn:sequenceFlow id="M19" sourceRef="Task_Generar" targetRef="Gateway_Union"/>
+    <bpmn:sequenceFlow id="M20" sourceRef="Gateway_Union" targetRef="Task_Auditar"/>
+    <bpmn:sequenceFlow id="M21" sourceRef="Task_Auditar" targetRef="Task_Revisar"/>
+    <bpmn:sequenceFlow id="M22" sourceRef="Task_Revisar" targetRef="End_Registrada"/>
+    <bpmn:textAnnotation id="Annotation_Reglas"><bpmn:text>Solo el rol ADMIN modera. Restringir, bloquear, ocultar y resolver exigen motivo. Bloquear no elimina reservas futuras. Cada exportación registra solicitante, fecha y resultado (REPORT_EXPORT).</bpmn:text></bpmn:textAnnotation>
+    <bpmn:association id="Association_Reglas" sourceRef="Task_Auditar" targetRef="Annotation_Reglas"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_Moderacion"><bpmndi:BPMNPlane id="Plane_Moderacion" bpmnElement="Collab_Moderacion">
+    <bpmndi:BPMNShape id="Part_Moderacion_di" bpmnElement="Part_Moderacion" isHorizontal="true"><dc:Bounds x="40" y="40" width="1900" height="970"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_Administrador_di" bpmnElement="Lane_Administrador" isHorizontal="true"><dc:Bounds x="70" y="40" width="1870" height="170"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_Marketplace_di" bpmnElement="Lane_Marketplace" isHorizontal="true"><dc:Bounds x="70" y="210" width="1870" height="800"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Start_Moderacion_di" bpmnElement="Start_Moderacion"><dc:Bounds x="142" y="107" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_Elegir_di" bpmnElement="Task_Elegir"><dc:Bounds x="225" y="85" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_ValidarRol_di" bpmnElement="Task_ValidarRol"><dc:Bounds x="385" y="380" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Gateway_Autorizado_di" bpmnElement="Gateway_Autorizado" isMarkerVisible="true"><dc:Bounds x="575" y="395" width="50" height="50"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_Rechazar_di" bpmnElement="Task_Rechazar"><dc:Bounds x="655" y="250" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="End_Rechazo_di" bpmnElement="End_Rechazo"><dc:Bounds x="882" y="107" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Gateway_Operacion_di" bpmnElement="Gateway_Operacion" isMarkerVisible="true"><dc:Bounds x="715" y="395" width="50" height="50"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_Restringir_di" bpmnElement="Task_Restringir"><dc:Bounds x="835" y="380" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_Bloquear_di" bpmnElement="Task_Bloquear"><dc:Bounds x="835" y="510" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_MarcarReservas_di" bpmnElement="Task_MarcarReservas"><dc:Bounds x="1005" y="510" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_NotificarAnfitrion_di" bpmnElement="Task_NotificarAnfitrion"><dc:Bounds x="1175" y="510" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_OcultarResena_di" bpmnElement="Task_OcultarResena"><dc:Bounds x="835" y="640" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_ResolverRevision_di" bpmnElement="Task_ResolverRevision"><dc:Bounds x="835" y="770" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_Indicadores_di" bpmnElement="Task_Indicadores"><dc:Bounds x="835" y="900" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_Generar_di" bpmnElement="Task_Generar"><dc:Bounds x="1005" y="900" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Gateway_Union_di" bpmnElement="Gateway_Union" isMarkerVisible="true"><dc:Bounds x="1375" y="395" width="50" height="50"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_Auditar_di" bpmnElement="Task_Auditar"><dc:Bounds x="1475" y="380" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Task_Revisar_di" bpmnElement="Task_Revisar"><dc:Bounds x="1635" y="85" width="130" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="End_Registrada_di" bpmnElement="End_Registrada"><dc:Bounds x="1852" y="107" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNEdge id="M01_di" bpmnElement="M01"><di:waypoint x="178" y="125"/><di:waypoint x="225" y="125"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M02_di" bpmnElement="M02"><di:waypoint x="355" y="125"/><di:waypoint x="375" y="125"/><di:waypoint x="375" y="420"/><di:waypoint x="385" y="420"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M03_di" bpmnElement="M03"><di:waypoint x="515" y="420"/><di:waypoint x="575" y="420"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M04_di" bpmnElement="M04"><di:waypoint x="600" y="395"/><di:waypoint x="600" y="290"/><di:waypoint x="655" y="290"/><bpmndi:BPMNLabel><dc:Bounds x="606" y="335" width="20" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M05_di" bpmnElement="M05"><di:waypoint x="785" y="290"/><di:waypoint x="810" y="290"/><di:waypoint x="810" y="125"/><di:waypoint x="882" y="125"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M06_di" bpmnElement="M06"><di:waypoint x="625" y="420"/><di:waypoint x="715" y="420"/><bpmndi:BPMNLabel><dc:Bounds x="645" y="400" width="20" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M07_di" bpmnElement="M07"><di:waypoint x="765" y="420"/><di:waypoint x="835" y="420"/><bpmndi:BPMNLabel><dc:Bounds x="755" y="398" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M08_di" bpmnElement="M08"><di:waypoint x="740" y="445"/><di:waypoint x="740" y="550"/><di:waypoint x="835" y="550"/><bpmndi:BPMNLabel><dc:Bounds x="755" y="528" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M09_di" bpmnElement="M09"><di:waypoint x="740" y="445"/><di:waypoint x="740" y="680"/><di:waypoint x="835" y="680"/><bpmndi:BPMNLabel><dc:Bounds x="755" y="658" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M10_di" bpmnElement="M10"><di:waypoint x="740" y="445"/><di:waypoint x="740" y="810"/><di:waypoint x="835" y="810"/><bpmndi:BPMNLabel><dc:Bounds x="755" y="788" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M11_di" bpmnElement="M11"><di:waypoint x="740" y="445"/><di:waypoint x="740" y="940"/><di:waypoint x="835" y="940"/><bpmndi:BPMNLabel><dc:Bounds x="755" y="918" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M12_di" bpmnElement="M12"><di:waypoint x="965" y="550"/><di:waypoint x="1005" y="550"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M13_di" bpmnElement="M13"><di:waypoint x="1135" y="550"/><di:waypoint x="1175" y="550"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M14_di" bpmnElement="M14"><di:waypoint x="965" y="940"/><di:waypoint x="1005" y="940"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M15_di" bpmnElement="M15"><di:waypoint x="965" y="420"/><di:waypoint x="1375" y="420"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M16_di" bpmnElement="M16"><di:waypoint x="1305" y="550"/><di:waypoint x="1400" y="550"/><di:waypoint x="1400" y="445"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M17_di" bpmnElement="M17"><di:waypoint x="965" y="680"/><di:waypoint x="1400" y="680"/><di:waypoint x="1400" y="445"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M18_di" bpmnElement="M18"><di:waypoint x="965" y="810"/><di:waypoint x="1400" y="810"/><di:waypoint x="1400" y="445"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M19_di" bpmnElement="M19"><di:waypoint x="1135" y="940"/><di:waypoint x="1400" y="940"/><di:waypoint x="1400" y="445"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M20_di" bpmnElement="M20"><di:waypoint x="1425" y="420"/><di:waypoint x="1475" y="420"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M21_di" bpmnElement="M21"><di:waypoint x="1605" y="420"/><di:waypoint x="1700" y="420"/><di:waypoint x="1700" y="165"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="M22_di" bpmnElement="M22"><di:waypoint x="1765" y="125"/><di:waypoint x="1852" y="125"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNShape id="Annotation_Reglas_di" bpmnElement="Annotation_Reglas"><dc:Bounds x="1460" y="560" width="300" height="100"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNEdge id="Association_Reglas_di" bpmnElement="Association_Reglas"><di:waypoint x="1540" y="460"/><di:waypoint x="1560" y="560"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,49 @@
+// C4 nivel 2 - Contenedores del Marketplace de Alojamientos.
+// Fuente: frontend/, backend/ (Spring Boot 4.1, Java 21), compose.yaml, deploy/ec2 y deploy/ec2/stripe.
+// Generar: dot -Tpng -Gdpi=110 09-c4-contenedores.dot -o ../09-c4-contenedores.png
+digraph C4Contenedores {
+  graph [rankdir=TB, fontname="DejaVu Sans", fontsize=20, pad=0.4, nodesep=0.8, ranksep=1.0, compound=true,
+         label=<<B>Marketplace de Alojamientos - Diagrama de contenedores (C4 nivel 2)</B><BR/><FONT POINT-SIZE="13">Aplicaciones y almacenes de datos que forman el sistema y cómo se comunican.</FONT>>,
+         labelloc=t];
+  node  [fontname="DejaVu Sans", fontsize=12, fontcolor=white, style="filled,rounded", shape=box, margin="0.22,0.12"];
+  edge  [fontname="DejaVu Sans", fontsize=10, color="#555555", fontcolor="#333333", arrowsize=0.8];
+
+  huesped   [fillcolor="#08427B", color="#052E56", label=<<B>Huésped</B><BR/><FONT POINT-SIZE="10">[Persona]</FONT>>];
+  anfitrion [fillcolor="#08427B", color="#052E56", label=<<B>Anfitrión</B><BR/><FONT POINT-SIZE="10">[Persona]</FONT>>];
+  admin     [fillcolor="#08427B", color="#052E56", label=<<B>Administrador</B><BR/><FONT POINT-SIZE="10">[Persona]</FONT>>];
+  {rank=same; huesped; anfitrion; admin;}
+
+  subgraph cluster_sistema {
+    label=<<B>Marketplace de Alojamientos</B> [Sistema de software]>; fontsize=14; fontcolor="#0B4884";
+    style="dashed,rounded"; color="#0B4884"; margin=24;
+
+    spa [fillcolor="#438DD5", color="#2E6295", label=<<B>Aplicación web (SPA)</B><BR/><FONT POINT-SIZE="10">[Contenedor: HTML, CSS y JavaScript con módulos ES]</FONT><BR/><BR/>Corre en el navegador. Pantallas de búsqueda,<BR/>detalle, reserva, panel de anfitrión y de<BR/>administración. Guarda el token JWT de la sesión.>];
+
+    nginx [fillcolor="#438DD5", color="#2E6295", label=<<B>Servidor web</B><BR/><FONT POINT-SIZE="10">[Contenedor: Nginx]</FONT><BR/><BR/>Entrega los archivos estáticos del frontend<BR/>y reenvía /api/ al backend. Bloquea el<BR/>webhook de Stripe desde Internet.>];
+
+    api [fillcolor="#438DD5", color="#2E6295", label=<<B>API REST</B><BR/><FONT POINT-SIZE="10">[Contenedor: Java 21, Spring Boot 4.1, Spring Security, JPA]</FONT><BR/><BR/>Reglas de negocio: publicaciones, disponibilidad,<BR/>cotización, reservas idempotentes, pagos de prueba,<BR/>cancelación, notificaciones, reseñas, moderación,<BR/>auditoría, dashboard y reportes (PDFBox, Apache POI).>];
+
+    db [shape=cylinder, style=filled, fillcolor="#438DD5", color="#2E6295", label=<<B>Base de datos</B><BR/><FONT POINT-SIZE="10">[Contenedor: PostgreSQL]</FONT><BR/><BR/>Usuarios, publicaciones, periodos,<BR/>reservas, intentos de pago, eventos<BR/>procesados, notificaciones, reseñas<BR/>y eventos de auditoría.>];
+
+    listener [fillcolor="#438DD5", color="#2E6295", label=<<B>Receptor de eventos de pago</B><BR/><FONT POINT-SIZE="10">[Contenedor: Stripe CLI, servicio systemd]</FONT><BR/><BR/>Escucha eventos checkout.session.* de la<BR/>cuenta sandbox y los reenvía al backend.>];
+
+    creds [fillcolor="#438DD5", color="#2E6295", label=<<B>Preparación de credenciales</B><BR/><FONT POINT-SIZE="10">[Contenedor: script de systemd]</FONT><BR/><BR/>Lee la clave restringida de prueba y la<BR/>entrega al backend en memoria (/run).>];
+  }
+
+  stripe [fillcolor="#8C8C8C", color="#6B6B6B", label=<<B>Stripe (sandbox)</B><BR/><FONT POINT-SIZE="10">[Sistema externo]</FONT><BR/><BR/>Checkout, eventos y reembolsos de prueba.>];
+  ssm [fillcolor="#8C8C8C", color="#6B6B6B", label=<<B>AWS Systems Manager<BR/>Parameter Store</B><BR/><FONT POINT-SIZE="10">[Sistema externo]</FONT><BR/><BR/>Parámetro SecureString con la<BR/>clave de prueba de Stripe.>];
+
+  huesped -> spa   [label="  Usa [HTTP]  "];
+  anfitrion -> spa [label="  Usa [HTTP]  "];
+  admin -> spa     [label="  Usa [HTTP]  "];
+
+  spa -> nginx  [label="  Descarga la aplicación y llama /api/*\l  [JSON sobre HTTP, token Bearer JWT]\l"];
+  nginx -> api  [label="  Reenvía /api/\l  [HTTP 127.0.0.1:8080]\l"];
+  api -> db     [label="  Lee y escribe\l  [JDBC, Hibernate]\l"];
+  api -> stripe [label="  Crea sesiones de Checkout,\l  consulta y reembolsa [HTTPS, stripe-java]\l"];
+  spa -> stripe [label="  Redirige al huésped a\l  Stripe Checkout [HTTPS]\l", style=dashed];
+  listener -> stripe [label="  Se suscribe a los eventos de la cuenta\l  [conexión saliente HTTPS]\l"];
+  listener -> api [label="  POST /api/stripe-test/webhook\l  firmado [HTTP 127.0.0.1:8080]\l"];
+  creds -> ssm  [label="  ssm:GetParameter\l  [HTTPS, rol IAM de la instancia]\l"];
+  creds -> api  [label="  Clave de prueba por\l  LoadCredential [/run]\l", style=dashed];
+}

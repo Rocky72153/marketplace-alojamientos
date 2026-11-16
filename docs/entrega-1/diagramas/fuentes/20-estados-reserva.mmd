@@ -1,0 +1,15 @@
+stateDiagram-v2
+    direction TB
+    [*] --> CONFIRMED : POST /api/reservations<br/>modo SIMULATED_TEST
+    [*] --> PENDING_PAYMENT : POST /api/stripe-test/checkouts<br/>modo STRIPE_TEST, fechas bloqueadas
+    PENDING_PAYMENT --> CONFIRMED : evento de pago completado<br/>dentro del plazo
+    PENDING_PAYMENT --> CANCELLED : sesión expirada, pago fallido<br/>o pago fuera de plazo<br/>[fechas liberadas]
+    CONFIRMED --> CANCELLED : huésped cancela antes de la llegada<br/>[reembolso total, parcial o nulo<br/>según la política de la publicación]
+    CONFIRMED --> COMPLETED : tarea diaria 00:00 America/Bogota<br/>[fecha de salida ya pasó]
+    COMPLETED --> [*] : permite crear una reseña
+    CANCELLED --> [*]
+    note right of CONFIRMED
+        manualReviewRequired = true si el
+        administrador bloquea la publicación
+        o si un reembolso falla o queda incierto
+    end note

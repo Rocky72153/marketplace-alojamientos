@@ -1,0 +1,87 @@
+// Diagrama UML de componentes de la API REST (equivale al nivel 3 de C4).
+// Fuente: paquetes de backend/src/main/java/co/edu/unbosque/marketplace en main.
+// Círculo = interfaz provista (rutas REST reales). Flecha discontinua = dependencia de uso (imports reales).
+// Generar: dot -Tpng -Gdpi=110 09-componentes.dot -o ../09-componentes.png
+digraph Componentes {
+  graph [rankdir=LR, fontname="DejaVu Sans", fontsize=20, pad=0.4, nodesep=0.3, ranksep=0.7, compound=true, newrank=true,
+         label=<<B>API REST - Diagrama de componentes (UML)</B><BR/><FONT POINT-SIZE="13">Cada componente agrupa los controladores, servicios y repositorios de un paquete. Las interfaces son las rutas REST que expone.</FONT>>,
+         labelloc=t];
+  node [fontname="DejaVu Sans", fontsize=11];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#555555", fontcolor="#333333", arrowsize=0.7];
+
+  spa [shape=component, style=filled, fillcolor="#DDE8F5", color="#2E6295", label=<<B>Aplicación web (SPA)</B><BR/><FONT POINT-SIZE="9">«componente externo»</FONT>>];
+  cli [shape=component, style=filled, fillcolor="#EEEEEE", color="#6B6B6B", label=<<B>Stripe CLI</B><BR/><FONT POINT-SIZE="9">«receptor de eventos»</FONT>>];
+
+  subgraph cluster_api {
+    label=<<B>API REST</B> «contenedor Spring Boot»>; fontsize=14; style="rounded"; color="#2E6295"; margin=20;
+    node [shape=component, style=filled, fillcolor="#E8F0FA", color="#2E6295", fontsize=10, fixedsize=false, width=0, height=0];
+
+    subgraph cluster_negocio {
+      label="Componentes de negocio"; fontsize=12; style="dashed,rounded"; color="#7A9CC6";
+  node [shape=circle, width=0.2, height=0.2, fixedsize=true, label="", style=filled, fillcolor=white, color="#333333", fontsize=9];
+      i_auth    [xlabel="/api/auth/*"];
+      i_profile [xlabel="/api/profile/me"];
+      i_listing [xlabel="/api/listings/*\n/api/host/listings"];
+      i_booking [xlabel="/api/listings/{id}/quotes\n/api/reservations/*"];
+      i_pay     [xlabel="/api/stripe-test/checkouts\n/api/payments/config"];
+      i_hook    [xlabel="/api/stripe-test/webhook"];
+      i_notif   [xlabel="/api/notifications/*"];
+      i_review  [xlabel="/api/listings/{id}/reviews\n/api/admin/reviews/*"];
+      i_admin   [xlabel="/api/admin/users, listings,\naudit, reservations"];
+      i_report  [xlabel="/api/admin/dashboard\n/api/admin/reports"];
+      i_health  [xlabel="/api/health"];
+
+      node [shape=component, style=filled, fillcolor="#E8F0FA", color="#2E6295", fontsize=10, fixedsize=false, width=0, height=0, label=""];
+      auth     [label=<<B>Autenticación</B><BR/><FONT POINT-SIZE="9">auth: AuthController</FONT>>];
+      perfil   [label=<<B>Perfil</B><BR/><FONT POINT-SIZE="9">profile: ProfileController</FONT>>];
+      publicaciones [label=<<B>Publicaciones y disponibilidad</B><BR/><FONT POINT-SIZE="9">listing: ListingController, HostListingController,<BR/>ListingSuggestionController, ListingService</FONT>>];
+      reservas [label=<<B>Reservas y cotización</B><BR/><FONT POINT-SIZE="9">booking: ReservationController, ReservationService,<BR/>BookingPricePolicy, ReservationCompletionScheduler</FONT>>];
+      pagos    [label=<<B>Pagos de prueba (Stripe)</B><BR/><FONT POINT-SIZE="9">booking: StripeCheckoutController,<BR/>StripeCheckoutTransactions, StripeEventTransactions,<BR/>StripeCheckoutMaintenance, StripeCancellationService,<BR/>StripeSdkTestGateway</FONT>>];
+      notificaciones [label=<<B>Notificaciones</B><BR/><FONT POINT-SIZE="9">notification: NotificationController,<BR/>NotificationService</FONT>>];
+      resenas  [label=<<B>Reseñas</B><BR/><FONT POINT-SIZE="9">review: ReviewController, ReviewService</FONT>>];
+      moderacion [label=<<B>Moderación</B><BR/><FONT POINT-SIZE="9">admin: ModerationController,<BR/>ModerationService</FONT>>];
+      reportes [label=<<B>Dashboard y reportes</B><BR/><FONT POINT-SIZE="9">reporting: ReportingController, DashboardService,<BR/>ReportService (PDFBox, Apache POI)</FONT>>];
+      errores  [label=<<B>Errores y salud</B><BR/><FONT POINT-SIZE="9">api: ApiExceptionHandler, HealthController</FONT>>];
+      demo     [label=<<B>Datos de demostración</B><BR/><FONT POINT-SIZE="9">demo: DemoDataSeeder (perfil local)</FONT>>];
+    }
+    subgraph cluster_transversal {
+      label="Componentes transversales (los usan todos los de negocio)"; fontsize=12; style="dashed,rounded"; color="#7A9CC6";
+      seguridad [label=<<B>Seguridad</B><BR/><FONT POINT-SIZE="9">security: JwtAuthenticationFilter,<BR/>JwtService, SecurityConfiguration</FONT>>];
+      auditoria [label=<<B>Auditoría y trazas</B><BR/><FONT POINT-SIZE="9">audit: RequestCorrelationFilter,<BR/>AuditService, StructuredEventLogger</FONT>>];
+      persistencia [label=<<B>Persistencia</B><BR/><FONT POINT-SIZE="9">Repositorios Spring Data JPA</FONT>>];
+    }
+  }
+
+  db [shape=cylinder, style=filled, fillcolor="#DDE8F5", color="#2E6295", fixedsize=false, width=0, height=0, label=<<B>PostgreSQL</B><BR/><FONT POINT-SIZE="9">«base de datos»</FONT>>];
+  stripe [shape=component, style=filled, fillcolor="#EEEEEE", color="#6B6B6B", fixedsize=false, width=0, height=0, label=<<B>Stripe API (sandbox)</B><BR/><FONT POINT-SIZE="9">«sistema externo»</FONT>>];
+
+  // Consumidores requieren las interfaces
+  edge [style=dashed, arrowhead=vee, color="#2E6295"];
+  spa -> i_listing [lhead=cluster_negocio, label="consume las interfaces REST\n[JSON sobre HTTP + JWT]"];
+  cli -> i_hook [label="eventos firmados"];
+
+  // Interfaz provista por el componente
+  edge [arrowhead=none, style=solid, color="#333333", label=""];
+  i_auth -> auth; i_profile -> perfil; i_listing -> publicaciones; i_booking -> reservas; i_pay -> pagos; i_hook -> pagos;
+  i_notif -> notificaciones; i_review -> resenas; i_admin -> moderacion; i_report -> reportes; i_health -> errores;
+
+  // Dependencias de uso entre componentes de negocio
+  edge [style=dashed, arrowhead=vee, color="#777777"];
+  reservas -> publicaciones [label="bloquea y libera fechas"];
+  publicaciones -> reservas [label="marca reservas futuras\npara revisión manual", constraint=false];
+  reservas -> notificaciones;
+  publicaciones -> notificaciones [label="cambio de estado"];
+  pagos -> publicaciones [label="inventario"];
+  pagos -> notificaciones [constraint=false];
+  resenas -> reservas [label="estancia completada", constraint=false];
+  moderacion -> reservas [constraint=false];
+  reportes -> reservas [constraint=false];
+  perfil -> auth [constraint=false];
+  demo -> publicaciones [constraint=false];
+
+  // Dependencias hacia transversales y externos
+  notificaciones -> auditoria [lhead=cluster_transversal, ltail=cluster_negocio, label="«use»", color="#999999"];
+  persistencia -> db [label="JDBC / Hibernate", color="#2E6295"];
+  pagos -> stripe [label="HTTPS (stripe-java)", color="#2E6295"];
+  auditoria -> persistencia [style=invis]; seguridad -> auditoria [style=invis];
+}

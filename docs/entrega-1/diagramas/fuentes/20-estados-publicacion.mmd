@@ -1,0 +1,19 @@
+stateDiagram-v2
+    direction TB
+    [*] --> DRAFT : anfitrión crea la publicación
+    DRAFT --> ACTIVE : anfitrión publica
+    DRAFT --> PENDING_REVIEW : anfitrión envía a revisión
+    PENDING_REVIEW --> ACTIVE : administrador aprueba
+    ACTIVE --> PAUSED : anfitrión pausa
+    PAUSED --> ACTIVE : anfitrión reactiva
+    ACTIVE --> BLOCKED : administrador bloquea con motivo
+    PAUSED --> BLOCKED : administrador bloquea con motivo
+    PENDING_REVIEW --> BLOCKED : administrador bloquea con motivo
+    BLOCKED --> ACTIVE : administrador desbloquea
+    note right of BLOCKED
+        No se puede editar.
+        Las reservas futuras confirmadas
+        se conservan y pasan a revisión manual.
+        El administrador puede aplicar cualquier
+        transición distinta al estado actual.
+    end note

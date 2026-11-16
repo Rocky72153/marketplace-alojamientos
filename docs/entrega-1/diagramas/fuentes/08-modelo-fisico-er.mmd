@@ -1,0 +1,166 @@
+erDiagram
+    marketplace_users ||--o{ listings : "host_id"
+    marketplace_users ||--o{ reservations : "guest_id"
+    marketplace_users ||--o{ notifications : "recipient_id"
+    marketplace_users ||--o{ reviews : "guest_id"
+    listings ||--o{ listing_amenities : "listing_id"
+    listings ||--o{ listing_images : "listing_id"
+    listings ||--o{ listing_extra_options : "listing_id"
+    listings ||--o{ availability_periods : "listing_id"
+    listings ||--o{ reservations : "listing_id"
+    listings ||--o{ reviews : "listing_id"
+    reservations ||--o{ reservation_extras : "reservation_id"
+    reservations ||--o| reviews : "booking_id (UK)"
+    reservations ||--o| stripe_test_checkout_attempts : "reservation_id (UK, sin FK)"
+    listings |o--o| demo_seed_entries : "listing_id (UK, sin FK)"
+
+    marketplace_users {
+        uuid id PK
+        varchar name
+        varchar email UK
+        varchar password_hash
+        varchar role "GUEST, HOST, ADMIN"
+        varchar account_state "ACTIVE, DEACTIVATED, RESTRICTED"
+        varchar phone
+        varchar photo_reference
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    listings {
+        uuid id PK
+        uuid host_id FK
+        varchar title
+        varchar description
+        varchar city
+        varchar location
+        varchar listing_type
+        int capacity
+        numeric price_per_night
+        varchar rules
+        varchar status "DRAFT a BLOCKED"
+        int cancellation_free_refund_days
+        int cancellation_partial_refund_days
+        numeric cancellation_partial_refund_percentage
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    listing_amenities {
+        uuid listing_id FK
+        varchar amenity_id
+    }
+    listing_images {
+        uuid listing_id FK
+        varchar image_reference
+    }
+    listing_extra_options {
+        uuid listing_id FK
+        int extra_position
+        varchar extra_id
+        varchar extra_name
+        numeric unit_price
+    }
+    availability_periods {
+        uuid id PK
+        uuid listing_id FK
+        date start_date
+        date end_date
+        varchar type "AVAILABLE, BLOCKED, RESERVED"
+        varchar reservation_reference
+    }
+    reservations {
+        uuid id PK
+        uuid guest_id FK
+        uuid listing_id FK
+        varchar idempotency_key "UK con guest_id"
+        varchar request_fingerprint
+        date check_in
+        date check_out
+        int nights
+        int guests
+        numeric price_per_night
+        numeric nightly_subtotal
+        numeric cleaning_fee
+        numeric service_fee
+        numeric discount_amount
+        numeric extras_total
+        numeric total
+        varchar currency
+        varchar payment_status
+        varchar payment_reference
+        varchar status "PENDING_PAYMENT a COMPLETED"
+        varchar cancellation_reason
+        timestamptz cancelled_at
+        numeric refund_percentage
+        numeric refund_amount
+        int policy_free_refund_days
+        int policy_partial_refund_days
+        numeric policy_partial_refund_percentage
+        boolean manual_review_required
+        timestamptz created_at
+    }
+    reservation_extras {
+        uuid reservation_id FK
+        int line_number
+        varchar extra_id
+        varchar extra_name
+        int quantity
+        numeric unit_price
+        numeric line_total
+    }
+    stripe_test_checkout_attempts {
+        uuid id PK
+        uuid reservation_id UK
+        uuid guest_id
+        uuid listing_id
+        bigint amount_minor
+        varchar currency
+        timestamptz expires_at
+        varchar session_id UK
+        varchar checkout_url
+        varchar payment_intent_id
+        bigint refund_amount_minor
+        timestamptz refund_retry_deadline
+        varchar state "PREPARING a CANCELLED"
+    }
+    stripe_test_processed_events {
+        varchar id PK "id del evento de Stripe"
+        timestamptz processed_at
+    }
+    notifications {
+        uuid id PK
+        uuid recipient_id FK
+        varchar type
+        varchar message
+        varchar reference_type
+        uuid reference_id
+        timestamptz created_at
+        timestamptz read_at
+    }
+    reviews {
+        uuid id PK
+        uuid booking_id FK "UK"
+        uuid listing_id FK
+        uuid guest_id FK
+        int rating
+        varchar content
+        boolean hidden
+        timestamptz hidden_at
+        uuid hidden_by
+        varchar hidden_reason
+        timestamptz created_at
+    }
+    audit_events {
+        uuid id PK
+        varchar event_type
+        uuid actor_id
+        varchar entity_type
+        uuid entity_id
+        varchar result
+        varchar reason
+        timestamptz occurred_at
+        varchar correlation_id
+    }
+    demo_seed_entries {
+        int seed_number PK
+        uuid listing_id UK
+    }

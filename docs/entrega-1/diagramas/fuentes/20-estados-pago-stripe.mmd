@@ -1,0 +1,17 @@
+stateDiagram-v2
+    direction TB
+    [*] --> PREPARING : reserva PENDING_PAYMENT creada
+    PREPARING --> OPEN : sesión cs_test creada en Stripe
+    PREPARING --> EXPIRED : vence sin sesión
+    OPEN --> PAID : checkout.session.completed<br/>(paid, dentro del plazo)
+    OPEN --> EXPIRED : checkout.session.expired<br/>o tarea de mantenimiento
+    PAID --> REFUND_PENDING : huésped cancela con reembolso
+    PAID --> CANCELLED : huésped cancela sin reembolso
+    EXPIRED --> REFUND_PENDING : pago recibido fuera de plazo
+    REFUND_PENDING --> REFUNDED : Stripe confirma el reembolso
+    REFUND_PENDING --> REFUND_FAILED : reembolso rechazado
+    REFUND_PENDING --> REFUND_REVIEW : respuesta incierta
+    REFUNDED --> [*]
+    CANCELLED --> [*]
+    REFUND_FAILED --> [*] : revisión manual del administrador
+    REFUND_REVIEW --> [*] : revisión manual del administrador

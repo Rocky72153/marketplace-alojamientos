@@ -24,7 +24,7 @@ La entrega final (Entrega 2) es el 26/11/2026. Las demás fechas del cronograma,
 5. [Épicas e historias de usuario](05-backlog-historias.md)
 6. [Casos de uso](06-casos-de-uso.md)
 7. [Modelo de dominio](07-modelo-dominio.md)
-8. [Modelo lógico de datos](08-modelo-datos.md)
+8. [Modelo de datos (físico implementado y lógico de diseño)](08-modelo-datos.md)
 9. [Arquitectura orientada a servicios](09-arquitectura-servicios.md)
 10. [Contrato REST OpenAPI](10-openapi.yaml)
 11. [Prototipo y estrategia de validación](11-prototipo-validacion.md)
@@ -36,12 +36,15 @@ La entrega final (Entrega 2) es el 26/11/2026. Las demás fechas del cronograma,
 17. [Diseño de casos de prueba](17-casos-de-prueba.md)
 18. [Desglose de subtareas y planificación Jira](18-plan-subtareas-jira.md)
 19. [Metodología Scrum](19-metodologia-scrum.md)
+20. [Diseño detallado: paquetes, actividad, estados y pipeline CI/CD](20-diseno-detallado.md)
 
 ## Fuentes de diagramas y material complementario
 
 - BPMN 2.0 de publicación: [bpmn/publicacion-alojamiento.bpmn](bpmn/publicacion-alojamiento.bpmn).
 - BPMN 2.0 de búsqueda/reserva: [bpmn/busqueda-reserva-cancelacion.bpmn](bpmn/busqueda-reserva-cancelacion.bpmn).
 - BPMN 2.0 de cancelación: [bpmn/cancelacion-reserva.bpmn](bpmn/cancelacion-reserva.bpmn).
+- BPMN 2.0 de moderación, auditoría y reportes: [bpmn/moderacion-reportes.bpmn](bpmn/moderacion-reportes.bpmn).
+- Fuentes Graphviz y Mermaid de los diagramas de arquitectura y diseño: [diagramas/fuentes/](diagramas/fuentes/).
 - Matriz de trazabilidad inicial: [../TRACEABILITY_TEMPLATE.csv](../TRACEABILITY_TEMPLATE.csv).
 - Registro de decisiones/preguntas abiertas: [../DECISIONS.md](../DECISIONS.md).
 - Guía de ejecución local: [../LOCAL_SETUP.md](../LOCAL_SETUP.md).

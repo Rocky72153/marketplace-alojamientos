@@ -1,0 +1,64 @@
+// Diagrama UML de paquetes del backend.
+// Fuente: paquetes y sentencias import de backend/src/main/java/co/edu/unbosque/marketplace en main.
+// Cada flecha discontinua es una dependencia «import» real entre paquetes.
+// Generar: dot -Tpng -Gdpi=110 20-paquetes.dot -o ../20-paquetes.png
+digraph Paquetes {
+  graph [rankdir=TB, fontname="DejaVu Sans", fontsize=20, pad=0.4, nodesep=0.45, ranksep=0.9, compound=true, newrank=true,
+         label=<<B>Backend - Diagrama de paquetes (UML)</B><BR/><FONT POINT-SIZE="13">co.edu.unbosque.marketplace. Las flechas discontinuas son dependencias «import» encontradas en el código.</FONT>>,
+         labelloc=t];
+  node [fontname="DejaVu Sans", fontsize=10, shape=tab, style=filled, fillcolor="#FFF7D6", color="#8A6D00"];
+  edge [fontname="DejaVu Sans", fontsize=9, style=dashed, arrowhead=vee, color="#555555", fontcolor="#555555", arrowsize=0.7];
+
+  subgraph cluster_root {
+    label=<<B>co.edu.unbosque.marketplace</B>  (MarketplaceApplication)>; fontsize=13; shape=tab; style="rounded"; color="#8A6D00"; margin=22;
+
+    subgraph cluster_neg {
+      label="Paquetes de negocio"; fontsize=11; style="dashed,rounded"; color="#B8A050";
+      auth [label=<<B>auth</B><BR ALIGN="LEFT"/>AuthController<BR ALIGN="LEFT"/>>];
+      profile [label=<<B>profile</B><BR ALIGN="LEFT"/>ProfileController<BR ALIGN="LEFT"/>>];
+      listing [label=<<B>listing</B><BR ALIGN="LEFT"/>Listing, AvailabilityPeriod, ListingExtraOption<BR ALIGN="LEFT"/>ListingService, ListingController,<BR ALIGN="LEFT"/>HostListingController, ListingSuggestionController<BR ALIGN="LEFT"/>ListingRepository, AvailabilityRepository<BR ALIGN="LEFT"/>ListingStatus, AvailabilityType, ListingData<BR ALIGN="LEFT"/>>];
+      booking [label=<<B>booking</B><BR ALIGN="LEFT"/>Reservation, ReservationExtra, ReservationStatus<BR ALIGN="LEFT"/>ReservationService, ReservationController, BookingPricePolicy<BR ALIGN="LEFT"/>ReservationCompletionService / Scheduler<BR ALIGN="LEFT"/>StripeCheckoutAttempt, StripeProcessedEvent<BR ALIGN="LEFT"/>StripeCheckoutController, StripeCheckoutTransactions<BR ALIGN="LEFT"/>StripeEventTransactions, StripeCheckoutMaintenance<BR ALIGN="LEFT"/>StripeCancellationService, StripeTestGateway, StripeSdkTestGateway<BR ALIGN="LEFT"/>TestPaymentSimulator, PaymentConfigurationController<BR ALIGN="LEFT"/>>];
+      notification [label=<<B>notification</B><BR ALIGN="LEFT"/>Notification, NotificationService<BR ALIGN="LEFT"/>NotificationController, NotificationRepository<BR ALIGN="LEFT"/>>];
+      review [label=<<B>review</B><BR ALIGN="LEFT"/>Review, ReviewService<BR ALIGN="LEFT"/>ReviewController, ReviewRepository<BR ALIGN="LEFT"/>>];
+      admin [label=<<B>admin</B><BR ALIGN="LEFT"/>ModerationController, ModerationService<BR ALIGN="LEFT"/>>];
+      reporting [label=<<B>reporting</B><BR ALIGN="LEFT"/>ReportingController, DashboardService<BR ALIGN="LEFT"/>ReportService, ReportAudit<BR ALIGN="LEFT"/>>];
+      demo [label=<<B>demo</B><BR ALIGN="LEFT"/>DemoDataSeeder, DemoSeedEntry<BR ALIGN="LEFT"/>>];
+    }
+
+    subgraph cluster_trans {
+      label="Paquetes transversales"; fontsize=11; style="dashed,rounded"; color="#B8A050";
+      security [label=<<B>security</B><BR ALIGN="LEFT"/>MarketplaceUser, AccountRole, AccountState<BR ALIGN="LEFT"/>JwtService, JwtAuthenticationFilter<BR ALIGN="LEFT"/>SecurityConfiguration, MarketplaceUserRepository<BR ALIGN="LEFT"/>>];
+      audit [label=<<B>audit</B><BR ALIGN="LEFT"/>AuditEvent, AuditService, AuditEventRepository<BR ALIGN="LEFT"/>RequestCorrelationFilter, CorrelationContext<BR ALIGN="LEFT"/>StructuredEventLogger<BR ALIGN="LEFT"/>>];
+      api [label=<<B>api</B><BR ALIGN="LEFT"/>ApiError, ApiExceptionHandler<BR ALIGN="LEFT"/>DomainException, HealthController<BR ALIGN="LEFT"/>>];
+    }
+  }
+
+  {rank=same; auth; admin; reporting; review; demo;}
+  {rank=same; profile; booking; notification; listing;}
+  profile -> booking -> notification -> listing [style=invis];
+
+  // Dependencias entre paquetes de negocio
+  profile -> auth;
+  profile -> booking;
+  admin -> booking; admin -> listing;
+  reporting -> booking; reporting -> listing;
+  review -> booking; review -> listing;
+  demo -> listing;
+  booking -> listing [constraint=false];
+  listing -> booking [constraint=false, color="#C0392B"];
+  booking -> notification;
+  notification -> booking [constraint=false, color="#C0392B"];
+  listing -> notification [constraint=false];
+  notification -> listing [constraint=false, color="#C0392B"];
+  booking -> review [constraint=false, color="#C0392B"];
+
+  // Todos los paquetes de negocio importan api, audit y security (demo solo security)
+  booking -> security [ltail=cluster_neg, lhead=cluster_trans, label="  «import» api, audit y security\l  (todos los de negocio; demo solo security)\l", penwidth=1.4];
+
+  // Dependencias dentro de los transversales
+  security -> audit; security -> api;
+  api -> audit [color="#C0392B"]; audit -> api [constraint=false, color="#C0392B"];
+
+  nota [shape=note, style=filled, fillcolor="#F5F5F5", color="#999999", fontsize=9, label=<<B>Observación de diseño</B><BR ALIGN="LEFT"/>Las flechas rojas cierran dependencias circulares:<BR ALIGN="LEFT"/>booking y listing, booking y notification,<BR ALIGN="LEFT"/>listing y notification, booking y review, api y audit.<BR ALIGN="LEFT"/>Funcionan porque es un solo módulo Maven, pero<BR ALIGN="LEFT"/>impedirían separar estos paquetes en servicios<BR ALIGN="LEFT"/>independientes sin refactorizar.<BR ALIGN="LEFT"/>>];
+  api -> nota [style=invis];
+}

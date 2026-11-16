@@ -114,6 +114,10 @@ flowchart TD
   J --> N
 ```
 
+**BPMN 2.0 con carriles:** [bpmn/moderacion-reportes.bpmn](bpmn/moderacion-reportes.bpmn). Modela las cinco operaciones que el código permite al administrador: restringir cuenta, bloquear publicación, ocultar reseña, resolver revisión manual de una reserva y exportar reporte.
+
+![BPMN de moderación, auditoría y reportes](diagramas/bpmn-moderacion-reportes.png)
+
 **Indicadores:** usuarios, publicaciones activas, reservas por estado, ingresos estimados y ciudades con mayor demanda. Definición exacta de “ingreso estimado”, periodo de corte y filtros del reporte debe quedar aprobada; la guía no fija una fórmula específica.
 
 ## Relación proceso–requerimiento

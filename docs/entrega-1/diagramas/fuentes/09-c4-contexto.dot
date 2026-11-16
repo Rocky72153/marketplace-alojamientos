@@ -1,0 +1,31 @@
+// C4 nivel 1 - Diagrama de contexto del sistema Marketplace de Alojamientos.
+// Fuente: código en main (controladores REST, StripeSdkTestGateway) y deploy/ec2.
+// Generar: dot -Tpng -Gdpi=150 09-c4-contexto.dot -o ../09-c4-contexto.png
+digraph C4Contexto {
+  graph [rankdir=TB, fontname="DejaVu Sans", fontsize=20, pad=0.4, nodesep=0.9, ranksep=1.2,
+         label=<<B>Marketplace de Alojamientos - Diagrama de contexto (C4 nivel 1)</B><BR/><FONT POINT-SIZE="13">El sistema se muestra como una sola unidad; solo se ven los actores y sistemas externos y la información que intercambian.</FONT>>,
+         labelloc=t];
+  node  [fontname="DejaVu Sans", fontsize=13, fontcolor=white, style="filled,rounded", shape=box, margin="0.25,0.15"];
+  edge  [fontname="DejaVu Sans", fontsize=11, color="#555555", fontcolor="#333333", arrowsize=0.8];
+
+  huesped [fillcolor="#08427B", color="#052E56", label=<<B>Huésped</B><BR/><FONT POINT-SIZE="11">[Persona]</FONT><BR/><BR/>Busca, cotiza, reserva, paga<BR/>en modo de prueba, cancela y reseña.>];
+  anfitrion [fillcolor="#08427B", color="#052E56", label=<<B>Anfitrión</B><BR/><FONT POINT-SIZE="11">[Persona]</FONT><BR/><BR/>Publica alojamientos, fija precio,<BR/>disponibilidad y extras.>];
+  admin [fillcolor="#08427B", color="#052E56", label=<<B>Administrador</B><BR/><FONT POINT-SIZE="11">[Persona - Inversiones LR]</FONT><BR/><BR/>Modera cuentas, publicaciones y reseñas;<BR/>consulta auditoría, dashboard y reportes.>];
+
+  sistema [fillcolor="#1168BD", color="#0B4884", fontsize=15, label=<<B>Marketplace de Alojamientos</B><BR/><FONT POINT-SIZE="11">[Sistema de software]</FONT><BR/><BR/>Aplicación web: publicación, búsqueda, disponibilidad,<BR/>cotización, reserva inmediata, cancelación según política,<BR/>notificaciones internas, reseñas, moderación,<BR/>auditoría y reportes PDF/Excel.>];
+
+  stripe [fillcolor="#8C8C8C", color="#6B6B6B", label=<<B>Stripe (cuenta sandbox)</B><BR/><FONT POINT-SIZE="11">[Sistema externo]</FONT><BR/><BR/>Checkout de pago y reembolsos<BR/>solo en modo de prueba.>];
+
+  {rank=same; anfitrion; admin;}
+  {rank=same; huesped; sistema;}
+
+  huesped -> sistema [minlen=3, label="  Criterios de búsqueda, fechas, huéspedes,\l  reservas, cancelaciones y reseñas [HTTP]\l"];
+  sistema -> huesped [label="  Resultados, cotización desglosada,\l  confirmación y notificaciones\l", style=dashed, constraint=false];
+  anfitrion -> sistema [label="  Datos de la publicación,\l  periodos de disponibilidad [HTTP]\l"];
+  admin -> sistema [label="  Acciones de moderación con motivo,\l  filtros de reporte [HTTP]\l"];
+  sistema -> admin [label="  Dashboard, auditoría,\l  archivos PDF o XLSX\l", style=dashed, constraint=false];
+
+  sistema -> stripe [label="  Crea sesión de Checkout y reembolsos\l  de prueba [HTTPS, API de Stripe]\l"];
+  stripe -> sistema [label="  Eventos firmados checkout.session.*\l  (reenviados por Stripe CLI)\l", style=dashed, constraint=false];
+  huesped -> stripe [label="  Paga con tarjeta de prueba\l  en Stripe Checkout [HTTPS]\l", constraint=false];
+}
