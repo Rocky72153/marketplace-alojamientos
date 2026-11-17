@@ -4,7 +4,7 @@ Esta carpeta/guía enumera evidencias que deben recopilarse desde las herramient
 
 ## Uso de IA (requisito expreso de la guía)
 
-Registro actual del 17/11/2026: [interacción y respuesta reales](uso-ia-2026-11-17.md), [prompt elaborado](prompt-revision-diagramas-2026-11-17.md) y [captura original](EV-IA-09-20261117-0048.png), con manifiesto de integridad. Incluye la revisión y corrección de diagramas realizada en esta sesión. El prompt ampliado se presenta como redacción actual, separado del mensaje original.
+Registro actual del 17/11/2026: [registro textual de la revisión de diagramas](uso-ia-2026-11-17.md) y [prompt elaborado](prompt-revision-diagramas-2026-11-17.md). Se conservan los hallazgos y las correcciones del proyecto, sin una captura de la interacción técnica. El prompt ampliado se presenta como redacción actual y no como transcripción del mensaje original ni evidencia visual de la revisión.
 
 Plantilla para registrar cada intercambio y enlazar capturas originales: [`registro-uso-IA.md`](registro-uso-IA.md).
 

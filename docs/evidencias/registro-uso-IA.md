@@ -15,13 +15,13 @@
 
 ### Registro actual — 17/11/2026
 
-| ID | Intercambio y captura | Herramienta | Artefactos y resultado |
+| ID | Registro y soporte conservado | Herramienta | Artefactos y resultado |
 |---|---|---|---|
-| EV-IA-09 | [Registro completo](uso-ia-2026-11-17.md); [captura original, 00:48 Bogotá](EV-IA-09-20261117-0048.png); [manifiesto SHA-256](EV-IA-09-manifiesto.json) | ChatGPT | [Prompt elaborado](prompt-revision-diagramas-2026-11-17.md), revisión de diagramas, corrección del pipeline y los flujos de pago. La versión ampliada es una redacción de esta sesión; la captura conserva el mensaje original. No acredita revisión humana independiente. |
+| EV-IA-09 | [Registro textual de revisión](uso-ia-2026-11-17.md). Sin captura conservada de la revisión técnica. | ChatGPT | [Prompt elaborado](prompt-revision-diagramas-2026-11-17.md), revisión de diagramas, corrección del pipeline y los flujos de pago. La versión ampliada es una redacción de esta sesión. No acredita evidencia visual de la interacción ni revisión humana independiente. |
 
 ### Plantilla histórica de octubre
 
-Las siguientes filas se conservan como plantilla histórica. EV-IA-09 documenta una interacción nueva; no acredita capturas originales de las interacciones anteriores que no se recopilaron.
+Las siguientes filas se conservan como plantilla histórica. EV-IA-09 registra por escrito una revisión nueva; no aporta una captura de esa revisión ni de las interacciones anteriores que no se recopilaron.
 
 | ID | Fecha/hora local del intercambio | Herramienta | Prompt completo visible | Respuesta completa visible | Archivo(s) de captura original | Artefacto afectado | Revisión humana / decisión |
 |---|---|---|---|---|---|---|---|

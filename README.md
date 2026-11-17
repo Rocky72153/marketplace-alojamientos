@@ -100,6 +100,7 @@ Los workflows de [GitHub Actions](https://github.com/Rocky72153/marketplace-aloj
 | Entender el diseño | [Clases y guía de lectura](docs/DIAGRAMA-CLASES.md), [arquitectura](docs/entrega-1/09-arquitectura-servicios.md) y [diseño detallado](docs/entrega-1/20-diseno-detallado.md). |
 | Ejecutar o desplegar | [Guía local](docs/LOCAL_SETUP.md), [despliegue EC2](docs/DESPLIEGUE-EC2.md) y [Stripe de prueba](docs/STRIPE-PRUEBAS.md). |
 | Revisar historias, criterios y versiones | [Jira MARKET](https://unbosque-team-zeutvqmy.atlassian.net/jira/software/projects/MARKET/boards/2), [trazabilidad](docs/TRACEABILITY_TEMPLATE.csv) y [release v1.0](https://github.com/Rocky72153/marketplace-alojamientos/releases/tag/v1.0). |
+| Consultar el apoyo de IA en la revisión de diagramas | [Registro textual](docs/evidencias/uso-ia-2026-11-17.md) y [prompt elaborado](docs/evidencias/prompt-revision-diagramas-2026-11-17.md), sin captura conservada de la revisión técnica. |
 | Navegar el resto de documentos | [Índice de documentación](docs/README.md). |
 
 ## Estructura del repositorio

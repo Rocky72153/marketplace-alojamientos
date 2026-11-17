@@ -25,4 +25,4 @@ Entrega un resumen con: inventario revisado, hallazgos concretos, archivos corre
 
 ## Nota sobre su utilización
 
-Este texto formaliza el alcance del trabajo solicitado en el chat y puede reutilizarse en una interacción posterior. La evidencia del mensaje original y la respuesta de esta sesión se conserva por separado; esta versión elaborada no los reemplaza.
+Este texto formaliza el alcance del trabajo solicitado en el chat y puede reutilizarse en una interacción posterior. Se conserva un [registro textual de la revisión](uso-ia-2026-11-17.md), sin una captura de la interacción técnica. Esta versión elaborada no sustituye el mensaje original ni acredita evidencia visual del trabajo.

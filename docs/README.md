@@ -59,7 +59,7 @@ Las anotaciones históricas sobre tareas pendientes corresponden a su fecha de c
 | Navegación, sesión y retorno de Stripe | [Verificación del 15 de noviembre](evidencias/frontend-stripe-2026-11-15.json). |
 | Capturas del frontend | [Portada, móvil, cotización y administración](FRONTEND-MEJORAS.md#capturas). |
 | Trabajo Scrum y retrospectiva acumulada | [Registro de eventos](evidencias/registro-eventos-scrum.md). |
-| Uso de IA y soportes originales por recopilar | [Registro de uso](evidencias/uso-ia-2026-10.md), [índice de capturas](evidencias/registro-uso-IA.md). |
+| Uso de IA y soportes originales por recopilar | [Revisión actual: registro textual sin captura](evidencias/uso-ia-2026-11-17.md), [registro histórico](evidencias/uso-ia-2026-10.md), [índice de registros y capturas pendientes](evidencias/registro-uso-IA.md). |
 | Índice general de soportes | [Carpeta de evidencias](evidencias/README.md). |
 
 Cada medición o captura acredita únicamente la versión, el ambiente y el alcance descritos. Las pruebas automáticas no sustituyen las firmas, la aceptación docente ni la validación con participantes.
@@ -137,7 +137,7 @@ Las imágenes de todos los diagramas están en [entrega-1/diagramas](entrega-1/d
 |---|---|---|---|
 | 6.1 | Checklist de entrega | [6.1](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/819409) | [13-checklist-entrega.md](entrega-1/13-checklist-entrega.md) |
 | 6.2 | Estado de la Entrega 1 | [6.2](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/753665) | [entrega-1/README.md](entrega-1/README.md) |
-| 6.3 | Evidencia del uso de IA | [6.3](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/9306113) | [Registro actual y captura original](evidencias/uso-ia-2026-11-17.md), [prompt elaborado](evidencias/prompt-revision-diagramas-2026-11-17.md) y [registro histórico](evidencias/registro-uso-IA.md) |
+| 6.3 | Evidencia del uso de IA | [6.3](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/9306113) | [Registro textual actual, sin captura de la revisión](evidencias/uso-ia-2026-11-17.md), [prompt elaborado](evidencias/prompt-revision-diagramas-2026-11-17.md) y [registro histórico](evidencias/registro-uso-IA.md) |
 | 6.4 | Release y demostración final | [6.4](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/9273364) | [Release v1.0](https://github.com/Rocky72153/marketplace-alojamientos/releases/tag/v1.0) y [DESPLIEGUE-EC2.md](DESPLIEGUE-EC2.md) |
 | 6.5 | Informe final y acta de cierre | [6.5](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/9011225) | [INFORME-FINAL-ENTREGA-2.md](INFORME-FINAL-ENTREGA-2.md) y [ACTA-CIERRE.md](ACTA-CIERRE.md) |
 
