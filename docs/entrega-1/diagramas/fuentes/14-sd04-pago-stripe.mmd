@@ -25,23 +25,46 @@ sequenceDiagram
     T->>DB: Intento OPEN
     C-->>W: 200 {attemptId, status OPEN, checkoutUrl}
     W->>H: Redirige a Stripe Checkout
-    H->>S: Paga con tarjeta de prueba
-    S-->>CLI: Evento checkout.session.completed
+    H->>S: Completa Checkout con datos de prueba
+    S-->>CLI: Evento de sesión (completed, async o expired)
     CLI->>C: POST /api/stripe-test/webhook (Stripe-Signature)
     C->>G: verifyWebhook(payload, firma)
     G-->>C: evento verificado
     C->>E: process(evento)
-    E->>DB: Bloquear intento y comprobar si el evento ya se procesó
-    alt Pagado dentro del plazo, cuenta y publicación activas
-        E->>DB: Reserva CONFIRMED, intento PAID
-        E->>DB: Notificación y auditoría STRIPE_TEST_PAYMENT_CONFIRMED
-    else Fuera de plazo o cuenta/publicación no activa
+    E->>DB: Bloquear intento, comprobar duplicado y clasificar evento
+    alt Evento ya procesado o estado terminal compatible
+        Note over DB,E: Conservar estado, sin confirmar ni cobrar otra vez
+    else completed con unpaid e intento OPEN
+        Note over DB,E: Acción WAIT_FOR_PAYMENT, sin cambio de estado<br/>Reserva PENDING_PAYMENT, intento OPEN<br/>Esperar async_payment_succeeded o async_payment_failed
+    else Evento paid e intento OPEN
+        alt Dentro del plazo, huésped y anfitrión habilitados, publicación ACTIVE
+            E->>DB: Reserva CONFIRMED, intento PAID
+            E->>DB: Notificación y auditoría STRIPE_TEST_PAYMENT_CONFIRMED
+        else Plazo vencido, cuenta restringida o publicación no activa
+            E->>L: releaseReservation (libera fechas)
+            E->>DB: Reserva CANCELLED, intento REFUND_PENDING
+            E->>DB: Auditoría STRIPE_TEST_REFUND_REQUIRED
+        end
+    else Evento paid e intento EXPIRED
+        E->>DB: Reserva sigue CANCELLED, intento REFUND_PENDING
+        Note over DB,E: Pago tardío, no reabrir las fechas ni confirmar la reserva
+    else expired o async_payment_failed con unpaid e intento OPEN
         E->>L: releaseReservation (libera fechas)
-        E->>DB: Reserva CANCELLED (TEST_EXPIRED), intento REFUND_PENDING
+        E->>DB: Reserva CANCELLED, intento EXPIRED
     end
-    E->>DB: Guardar id del evento (idempotencia)
-    C-->>CLI: 200
-    S-->>H: Vuelve a la aplicación
-    W->>C: GET /api/stripe-test/checkouts/{id}
-    C-->>W: status PAID
-    W-->>H: Reserva confirmada
+    E->>DB: Guardar id si es un evento nuevo aceptado (idempotencia)
+    C-->>CLI: 200 si el procesamiento terminó sin error
+    Note over C,E: Evento inválido: 400. Falta de vínculo o condición transitoria: 503<br/>No guardar el evento como procesado si la transacción falla
+    Note over H,S: El regreso del navegador puede ocurrir antes o después del webhook
+    S-->>H: Vuelve a la aplicación (no acredita el pago)
+    W->>C: GET /api/stripe-test/checkouts/{id} (JWT del titular)
+    C-->>W: Estado actual del intento guardado en PostgreSQL
+    alt status PAID
+        W-->>H: Pago de prueba y reserva confirmados
+    else status PREPARING u OPEN
+        W-->>H: Pago pendiente, consultar de nuevo sin confirmar la reserva
+    else status EXPIRED o CANCELLED
+        W-->>H: Pago vencido o reserva cancelada, sin confirmación
+    else status REFUND_PENDING, REFUND_FAILED, REFUND_REVIEW o REFUNDED
+        W-->>H: Mostrar estado del reembolso y consultar historial
+    end

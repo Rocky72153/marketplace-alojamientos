@@ -1,20 +1,21 @@
 // Pipeline CI/CD real del proyecto.
 // Fuente: .github/workflows/ci.yml, .github/workflows/sonarcloud.yml, .github/dependabot.yml y docs/DESPLIEGUE-EC2.md.
-// La integración continua es automática; la entrega a EC2 es manual (no hay despliegue continuo).
+// Corte verificado: 17/11/2026. La integración continua es automática; la entrega a EC2 es manual.
 // Generar: dot -Tpng -Gdpi=110 20-pipeline-ci-cd.dot -o ../20-pipeline-ci-cd.png
 digraph Pipeline {
   graph [rankdir=TB, fontname="DejaVu Sans", fontsize=20, pad=0.4, nodesep=0.35, ranksep=0.45, compound=true, newrank=true,
-         label=<<B>Pipeline CI/CD - Marketplace de Alojamientos</B><BR/><FONT POINT-SIZE="13">Integración continua automática en GitHub Actions y SonarCloud; entrega a la instancia EC2 manual y verificada.</FONT>>,
+         label=<<B>Pipeline CI/CD - Marketplace de Alojamientos</B><BR/><FONT POINT-SIZE="13">Estado al 17/11/2026: integración continua automática, ramas protegidas y entrega manual.</FONT>>,
          labelloc=t];
   node [fontname="DejaVu Sans", fontsize=10, shape=box, style="filled,rounded", fillcolor="#FFFFFF", color="#555555"];
   edge [fontname="DejaVu Sans", fontsize=9, color="#444444", fontcolor="#333333", arrowsize=0.7];
 
   dev [shape=box, fillcolor="#08427B", fontcolor=white, color="#052E56", label=<<B>Desarrollador</B><BR/>commit en rama<BR/>feature/* o docs/*>];
-  dep [fillcolor="#F4F4F4", label=<<B>Dependabot</B><BR/>semanal: Actions,<BR/>Maven y npm>];
+  dep [fillcolor="#F4F4F4", style="rounded,dashed", label=<<B>Dependencias - registro histórico</B><BR/>PR semanales hasta el 16/11/2026<BR/>Actualizaciones automáticas desactivadas<BR/>open-pull-requests-limit: 0>];
   pr [fillcolor="#F0F0F0", label=<<B>Pull Request</B><BR/>hacia develop o main<BR/>(plantilla de PR)>];
 
   subgraph cluster_ci {
     label=<<B>Integración continua</B> - workflow CI (.github/workflows/ci.yml)<BR/>Se dispara en pull_request y push a main y develop>; fontsize=11; style="rounded,filled"; fillcolor="#EEF5FC"; color="#2E6295";
+    ci_entry [shape=point, width=0.07, label="", fillcolor="#444444"];
 
     subgraph cluster_b { label="Backend CI"; style="rounded"; color="#7A9CC6"; fontsize=10;
       b1 [label="checkout"]; b2 [label="Java 21 (Temurin)\ncaché Maven"]; b3 [label=<<B>mvn -B verify</B><BR/>compila, pruebas JUnit<BR/>y cobertura JaCoCo>];
@@ -35,7 +36,7 @@ digraph Pipeline {
 
   ok [shape=diamond, style=filled, fillcolor="#FFF7D6", color="#8A6D00", label="¿Todos los\nchecks en verde?"];
   fix [fillcolor="#FDECEA", color="#C0392B", label="Corregir y\nvolver a subir"];
-  rev [label=<<B>Revisión del PR</B><BR/>por el otro integrante>];
+  rev [label=<<B>Condiciones de integración</B><BR/>PR actualizado y conversaciones resueltas<BR/>0 aprobaciones: dispensa del propietario (17/11)<BR/>Sin atribuir revisión independiente>];
   merge_dev [label=<<B>Merge a develop</B>>];
   merge_main [label=<<B>PR develop a main</B><BR/>y merge>];
 
@@ -55,8 +56,12 @@ digraph Pipeline {
   }
   pub [shape=box, fillcolor="#3E6B23", fontcolor=white, color="#2C4D18", label=<<B>Publicado</B><BR/>moralesforero.lol>];
 
-  dev -> pr; dep -> pr;
-  pr -> b1 [lhead=cluster_ci];
+  dev -> pr;
+  dep -> pr [label="histórico; ya no genera PR", style=dashed, color="#999999", constraint=false];
+  pr -> ci_entry [lhead=cluster_ci];
+  ci_entry -> b1 [lhead=cluster_b];
+  ci_entry -> f1 [lhead=cluster_f];
+  ci_entry -> d1 [lhead=cluster_d];
   pr -> s1 [lhead=cluster_sonar];
   b3 -> ok; f5 -> ok; d3 -> ok; s3 -> ok;
   ok -> fix [label="No"]; fix -> dev [constraint=false, style=dashed];
@@ -65,6 +70,6 @@ digraph Pipeline {
   merge_main -> c1 [lhead=cluster_cd, label="cuando el equipo\ndecide publicar", style=dashed];
   c6 -> pub [label="Sí"];
 
-  nota [shape=note, style=filled, fillcolor="#F5F5F5", color="#999999", fontsize=9, label=<<B>Pendientes registrados</B><BR ALIGN="LEFT"/>- La protección de ramas de main y develop no está activada<BR ALIGN="LEFT"/>  (existe scripts/configure-github-branch-protection.sh).<BR ALIGN="LEFT"/>- No hay paso automático de despliegue: el pipeline llega<BR ALIGN="LEFT"/>  a entrega continua parcial, no a despliegue continuo.<BR ALIGN="LEFT"/>- No hay releases versionados en GitHub (MARKET-80).<BR ALIGN="LEFT"/>>];
+  nota [shape=note, style=filled, fillcolor="#F5F5F5", color="#999999", fontsize=9, label=<<B>Estado y límites verificados - 17/11/2026</B><BR ALIGN="LEFT"/>- main y develop protegidas; cuatro checks obligatorios:<BR ALIGN="LEFT"/>  Backend CI, Frontend CI, Documentation CI y SonarCloud Quality Gate.<BR ALIGN="LEFT"/>- La política incluye administradores: sin bypass, force push ni eliminación.<BR ALIGN="LEFT"/>- v1.0 publicada el 16/11; documentación posterior integrada por PR #39.<BR ALIGN="LEFT"/>- El propietario dispensó la revisión de Julián: no acredita firma ni aceptación docente.<BR ALIGN="LEFT"/>- Entrega manual; no hay despliegue continuo ni disponibilidad futura garantizada de AWS.<BR ALIGN="LEFT"/>- Plan alterno MARKET-73 documentado en DESPLIEGUE-EC2.md; ensayo futuro no acreditado.<BR ALIGN="LEFT"/>>];
   pub -> nota [style=invis];
 }
