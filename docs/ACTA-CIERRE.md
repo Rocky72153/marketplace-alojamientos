@@ -63,7 +63,7 @@ Además de lo que pide la guía, se integró Stripe en modo de prueba (sandbox) 
 - La recuperación de contraseña es simulada (no hay proveedor de correo).
 - La protección de las ramas `main` y `develop` no está activada.
 - No hubo sesiones de validación con usuarios reales (sección 11.5 del prototipo).
-- La cuenta de AWS de la demostración vence el 23/11/2026; mantenerla hasta el 26/11 está a cargo de Juan Sebastián Morales Forero (MARKET-73).
+- La cuenta de AWS de la demostración vence el 23/11/2026. El [plan alterno local](DESPLIEGUE-EC2.md#plan-alterno-para-la-entrega-del-26112026--market-73), a cargo de Juan Sebastián Morales Forero, cubre el criterio documental de MARKET-73 sin asegurar una disponibilidad futura que aún no se ha comprobado.
 
 ## Lecciones aprendidas
 

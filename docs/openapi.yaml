@@ -1,0 +1,3170 @@
+openapi: 3.1.0
+info:
+  title: Marketplace de Alojamientos — API implementada
+  version: 1.0.0
+  description: Contrato de los controladores Java actuales, no del diseño histórico de Entrega 1. Prefijo
+    /api incluido en paths. Solo pagos de prueba; sin correo real. Las rutas Stripe se registran condicionalmente
+    en STRIPE_TEST. Se documentan roles y propiedad además del JWT; OpenAPI no sustituye esas comprobaciones
+    del servidor. X-Correlation-ID lo genera el backend por solicitud, no se confía en un valor entrante.
+    Todos los retornos de creación son 200 salvo reseña (201); el webhook devuelve 200 sin cuerpo. El
+    proxy puede responder antes de llegar al backend.
+servers:
+- url: http://localhost:8080
+  description: Backend local; requiere base de datos y configuración de prueba.
+- url: /
+  description: Mismo origen del frontend cuando el proxy publica /api. El webhook público puede estar
+    bloqueado.
+tags:
+- name: Sistema
+- name: Identidad
+- name: Perfil
+- name: Alojamientos
+- name: Disponibilidad
+- name: Reservas
+- name: Pagos
+- name: Notificaciones
+- name: Reseñas
+- name: Administración
+- name: Reportes
+security:
+- BearerAuth: []
+paths:
+  /api/health:
+    get:
+      operationId: getHealth
+      tags:
+      - Sistema
+      summary: Estado del servicio
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '500':
+          $ref: '#/components/responses/Error500'
+      security: []
+      x-source-controller: api/HealthController.java
+  /api/payments/config:
+    get:
+      operationId: getPaymentConfig
+      tags:
+      - Pagos
+      summary: Consultar modo de pago
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentConfig'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: No devuelve claves ni credenciales.
+      security: []
+      x-source-controller: booking/PaymentConfigurationController.java
+  /api/auth/register:
+    post:
+      operationId: registerAccount
+      tags:
+      - Identidad
+      summary: Registrar una cuenta y emitir sesión
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Sin role se crea GUEST; HOST se permite en registro público. ADMIN requiere clave de
+        arranque válida. No se devuelve passwordHash.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      parameters:
+      - name: X-Admin-Bootstrap
+        in: header
+        required: false
+        schema:
+          type: string
+        description: 'Solo obligatorio para ADMIN: debe coincidir con la clave de arranque configurada.
+          Nunca incluir su valor en documentación ni logs.'
+      security: []
+      x-source-controller: auth/AuthController.java
+  /api/auth/login:
+    post:
+      operationId: login
+      tags:
+      - Identidad
+      summary: Iniciar sesión
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Correo normalizado a minúsculas; cuenta activa y contraseña válida. El mensaje de rechazo
+        no revela si existe una cuenta.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      security: []
+      x-source-controller: auth/AuthController.java
+  /api/auth/recovery:
+    post:
+      operationId: requestSimulatedRecovery
+      tags:
+      - Identidad
+      summary: Solicitar recuperación simulada
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: 'Confirmación neutral: no envía correo ni cambia la contraseña.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoveryRequest'
+      security: []
+      x-source-controller: auth/AuthController.java
+  /api/profile/me:
+    get:
+      operationId: getOwnProfile
+      tags:
+      - Perfil
+      summary: Consultar perfil propio
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: La identidad viene del JWT; no admite un ID de otro usuario.
+      x-source-controller: profile/ProfileController.java
+    patch:
+      operationId: updateOwnProfile
+      tags:
+      - Perfil
+      summary: Actualizar datos del perfil propio
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      x-source-controller: profile/ProfileController.java
+    delete:
+      operationId: deactivateOwnAccount
+      tags:
+      - Perfil
+      summary: Desactivar la cuenta propia
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: No elimina físicamente la cuenta. Invalida su uso autenticado y señala reservas futuras
+        del anfitrión para revisión manual.
+      x-source-controller: profile/ProfileController.java
+  /api/listings:
+    get:
+      operationId: searchListings
+      tags:
+      - Alojamientos
+      summary: Buscar anuncios activos
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Sin paginación de servidor. checkIn/checkOut se proporcionan juntos y salida>llegada;
+        minPrice≤maxPrice. Con fechas se exige cobertura disponible sin bloqueos/reservas. Solo anuncios
+        activos de anfitriones activos.
+      parameters:
+      - name: city
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Coincidencia parcial tolerante a tildes; omitir para cualquier ciudad.
+      - name: checkIn
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: checkOut
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: guests
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: minPrice
+        in: query
+        required: false
+        schema:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+          minimum: 0
+      - name: maxPrice
+        in: query
+        required: false
+        schema:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+          minimum: 0
+      - name: amenityIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        style: form
+        explode: true
+      security: []
+      x-source-controller: listing/ListingController.java
+    post:
+      operationId: createListing
+      tags:
+      - Alojamientos
+      summary: Crear publicación
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listing'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListingInput'
+      x-required-roles:
+      - HOST
+      x-source-controller: listing/ListingController.java
+  /api/listings/cities:
+    get:
+      operationId: suggestCities
+      tags:
+      - Alojamientos
+      summary: Sugerir ciudades
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                maxItems: 10
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Hasta diez opciones; consulta vacía usa los destinos preferidos que existan en el catálogo
+        activo.
+      parameters:
+      - name: query
+        in: query
+        required: false
+        schema:
+          type: string
+      security: []
+      x-source-controller: listing/ListingController.java
+  /api/listings/suggestions:
+    get:
+      operationId: suggestListings
+      tags:
+      - Alojamientos
+      summary: Sugerencias públicas de alojamientos
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestionsResponse'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Hasta ocho publicaciones activas recientes. No garantiza disponibilidad para fechas
+        concretas.
+      security: []
+      x-source-controller: listing/ListingSuggestionController.java
+  /api/listings/{listingId}:
+    get:
+      operationId: getListing
+      tags:
+      - Alojamientos
+      summary: Consultar detalle público o propio
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listing'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: 'Anónimo: anuncio activo de anfitrión activo. JWT de propietario o ADMIN permite consultar
+        anuncios no públicos. 404 oculta los demás.'
+      security:
+      - {}
+      - BearerAuth: []
+      x-source-controller: listing/ListingController.java
+      parameters:
+      - name: listingId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateListing
+      tags:
+      - Alojamientos
+      summary: Actualizar publicación propia o administrada
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listing'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Propietario o ADMIN; una publicación BLOCKED no se puede editar. Todos los campos mínimos
+        de ListingInput son obligatorios aun usando PATCH.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListingInput'
+      x-required-roles:
+      - HOST
+      - ADMIN
+      x-source-controller: listing/ListingController.java
+      parameters:
+      - name: listingId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/listings/{listingId}/state:
+    patch:
+      operationId: changeListingState
+      tags:
+      - Alojamientos
+      summary: Cambiar estado de publicación
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listing'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Propietario o ADMIN. BLOCKED exige ADMIN y motivo; conserva las reservas futuras para
+        revisión manual.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeStateRequest'
+      x-required-roles:
+      - HOST
+      - ADMIN
+      x-source-controller: listing/ListingController.java
+      parameters:
+      - name: listingId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/listings/{listingId}/availability:
+    get:
+      operationId: getAvailability
+      tags:
+      - Disponibilidad
+      summary: Consultar períodos disponibles o bloqueados
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AvailabilityPeriod'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Misma visibilidad que el detalle. from/to se omiten ambos o se indican juntos; devuelve
+        períodos que se solapan con el intervalo.
+      parameters:
+      - name: listingId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: Inicio del intervalo consultado; debe acompañar to.
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: Fin exclusivo; debe ser posterior a from.
+      security:
+      - {}
+      - BearerAuth: []
+      x-source-controller: listing/ListingController.java
+    put:
+      operationId: replaceAvailability
+      tags:
+      - Disponibilidad
+      summary: Reemplazar períodos editables
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AvailabilityPeriod'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Solo propietario o ADMIN. Protege períodos ya reservados y rechaza intervalos inválidos
+        o solapados.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilityRequest'
+      x-required-roles:
+      - HOST
+      - ADMIN
+      x-source-controller: listing/ListingController.java
+      parameters:
+      - name: listingId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/host/listings:
+    get:
+      operationId: getHostListings
+      tags:
+      - Alojamientos
+      summary: Listar publicaciones propias del anfitrión
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostListingPage'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      parameters:
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/PageSize'
+      x-required-roles:
+      - HOST
+      x-source-controller: listing/HostListingController.java
+  /api/listings/{listingId}/quotes:
+    post:
+      operationId: quoteListing
+      tags:
+      - Reservas
+      summary: Calcular cotización pública
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: No confirma ni bloquea una reserva. Recalcula importes y comprueba disponibilidad,
+        capacidad, fechas y extras.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuoteRequest'
+      security: []
+      x-source-controller: booking/ReservationController.java
+      parameters:
+      - name: listingId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/reservations:
+    post:
+      operationId: reserveWithSimulator
+      tags:
+      - Reservas
+      summary: Confirmar reserva con simulador interno
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Usar solo SIMULATED_TEST. En STRIPE_TEST, una solicitud nueva falla con PAYMENT_MODE_MISMATCH
+        (409); usar Checkout. La misma clave y datos devuelve la reserva previa; otra combinación devuelve
+        409. Revalida cuenta, anuncio y calendario bajo bloqueo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationRequest'
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      x-required-roles:
+      - GUEST
+      x-payment-mode: SIMULATED_TEST
+      x-source-controller: booking/ReservationController.java
+    get:
+      operationId: getOwnReservations
+      tags:
+      - Reservas
+      summary: Consultar historial propio
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reservation'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Solo reservas del huésped autenticado. Actualiza estancias completadas cuando checkOut
+        es anterior a la fecha actual de Bogotá.
+      x-required-roles:
+      - GUEST
+      x-source-controller: booking/ReservationController.java
+  /api/reservations/{reservationId}:
+    get:
+      operationId: getOwnReservation
+      tags:
+      - Reservas
+      summary: Consultar reserva propia
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Una reserva de otro huésped responde 404.
+      x-required-roles:
+      - GUEST
+      x-source-controller: booking/ReservationController.java
+      parameters:
+      - name: reservationId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/reservations/{reservationId}/cancel:
+    post:
+      operationId: cancelOwnReservation
+      tags:
+      - Reservas
+      summary: Cancelar reserva propia
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Reserva CONFIRMED con llegada posterior a hoy en Bogotá. Aplica la política guardada,
+        registra cancelación y libera calendario. Si hay intento Stripe se solicita reembolso de prueba
+        asíncrono; su estado posterior se consulta en el historial. No cancelar estancias comenzadas o
+        completadas.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      x-required-roles:
+      - GUEST
+      x-source-controller: booking/ReservationController.java
+      parameters:
+      - name: reservationId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/stripe-test/checkouts:
+    post:
+      operationId: createTestCheckout
+      tags:
+      - Pagos
+      summary: Crear o recuperar Checkout de prueba
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Checkout'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Solo se registra el controlador en STRIPE_TEST. Requiere cuenta activa, disponibilidad
+        y clave idempotente. Crea reserva PENDING_PAYMENT y bloquea su período. Pago confirmado exclusivamente
+        por evento firmado; expira aproximadamente una hora después. Los fallos transitorios permiten
+        reintentar con la misma clave.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationRequest'
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      x-required-roles:
+      - GUEST
+      x-payment-mode: STRIPE_TEST
+      x-source-controller: booking/StripeCheckoutController.java
+  /api/stripe-test/checkouts/{id}:
+    get:
+      operationId: getOwnTestCheckout
+      tags:
+      - Pagos
+      summary: Consultar intento de pago propio
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Checkout'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Solo STRIPE_TEST. Un intento de otro huésped responde 404; checkoutUrl solo existe
+        en estado OPEN.
+      x-required-roles:
+      - GUEST
+      x-payment-mode: STRIPE_TEST
+      x-source-controller: booking/StripeCheckoutController.java
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/stripe-test/webhook:
+    post:
+      operationId: receiveTestStripeWebhook
+      tags:
+      - Pagos
+      summary: Recibir evento Stripe de prueba firmado
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '404':
+          description: El proxy de la demostración HTTP bloquea esta ruta pública; también puede no estar
+            registrada fuera de STRIPE_TEST. Un 404 del proxy no garantiza ApiError ni X-Correlation-ID.
+          content:
+            text/html:
+              schema:
+                type: string
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      description: 'Solo STRIPE_TEST. El cuerpo no se debe modificar tras recibirlo. No requiere JWT;
+        sí firma válida y modo test. Sesión, importe y moneda se contrastan con el intento; procesamiento
+        idempotente por eventId. En la demostración HTTP el proxy Nginx devuelve 404 al acceso público:
+        Stripe CLI entrega a loopback del backend. Esta ruta describe el controlador interno y no promete
+        exposición pública.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StripeWebhookEvent'
+      parameters:
+      - name: Stripe-Signature
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Firma HMAC verificada por el SDK sobre los bytes originales del cuerpo.
+      security:
+      - StripeSignature: []
+      x-payment-mode: STRIPE_TEST
+      x-source-controller: booking/StripeCheckoutController.java
+  /api/notifications:
+    get:
+      operationId: getOwnNotifications
+      tags:
+      - Notificaciones
+      summary: Consultar bandeja propia
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      x-source-controller: notification/NotificationController.java
+  /api/notifications/{notificationId}:
+    get:
+      operationId: getOwnNotification
+      tags:
+      - Notificaciones
+      summary: Consultar notificación propia
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Notificación ajena o inexistente responde 404.
+      x-source-controller: notification/NotificationController.java
+      parameters:
+      - name: notificationId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/notifications/{notificationId}/read:
+    patch:
+      operationId: markOwnNotificationRead
+      tags:
+      - Notificaciones
+      summary: Marcar notificación propia como leída
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      x-source-controller: notification/NotificationController.java
+      parameters:
+      - name: notificationId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/listings/{listingId}/reviews:
+    get:
+      operationId: getVisibleReviews
+      tags:
+      - Reseñas
+      summary: Consultar reseñas públicas visibles
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Solo anuncio activo de anfitrión activo. Excluye reseñas ocultas.
+      security: []
+      x-source-controller: review/ReviewController.java
+      parameters:
+      - name: listingId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: createReview
+      tags:
+      - Reseñas
+      summary: Reseñar una estancia completada
+      responses:
+        '201':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: bookingId debe ser una reserva COMPLETED propia y de ese alojamiento. Una sola reseña
+        por reserva; las estancias se completan al haber pasado la fecha de salida.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewRequest'
+      x-required-roles:
+      - GUEST
+      x-source-controller: review/ReviewController.java
+      parameters:
+      - name: listingId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/admin/reviews:
+    get:
+      operationId: getModerationReviews
+      tags:
+      - Administración
+      summary: Consultar reseñas para moderación
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModerationReview'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      x-required-roles:
+      - ADMIN
+      x-source-controller: review/ReviewController.java
+  /api/admin/reviews/{reviewId}/hide:
+    post:
+      operationId: hideReview
+      tags:
+      - Administración
+      summary: Ocultar reseña con motivo
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModerationReview'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: No elimina la reseña; registra actor, motivo y auditoría. Si ya estaba oculta devuelve
+        409.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      x-required-roles:
+      - ADMIN
+      x-source-controller: review/ReviewController.java
+      parameters:
+      - name: reviewId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/admin/users:
+    get:
+      operationId: getAdminUsers
+      tags:
+      - Administración
+      summary: Consultar cuentas
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserPage'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      parameters:
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/PageSize'
+      x-required-roles:
+      - ADMIN
+      x-source-controller: admin/ModerationController.java
+  /api/admin/listings:
+    get:
+      operationId: getAdminListings
+      tags:
+      - Administración
+      summary: Consultar publicaciones
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminListingPage'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      parameters:
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/PageSize'
+      x-required-roles:
+      - ADMIN
+      x-source-controller: admin/ModerationController.java
+  /api/admin/audit:
+    get:
+      operationId: getAuditPage
+      tags:
+      - Administración
+      summary: Consultar auditoría
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditPage'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      parameters:
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/PageSize'
+      x-required-roles:
+      - ADMIN
+      x-source-controller: admin/ModerationController.java
+  /api/admin/users/{id}/restrict:
+    post:
+      operationId: restrictAccount
+      tags:
+      - Administración
+      summary: Restringir una cuenta con motivo
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: La cuenta debe estar ACTIVE; impide restringirse a sí mismo. Conserva reservas futuras
+        de anfitrión y las señala para revisión manual.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      x-required-roles:
+      - ADMIN
+      x-source-controller: admin/ModerationController.java
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/admin/audit/{id}:
+    get:
+      operationId: getAuditEvent
+      tags:
+      - Administración
+      summary: Consultar un evento de auditoría
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEvent'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      x-required-roles:
+      - ADMIN
+      x-source-controller: admin/ModerationController.java
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/admin/reservations/manual-review:
+    get:
+      operationId: getManualReviews
+      tags:
+      - Administración
+      summary: Consultar reservas señaladas para revisión
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ManualReview'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      x-required-roles:
+      - ADMIN
+      x-source-controller: admin/ModerationController.java
+  /api/admin/reservations/{id}/resolve-review:
+    post:
+      operationId: resolveManualReview
+      tags:
+      - Administración
+      summary: Resolver una marca de revisión manual
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManualReview'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Elimina la marca y registra el motivo. No confirma, cancela ni reembolsa por sí misma.
+        409 si la reserva no tenía marca.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      x-required-roles:
+      - ADMIN
+      x-source-controller: admin/ModerationController.java
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/admin/dashboard:
+    get:
+      operationId: getDashboard
+      tags:
+      - Reportes
+      summary: Consultar indicadores administrativos
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Reservas filtradas por fecha de creación inclusiva en Bogotá; from≤to y años 1..9998.
+        Usuarios/publicaciones son totales actuales al corte. Ingresos estimados y demanda incluyen CONFIRMED/COMPLETED,
+        no CANCELLED, y no son recaudo real. Devuelve sus definiciones de cálculo.
+      parameters:
+      - $ref: '#/components/parameters/FromDate'
+      - $ref: '#/components/parameters/ToDate'
+      x-required-roles:
+      - ADMIN
+      x-source-controller: reporting/ReportingController.java
+  /api/admin/reports:
+    get:
+      operationId: exportReport
+      tags:
+      - Reportes
+      summary: Exportar indicadores PDF o XLSX
+      responses:
+        '200':
+          description: Operación completada.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+            Content-Disposition:
+              description: attachment; filename="reporte-marketplace.pdf" o "reporte-marketplace.xlsx".
+              schema:
+                type: string
+            Cache-Control:
+              schema:
+                type: string
+                enum:
+                - no-store
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '500':
+          $ref: '#/components/responses/Error500'
+      description: Mismos datos, período y definiciones que dashboard. Audita solicitante, resultado y
+        fecha. Solo PDF/XLSX; errores de fecha/formato/generación no se registran como éxito.
+      parameters:
+      - name: format
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - PDF
+          - XLSX
+        description: Mayúsculas exactas. Aunque el parámetro Java es opcional, omitirlo produce 400.
+      - $ref: '#/components/parameters/FromDate'
+      - $ref: '#/components/parameters/ToDate'
+      x-required-roles:
+      - ADMIN
+      x-source-controller: reporting/ReportingController.java
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token emitido por register/login; se vuelve a comprobar el estado de la cuenta. No
+        usar datos reales en una demostración HTTP.
+    StripeSignature:
+      type: apiKey
+      in: header
+      name: Stripe-Signature
+      description: Representación OpenAPI del requisito de cabecera, no una clave API estática. El SDK
+        verifica la firma HMAC del cuerpo con el secreto de webhook.
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Clave lógica no vacía, recortada y de hasta 100 caracteres. Reutilizarla para reintentar
+        la misma solicitud; otros datos con la misma clave producen 409.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 100
+        pattern: \S
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+    PageSize:
+      name: size
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 20
+    FromDate:
+      name: from
+      in: query
+      required: false
+      description: Fecha inicial inclusiva en horario de Bogotá; omitir para no limitar.
+      schema:
+        type: string
+        format: date
+    ToDate:
+      name: to
+      in: query
+      required: false
+      description: Fecha final inclusiva en horario de Bogotá; omitir para no limitar.
+      schema:
+        type: string
+        format: date
+  responses:
+    Error400:
+      description: Entrada inválida o incumplimiento de reglas de negocio.
+      headers:
+        X-Correlation-ID:
+          $ref: '#/components/headers/CorrelationId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Error401:
+      description: Sesión ausente, inválida, desactivada o restringida.
+      headers:
+        X-Correlation-ID:
+          $ref: '#/components/headers/CorrelationId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Error403:
+      description: Rol o propiedad insuficientes para esta operación.
+      headers:
+        X-Correlation-ID:
+          $ref: '#/components/headers/CorrelationId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Error404:
+      description: Recurso no encontrado o no visible para la cuenta.
+      headers:
+        X-Correlation-ID:
+          $ref: '#/components/headers/CorrelationId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Error409:
+      description: Conflicto de disponibilidad, idempotencia, duplicación o estado.
+      headers:
+        X-Correlation-ID:
+          $ref: '#/components/headers/CorrelationId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Error500:
+      description: Error interno; respuesta neutral sin detalles privados.
+      headers:
+        X-Correlation-ID:
+          $ref: '#/components/headers/CorrelationId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Error503:
+      description: Proveedor de prueba/configuración no disponible o evento pendiente de conciliación.
+      headers:
+        X-Correlation-ID:
+          $ref: '#/components/headers/CorrelationId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+  schemas:
+    AccountRole:
+      type: string
+      enum:
+      - GUEST
+      - HOST
+      - ADMIN
+    AccountState:
+      type: string
+      enum:
+      - ACTIVE
+      - DEACTIVATED
+      - RESTRICTED
+    ListingStatus:
+      type: string
+      enum:
+      - DRAFT
+      - PENDING_REVIEW
+      - ACTIVE
+      - PAUSED
+      - BLOCKED
+    AvailabilityType:
+      type: string
+      enum:
+      - AVAILABLE
+      - BLOCKED
+      - RESERVED
+    ReservationStatus:
+      type: string
+      enum:
+      - PENDING_PAYMENT
+      - CONFIRMED
+      - CANCELLED
+      - COMPLETED
+    PaymentMode:
+      type: string
+      enum:
+      - SIMULATED_TEST
+      - STRIPE_TEST
+    CheckoutStatus:
+      type: string
+      enum:
+      - PREPARING
+      - OPEN
+      - PAID
+      - EXPIRED
+      - REFUND_PENDING
+      - REFUND_FAILED
+      - REFUND_REVIEW
+      - REFUNDED
+      - CANCELLED
+    PaymentStatus:
+      type: string
+      enum:
+      - TEST_APPROVED
+      - TEST_PENDING
+      - TEST_EXPIRED
+      - TEST_REFUNDED
+      - TEST_NO_REFUND
+      - TEST_REFUND_PENDING
+      - TEST_REFUND_FAILED
+      - TEST_REFUND_REVIEW
+    ApiError:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        correlationId:
+          type: string
+          format: uuid
+      required:
+      - code
+      - message
+      - correlationId
+      description: Error del backend; no contiene detalles internos ni credenciales.
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - UP
+        application:
+          type: string
+          enum:
+          - marketplace-alojamientos
+      required:
+      - status
+      - application
+    PaymentConfig:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/PaymentMode'
+      required:
+      - mode
+    RegisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          pattern: \S
+          maxLength: 120
+        email:
+          type: string
+          minLength: 1
+          pattern: \S
+          format: email
+          maxLength: 320
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          minLength: 8
+          maxLength: 72
+          pattern: \S
+          description: Además del límite de caracteres de Bean Validation, no puede superar 72 bytes UTF-8
+            (bcrypt).
+        role:
+          anyOf:
+          - allOf:
+            - $ref: '#/components/schemas/AccountRole'
+          - type: 'null'
+          default: GUEST
+      required:
+      - name
+      - email
+      - password
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          minLength: 1
+          pattern: \S
+          format: email
+          maxLength: 320
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          minLength: 1
+          maxLength: 72
+          pattern: \S
+          description: Además del límite de caracteres de Bean Validation, no puede superar 72 bytes UTF-8
+            (bcrypt).
+      required:
+      - email
+      - password
+    RecoveryRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          minLength: 1
+          pattern: \S
+          format: email
+          maxLength: 320
+      required:
+      - email
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    Profile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/AccountRole'
+        accountState:
+          $ref: '#/components/schemas/AccountState'
+        phone:
+          type:
+          - string
+          - 'null'
+        photoReference:
+          type:
+          - string
+          - 'null'
+      required:
+      - id
+      - name
+      - email
+      - role
+      - accountState
+      - phone
+      - photoReference
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+          enum:
+          - Bearer
+        expiresAt:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/Profile'
+      required:
+      - accessToken
+      - tokenType
+      - expiresAt
+      - user
+    UpdateProfileRequest:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 120
+        phone:
+          type:
+          - string
+          - 'null'
+          maxLength: 40
+        photoReference:
+          type:
+          - string
+          - 'null'
+          maxLength: 1000
+      required: []
+      description: Todos los campos son opcionales. null conserva el valor; una cadena vacía elimina teléfono/foto.
+        El nombre se recorta al guardar.
+    ExtraInput:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+          maxLength: 36
+          description: Si falta o está vacío, se genera un UUID textual.
+        name:
+          type: string
+          minLength: 1
+          pattern: \S
+          maxLength: 80
+        unitPrice:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+          minimum: 0.01
+          maximum: 9999999999.99
+          multipleOf: 0.01
+      required:
+      - name
+      - unitPrice
+    CancellationPolicyInput:
+      type: object
+      properties:
+        freeRefundDays:
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+        partialRefundDays:
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+        partialRefundPercentage:
+          type: number
+          description: Porcentaje de reembolso parcial, no importe monetario.
+          minimum: 0
+          maximum: 100
+          multipleOf: 0.01
+      required:
+      - partialRefundPercentage
+      description: freeRefundDays debe ser mayor o igual a partialRefundDays. Los enteros omitidos toman
+        cero en Java.
+    ListingInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          pattern: \S
+          maxLength: 160
+        description:
+          type: string
+          minLength: 1
+          pattern: \S
+          maxLength: 4000
+        city:
+          type: string
+          minLength: 1
+          pattern: \S
+          maxLength: 120
+        location:
+          type: string
+          minLength: 1
+          pattern: \S
+          maxLength: 240
+        type:
+          type: string
+          minLength: 1
+          pattern: \S
+          description: Texto de tipo; el backend no lo restringe a una enumeración.
+          maxLength: 50
+        capacity:
+          type: integer
+          format: int32
+          minimum: 1
+        pricePerNight:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+          minimum: 0.01
+          maximum: 9999999999.99
+          multipleOf: 0.01
+        amenityIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            minLength: 1
+            pattern: \S
+            maxLength: 80
+          uniqueItems: true
+        rules:
+          type:
+          - string
+          - 'null'
+          maxLength: 2000
+        imageReferences:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            minLength: 1
+            pattern: \S
+            maxLength: 1000
+          uniqueItems: true
+        extraOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ExtraInput'
+        cancellationPolicy:
+          anyOf:
+          - allOf:
+            - $ref: '#/components/schemas/CancellationPolicyInput'
+          - type: 'null'
+      required:
+      - title
+      - description
+      - city
+      - location
+      - type
+      - capacity
+      - pricePerNight
+      description: Crear inicia DRAFT. PATCH exige de nuevo los campos mínimos; no es un JSON Merge Patch.
+        En PATCH, extraOptions/cancellationPolicy ausentes conservan sus términos; extraOptions=[] los
+        elimina. Los identificadores de extras deben ser únicos.
+    ExtraOption:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        unitPrice:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+      required:
+      - id
+      - name
+      - unitPrice
+    CancellationPolicy:
+      type: object
+      properties:
+        freeRefundDays:
+          type: integer
+          format: int32
+        partialRefundDays:
+          type: integer
+          format: int32
+        partialRefundPercentage:
+          type: number
+          description: Porcentaje, no importe monetario.
+      required:
+      - freeRefundDays
+      - partialRefundDays
+      - partialRefundPercentage
+    Listing:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        hostId:
+          type: string
+          format: uuid
+        hostName:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        city:
+          type: string
+        location:
+          type: string
+        type:
+          type: string
+        capacity:
+          type: integer
+          format: int32
+        pricePerNight:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        amenityIds:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        rules:
+          type:
+          - string
+          - 'null'
+        imageReferences:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        status:
+          $ref: '#/components/schemas/ListingStatus'
+        extraOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtraOption'
+        cancellationPolicy:
+          $ref: '#/components/schemas/CancellationPolicy'
+      required:
+      - id
+      - hostId
+      - hostName
+      - title
+      - description
+      - city
+      - location
+      - type
+      - capacity
+      - pricePerNight
+      - amenityIds
+      - rules
+      - imageReferences
+      - status
+      - extraOptions
+      - cancellationPolicy
+    SearchResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Listing'
+        total:
+          type: integer
+          format: int32
+          minimum: 0
+      required:
+      - items
+      - total
+      description: Resultados completos sin paginación de servidor. total es el tamaño de items.
+    ListingSuggestion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        city:
+          type: string
+        type:
+          type: string
+        capacity:
+          type: integer
+          format: int32
+        pricePerNight:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+      required:
+      - id
+      - title
+      - city
+      - type
+      - capacity
+      - pricePerNight
+    SuggestionsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListingSuggestion'
+          maxItems: 8
+      required:
+      - items
+    ChangeStateRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ListingStatus'
+        reason:
+          type:
+          - string
+          - 'null'
+          maxLength: 1000
+      required:
+      - status
+      description: Bloquear exige ADMIN y motivo no vacío. Un propietario puede DRAFT→ACTIVE/PENDING_REVIEW,
+        ACTIVE→PAUSED, PAUSED→ACTIVE. ADMIN puede cambiar a un estado distinto.
+    AvailabilityInput:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        type:
+          type: string
+          enum:
+          - AVAILABLE
+          - BLOCKED
+      required:
+      - startDate
+      - endDate
+      - type
+      description: Intervalo [startDate,endDate); endDate debe ser posterior. RESERVED no se admite en
+        esta operación, ni siquiera para ADMIN; las reservas generan esos períodos.
+    AvailabilityRequest:
+      type: object
+      properties:
+        periods:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityInput'
+      required:
+      - periods
+      description: '[] vacía períodos editables. Se rechazan solapamientos y conflictos con reservas existentes.'
+    AvailabilityPeriod:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        type:
+          $ref: '#/components/schemas/AvailabilityType'
+      required:
+      - id
+      - startDate
+      - endDate
+      - type
+    ExtraQuantity:
+      type: object
+      properties:
+        extraId:
+          type: string
+          minLength: 1
+          pattern: \S
+          maxLength: 36
+        quantity:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 99
+      required:
+      - extraId
+      - quantity
+    QuoteRequest:
+      type: object
+      properties:
+        checkIn:
+          type: string
+          format: date
+        checkOut:
+          type: string
+          format: date
+        guests:
+          type: integer
+          format: int32
+          minimum: 1
+        extras:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ExtraQuantity'
+      required:
+      - checkIn
+      - checkOut
+      - guests
+      description: checkIn no puede estar en el pasado según Bogotá; checkOut es posterior y la estadía
+        no supera 365 noches. guests no supera capacidad. Extras existentes y sin IDs repetidos. Importes
+        recalculados por el servidor; no se recibe total ni quoteId.
+    ReservationRequest:
+      type: object
+      properties:
+        listingId:
+          type: string
+          format: uuid
+        checkIn:
+          type: string
+          format: date
+        checkOut:
+          type: string
+          format: date
+        guests:
+          type: integer
+          format: int32
+          minimum: 1
+        extras:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ExtraQuantity'
+      required:
+      - listingId
+      - checkIn
+      - checkOut
+      - guests
+      description: checkIn no puede estar en el pasado según Bogotá; checkOut es posterior y la estadía
+        no supera 365 noches. guests no supera capacidad. Extras existentes y sin IDs repetidos. Importes
+        recalculados por el servidor; no se recibe total ni quoteId.
+    ReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          pattern: \S
+          maxLength: 1000
+      required:
+      - reason
+    ExtraLine:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+        unitPrice:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        lineTotal:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+      required:
+      - id
+      - name
+      - quantity
+      - unitPrice
+      - lineTotal
+    ReservationExtra:
+      type: object
+      properties:
+        extraId:
+          type: string
+        name:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+        unitPrice:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        lineTotal:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+      required:
+      - extraId
+      - name
+      - quantity
+      - unitPrice
+      - lineTotal
+    Quote:
+      type: object
+      properties:
+        listingId:
+          type: string
+          format: uuid
+        listingTitle:
+          type: string
+        checkIn:
+          type: string
+          format: date
+        checkOut:
+          type: string
+          format: date
+        nights:
+          type: integer
+          format: int32
+        guests:
+          type: integer
+          format: int32
+        pricePerNight:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        nightlySubtotal:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        cleaningFee:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        serviceFee:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        discountAmount:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        extras:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtraLine'
+        extrasTotal:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        total:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        currency:
+          type: string
+          enum:
+          - COP
+        freeRefundDays:
+          type: integer
+          format: int32
+        partialRefundDays:
+          type: integer
+          format: int32
+        partialRefundPercentage:
+          type: number
+          description: Porcentaje, no importe monetario.
+      required:
+      - listingId
+      - listingTitle
+      - checkIn
+      - checkOut
+      - nights
+      - guests
+      - pricePerNight
+      - nightlySubtotal
+      - cleaningFee
+      - serviceFee
+      - discountAmount
+      - extras
+      - extrasTotal
+      - total
+      - currency
+      - freeRefundDays
+      - partialRefundDays
+      - partialRefundPercentage
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        listingId:
+          type: string
+          format: uuid
+        listingTitle:
+          type: string
+        checkIn:
+          type: string
+          format: date
+        checkOut:
+          type: string
+          format: date
+        nights:
+          type: integer
+          format: int32
+        guests:
+          type: integer
+          format: int32
+        pricePerNight:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        nightlySubtotal:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        cleaningFee:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        serviceFee:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        discountAmount:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        extrasTotal:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        total:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        currency:
+          type: string
+          enum:
+          - COP
+        extras:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReservationExtra'
+        paymentStatus:
+          $ref: '#/components/schemas/PaymentStatus'
+        status:
+          $ref: '#/components/schemas/ReservationStatus'
+        createdAt:
+          type: string
+          format: date-time
+        cancellationReason:
+          type:
+          - string
+          - 'null'
+        cancelledAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        refundPercentage:
+          type:
+          - number
+          - 'null'
+          description: Porcentaje de devolución; null antes de cancelar.
+        refundAmount:
+          type:
+          - number
+          - 'null'
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        reviewed:
+          type: boolean
+      required:
+      - id
+      - listingId
+      - listingTitle
+      - checkIn
+      - checkOut
+      - nights
+      - guests
+      - pricePerNight
+      - nightlySubtotal
+      - cleaningFee
+      - serviceFee
+      - discountAmount
+      - extrasTotal
+      - total
+      - currency
+      - extras
+      - paymentStatus
+      - status
+      - createdAt
+      - cancellationReason
+      - cancelledAt
+      - refundPercentage
+      - refundAmount
+      - reviewed
+      description: Reserva propia con desglose aceptado y estado de pago de prueba. El historial no expone
+        huéspedes ajenos ni referencias privadas del proveedor.
+    Checkout:
+      type: object
+      properties:
+        attemptId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/CheckoutStatus'
+        checkoutUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+          description: URL completa HTTPS de checkout.stripe.com solo cuando status=OPEN. Conservar query
+            y fragmento sin recortarlos.
+        expiresAt:
+          type: string
+          format: date-time
+      required:
+      - attemptId
+      - status
+      - checkoutUrl
+      - expiresAt
+      description: La reserva solo se confirma tras un evento firmado válido. El retorno del navegador
+        no acredita el pago. PAID confirma; otros estados requieren seguir la respuesta del servidor.
+    StripeWebhookEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        livemode:
+          type: boolean
+          enum:
+          - false
+        data:
+          type: object
+          properties:
+            object:
+              type: object
+              additionalProperties: true
+          additionalProperties: true
+      description: 'Evento original de Stripe, con su cuerpo sin modificar y firma válida. Esquema deliberadamente
+        abierto: el SDK verifica firma, modo test y los campos de Checkout que maneja; no define aquí
+        todos los tipos/versiones externos. Se procesan completed, async_payment_succeeded, async_payment_failed
+        y expired; otros tipos válidos se ignoran.'
+      additionalProperties: true
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        message:
+          type: string
+        referenceType:
+          type: string
+        referenceId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        readAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      required:
+      - id
+      - type
+      - message
+      - referenceType
+      - referenceId
+      - createdAt
+      - readAt
+    CreateReviewRequest:
+      type: object
+      properties:
+        bookingId:
+          type: string
+          format: uuid
+        rating:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+        content:
+          type: string
+          minLength: 1
+          pattern: \S
+          maxLength: 5000
+      required:
+      - bookingId
+      - rating
+      - content
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        bookingId:
+          type: string
+          format: uuid
+        guestDisplayName:
+          type: string
+        rating:
+          type: integer
+          format: int32
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - bookingId
+      - guestDisplayName
+      - rating
+      - content
+      - createdAt
+    ModerationReview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        bookingId:
+          type: string
+          format: uuid
+        listingId:
+          type: string
+          format: uuid
+        listingTitle:
+          type: string
+        guestDisplayName:
+          type: string
+        rating:
+          type: integer
+          format: int32
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        hidden:
+          type: boolean
+        hiddenAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        hiddenBy:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        hiddenReason:
+          type:
+          - string
+          - 'null'
+      required:
+      - id
+      - bookingId
+      - listingId
+      - listingTitle
+      - guestDisplayName
+      - rating
+      - content
+      - createdAt
+      - hidden
+      - hiddenAt
+      - hiddenBy
+      - hiddenReason
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/AccountRole'
+        accountState:
+          $ref: '#/components/schemas/AccountState'
+      required:
+      - id
+      - name
+      - email
+      - role
+      - accountState
+    AdminListing:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        city:
+          type: string
+        status:
+          $ref: '#/components/schemas/ListingStatus'
+      required:
+      - id
+      - title
+      - city
+      - status
+    AuditEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        eventType:
+          type: string
+        actorId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        entityType:
+          type:
+          - string
+          - 'null'
+        entityId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        result:
+          type: string
+        reason:
+          type:
+          - string
+          - 'null'
+        occurredAt:
+          type: string
+          format: date-time
+        correlationId:
+          type:
+          - string
+          - 'null'
+          description: Eventos anteriores a la correlación pueden no tener referencia.
+      required:
+      - id
+      - eventType
+      - actorId
+      - entityType
+      - entityId
+      - result
+      - reason
+      - occurredAt
+      - correlationId
+    ManualReview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        listingId:
+          type: string
+          format: uuid
+        listingTitle:
+          type: string
+        guestId:
+          type: string
+          format: uuid
+        checkIn:
+          type: string
+          format: date
+        checkOut:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/ReservationStatus'
+      required:
+      - id
+      - listingId
+      - listingTitle
+      - guestId
+      - checkIn
+      - checkOut
+      - status
+    CityDemand:
+      type: object
+      properties:
+        city:
+          type: string
+        bookings:
+          type: integer
+          format: int64
+      required:
+      - city
+      - bookings
+    DashboardDefinitions:
+      type: object
+      properties:
+        users:
+          type: string
+        activeListings:
+          type: string
+        bookings:
+          type: string
+        estimatedRevenue:
+          type: string
+        topCities:
+          type: string
+      required:
+      - users
+      - activeListings
+      - bookings
+      - estimatedRevenue
+      - topCities
+    Dashboard:
+      type: object
+      properties:
+        generatedAt:
+          type: string
+          format: date-time
+        from:
+          type:
+          - string
+          - 'null'
+          format: date
+        to:
+          type:
+          - string
+          - 'null'
+          format: date
+        timezone:
+          type: string
+          enum:
+          - America/Bogota
+        users:
+          type: integer
+          format: int64
+        activeListings:
+          type: integer
+          format: int64
+        bookingsByStatus:
+          type: object
+          properties:
+            PENDING_PAYMENT:
+              type: integer
+              format: int64
+              minimum: 0
+            CONFIRMED:
+              type: integer
+              format: int64
+              minimum: 0
+            CANCELLED:
+              type: integer
+              format: int64
+              minimum: 0
+            COMPLETED:
+              type: integer
+              format: int64
+              minimum: 0
+          additionalProperties:
+            type: integer
+            format: int64
+            minimum: 0
+        estimatedRevenue:
+          type: number
+          description: Importe decimal en COP; el servidor redondea a dos decimales.
+        currency:
+          type: string
+          enum:
+          - COP
+        topCities:
+          type: array
+          items:
+            $ref: '#/components/schemas/CityDemand'
+          maxItems: 10
+        definitions:
+          $ref: '#/components/schemas/DashboardDefinitions'
+      required:
+      - generatedAt
+      - from
+      - to
+      - timezone
+      - users
+      - activeListings
+      - bookingsByStatus
+      - estimatedRevenue
+      - currency
+      - topCities
+      - definitions
+    PageMetadata:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+          minimum: 0
+        totalPages:
+          type: integer
+          format: int32
+          minimum: 0
+        number:
+          type: integer
+          format: int32
+          minimum: 0
+        size:
+          type: integer
+          format: int32
+          minimum: 1
+        numberOfElements:
+          type: integer
+          format: int32
+          minimum: 0
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+      required:
+      - totalElements
+      - totalPages
+      - number
+      - size
+      description: Envoltorio Page de Spring Data; pueden aparecer metadatos adicionales sort/pageable.
+        Consumir content y los totales, no depender de campos internos adicionales.
+    HostListingPage:
+      allOf:
+      - $ref: '#/components/schemas/PageMetadata'
+      - type: object
+        required:
+        - content
+        properties:
+          content:
+            type: array
+            items:
+              $ref: '#/components/schemas/Listing'
+    AdminUserPage:
+      allOf:
+      - $ref: '#/components/schemas/PageMetadata'
+      - type: object
+        required:
+        - content
+        properties:
+          content:
+            type: array
+            items:
+              $ref: '#/components/schemas/AdminUser'
+    AdminListingPage:
+      allOf:
+      - $ref: '#/components/schemas/PageMetadata'
+      - type: object
+        required:
+        - content
+        properties:
+          content:
+            type: array
+            items:
+              $ref: '#/components/schemas/AdminListing'
+    AuditPage:
+      allOf:
+      - $ref: '#/components/schemas/PageMetadata'
+      - type: object
+        required:
+        - content
+        properties:
+          content:
+            type: array
+            items:
+              $ref: '#/components/schemas/AuditEvent'
+  headers:
+    CorrelationId:
+      description: UUID generado por el servidor para esta petición. La cabecera entrante no se reutiliza.
+      schema:
+        type: string
+        format: uuid
+x-source-root: backend/src/main/java/co/edu/unbosque/marketplace

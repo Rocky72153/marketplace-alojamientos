@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Valida la estructura de los artefactos versionados de la Entrega 1."""
+"""Valida los artefactos documentales históricos y el contrato de API vigente."""
 from __future__ import annotations
 
 import csv
@@ -47,19 +47,29 @@ def validate_required_files() -> None:
             fail(f"Falta artefacto obligatorio: docs/entrega-1/{relative}")
 
 
-def validate_openapi() -> None:
-    path = DOCS / "10-openapi.yaml"
+def resolve_local_ref(spec: dict, ref: str) -> object:
+    value: object = spec
+    for part in ref[2:].split("/"):
+        key = part.replace("~1", "/").replace("~0", "~")
+        if not isinstance(value, dict) or key not in value:
+            raise KeyError(ref)
+        value = value[key]
+    return value
+
+
+def validate_openapi_document(path: Path, version: str, current: bool = False) -> None:
+    label = str(path.relative_to(ROOT))
     try:
         spec = yaml.safe_load(path.read_text(encoding="utf-8"))
     except Exception as exc:  # YAML parsing errors should be visible in CI.
-        fail(f"OpenAPI YAML no se puede leer: {exc}")
+        fail(f"OpenAPI YAML no se puede leer ({label}): {exc}")
         return
 
     if not isinstance(spec, dict):
         fail("OpenAPI debe ser un objeto YAML de nivel superior")
         return
-    if spec.get("openapi") != "3.1.0":
-        fail("El contrato debe declarar openapi: 3.1.0")
+    if spec.get("openapi") != version:
+        fail(f"{label} debe declarar openapi: {version}")
     if not isinstance(spec.get("info"), dict) or not spec["info"].get("title"):
         fail("El contrato OpenAPI necesita info.title")
     paths = spec.get("paths")
@@ -67,7 +77,23 @@ def validate_openapi() -> None:
         fail("El contrato OpenAPI debe declarar al menos una ruta")
         return
 
+    def check_refs(value: object) -> None:
+        if isinstance(value, dict):
+            ref = value.get("$ref")
+            if isinstance(ref, str) and ref.startswith("#/"):
+                try:
+                    resolve_local_ref(spec, ref)
+                except KeyError:
+                    fail(f"Referencia OpenAPI inexistente en {label}: {ref}")
+            for child in value.values():
+                check_refs(child)
+        elif isinstance(value, list):
+            for child in value:
+                check_refs(child)
+
+    check_refs(spec)
     operation_ids: set[str] = set()
+    operations: set[tuple[str, str]] = set()
     supported_methods = {"get", "post", "put", "patch", "delete", "options", "head", "trace"}
     for route, item in paths.items():
         if not isinstance(item, dict):
@@ -79,6 +105,7 @@ def validate_openapi() -> None:
             if not isinstance(operation, dict):
                 fail(f"Operación inválida: {method.upper()} {route}")
                 continue
+            operations.add((method.upper(), route))
             operation_id = operation.get("operationId")
             if not operation_id:
                 fail(f"Falta operationId en {method.upper()} {route}")
@@ -115,7 +142,34 @@ def validate_openapi() -> None:
             for name in placeholders - declared:
                 fail(f"Parámetro de ruta {{{name}}} no declarado en {method.upper()} {route}")
 
-    print(f"OpenAPI: YAML válido; {len(paths)} rutas y {len(operation_ids)} operaciones inspeccionadas")
+    if current:
+        mappings: set[tuple[str, str]] = set()
+        source_root = ROOT / "backend" / "src" / "main" / "java"
+        method_pattern = re.compile(r'@(Get|Post|Put|Patch|Delete)Mapping(?:\(\s*"([^"\n]*)"\s*\))?\s')
+        for controller in source_root.rglob("*Controller.java"):
+            source = controller.read_text(encoding="utf-8")
+            class_annotations = source.split("public class", 1)[0]
+            base = re.search(r'@RequestMapping\(\s*"([^"\n]*)"\s*\)', class_annotations)
+            prefix = base.group(1) if base else ""
+            matches = list(method_pattern.finditer(source))
+            annotation_count = len(re.findall(r'@(Get|Post|Put|Patch|Delete)Mapping\b', source))
+            if len(matches) != annotation_count:
+                fail(f"Mapping no simple en {controller.relative_to(ROOT)}; ampliar el contraste OpenAPI")
+            for match in matches:
+                mappings.add((match.group(1).upper(), prefix + (match.group(2) or "")))
+        for method, route in sorted(mappings - operations):
+            fail(f"Falta mapping del backend en {label}: {method} {route}")
+        for method, route in sorted(operations - mappings):
+            fail(f"Operación sin mapping del backend en {label}: {method} {route}")
+        if not mappings:
+            fail("No se encontraron mappings REST para contrastar el contrato vigente")
+        print(f"OpenAPI vigente: {len(mappings)} mappings del backend contrastados")
+    print(f"OpenAPI ({label}): YAML válido; {len(paths)} rutas y {len(operation_ids)} operaciones inspeccionadas")
+
+
+def validate_openapi() -> None:
+    validate_openapi_document(DOCS / "10-openapi.yaml", "3.1.0")
+    validate_openapi_document(ROOT / "docs" / "openapi.yaml", "3.1.0", current=True)
 
 
 def validate_bpmn() -> None:
@@ -203,7 +257,7 @@ def main() -> int:
         for error in ERRORS:
             print(f"- {error}", file=sys.stderr)
         return 1
-    print("Validación documental de Entrega 1 completada correctamente.")
+    print("Validación documental y del contrato vigente completada correctamente.")
     return 0
 
 
