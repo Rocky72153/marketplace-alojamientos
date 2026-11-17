@@ -3,15 +3,24 @@ stateDiagram-v2
     [*] --> PREPARING : reserva PENDING_PAYMENT creada
     PREPARING --> OPEN : sesión cs_test creada en Stripe
     PREPARING --> EXPIRED : vence sin sesión
-    OPEN --> PAID : checkout.session.completed<br/>(paid, dentro del plazo)
-    OPEN --> EXPIRED : checkout.session.expired<br/>o tarea de mantenimiento
+    OPEN --> PAID : checkout.session.completed o<br/>checkout.session.async_payment_succeeded<br/>[paid, dentro del plazo y cuentas/publicación activas]
+    OPEN --> EXPIRED : checkout.session.expired o<br/>checkout.session.async_payment_failed<br/>o tarea de mantenimiento
+    OPEN --> EXPIRED : pago recibido fuera de plazo<br/>o cuentas/publicación no activas
     PAID --> REFUND_PENDING : huésped cancela con reembolso
     PAID --> CANCELLED : huésped cancela sin reembolso
-    EXPIRED --> REFUND_PENDING : pago recibido fuera de plazo
+    EXPIRED --> REFUND_PENDING : pago recibido tras expirar<br/>o rechazo de confirmación por plazo/estado
     REFUND_PENDING --> REFUNDED : Stripe confirma el reembolso
     REFUND_PENDING --> REFUND_FAILED : reembolso rechazado
-    REFUND_PENDING --> REFUND_REVIEW : respuesta incierta
+    REFUND_PENDING --> REFUND_REVIEW : respuesta incierta o fin del plazo<br/>seguro de reintento automático (23 h)
     REFUNDED --> [*]
     CANCELLED --> [*]
     REFUND_FAILED --> [*] : revisión manual del administrador
     REFUND_REVIEW --> [*] : revisión manual del administrador
+    note right of OPEN
+        checkout.session.completed con unpaid:
+        sigue OPEN y espera el resultado del pago.
+        Esperar un pago no crea otro estado persistido.
+        Los eventos duplicados no cambian el estado.
+        Si la sesión aún no está vinculada, se reintenta
+        el evento sin cambiar PREPARING.
+    end note
