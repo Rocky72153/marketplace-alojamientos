@@ -61,9 +61,9 @@ Además de lo que pide la guía, se integró Stripe en modo de prueba (sandbox) 
 
 - La demostración usa HTTP sin cifrado y solo admite datos ficticios.
 - La recuperación de contraseña es simulada (no hay proveedor de correo).
-- La protección de las ramas `main` y `develop` no está activada.
+- La configuración de protección de `main` y `develop` se consulta en GitHub Settings; el procedimiento reproducible está en `scripts/configure-github-branch-protection.sh`.
 - No hubo sesiones de validación con usuarios reales (sección 11.5 del prototipo).
-- La cuenta de AWS de la demostración vence el 23/11/2026; mantenerla hasta el 26/11 está a cargo de Juan Sebastián Morales Forero (MARKET-73).
+- La cuenta de AWS de la demostración vence el 23/11/2026. El [plan alterno local](DESPLIEGUE-EC2.md#plan-alterno-para-la-entrega-del-26112026--market-73), a cargo de Juan Sebastián Morales Forero, cubre el criterio documental de MARKET-73 sin asegurar una disponibilidad futura que aún no se ha comprobado.
 
 ## Lecciones aprendidas
 
@@ -93,3 +93,7 @@ Plan de respaldo: si la demostración en AWS no está disponible, ejecutar el si
 | Product Owner | Juan Sebastián Morales Forero | | |
 | Scrum Master | Julián David Aguilera Párraga | | |
 | Docente y patrocinador | Ing. David Esteban Rodríguez Gómez | | |
+
+## Decisión del propietario — 17/11/2026
+
+La revisión independiente de Julián se omite por instrucción del propietario. Se mantienen las revisiones técnicas registradas y las comprobaciones de CI. No se acredita una aprobación independiente o docente por esta excepción.

@@ -1,5 +1,20 @@
 # Guía de despliegue académico en una instancia EC2 existente
 
+## Plan alterno para la entrega del 26/11/2026 — MARKET-73
+
+La cuenta de demostración de AWS tiene vencimiento registrado para el 23/11/2026. Este plan permite presentar el proyecto desde el computador del equipo si el sitio deja de estar disponible; no promete que AWS continúe activo ni crea recursos de pago adicionales.
+
+1. Antes de la presentación, descargar la [release v1.0](https://github.com/Rocky72153/marketplace-alojamientos/releases/tag/v1.0), conservar el repositorio y preparar las herramientas de [LOCAL_SETUP.md](LOCAL_SETUP.md). Descargar también las dependencias de Maven/npm y la imagen de PostgreSQL mientras haya conexión.
+2. Ejecutar PostgreSQL, backend y frontend siguiendo esa guía. El catálogo colombiano se puede generar localmente sin AWS. Conservar el volumen de datos: detener con `docker compose stop db`, sin eliminarlo. El catálogo regenerado no restaura las reservas o cuentas creadas en el servidor; para conservarlas se necesita su respaldo privado verificado.
+3. Para demostrar el proveedor externo, usar el mismo sandbox de Stripe y mantener Internet disponible. Iniciar Stripe CLI con la cuenta sandbox y reenviar eventos a `http://127.0.0.1:8080/api/stripe-test/webhook`, como se describe en [STRIPE-PRUEBAS.md](STRIPE-PRUEBAS.md). La clave restringida y el secreto de firma deben configurarse privadamente en el equipo, sin depender de Parameter Store una vez vencida la cuenta AWS.
+4. En el backend local, configurar las propiedades reales `marketplace.payment.mode=STRIPE_TEST`, `marketplace.payment.stripe-test-key`, `marketplace.payment.stripe-webhook-secret`, `marketplace.payment.stripe-account-id` y `marketplace.payment.stripe-frontend-url=http://localhost:4173`. Se pueden suministrar en un archivo `.properties` privado, fuera del repositorio, mediante `--spring.config.additional-location=file:RUTA-PRIVADA/stripe-test.properties`. Los valores privados se toman del sandbox y de la sesión actual de Stripe CLI; no se incluyen en esta guía.
+5. Antes del ensayo, comprobar `/api/health` (`UP`), `/api/payments/config` (`STRIPE_TEST`), sugerencias y búsqueda; realizar el recorrido de reserva con tarjeta de prueba y comprobar el estado confirmado por el servidor. Si se reinicia Stripe CLI, revisar su secreto de firma. No usar tarjetas reales.
+6. Si no hay Internet, presentar las funciones locales en `SIMULATED_TEST` e identificar claramente ese modo como simulador. Para el proveedor externo, mostrar la [evidencia del pago y reembolso de prueba ya ejecutados](evidencias/stripe-sandbox-2026-11-14.json); no afirmar que se ejecutó un pago nuevo sin conexión. Las [capturas de interfaz](FRONTEND-MEJORAS.md) y el [guion de sustentación](ACTA-CIERRE.md) sirven como respaldo.
+
+Responsable del plan: Juan Sebastian Morales Forero. MARKET-73 admite como criterio alternativo un plan documentado; este apartado satisface ese criterio documental. El ensayo local del equipo y la disponibilidad futura del sitio se verifican en su momento, sin presentarlos aquí como hechos ya ocurridos.
+
+## Procedimiento del servidor
+
 Este procedimiento prepara la publicación en una instancia Ubuntu existente con Nginx y PostgreSQL en la misma máquina. Es una guía y sus plantillas: **su presencia no demuestra que el despliegue haya sido ejecutado ni validado**. No crea instancias, bases administradas, balanceadores ni otros recursos de AWS. Ejecuta cada paso solo tras comprobar el estado real del servidor y el dominio.
 
 ## Alcance y requisitos previos

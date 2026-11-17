@@ -1,5 +1,37 @@
 # Informe de preparación de la Entrega 2
 
+**Corte actual:** 16 de noviembre de 2026, hora de Bogotá. Este informe separa la evidencia técnica de la aceptación que corresponde al equipo y al docente.
+
+## Estado actual de la entrega
+
+| Parte | Estado comprobado y fuente |
+|---|---|
+| Versión identificable | [Release v1.0](https://github.com/Rocky72153/marketplace-alojamientos/releases/tag/v1.0), publicada el 16 de noviembre y asociada al commit `d073598`. La [matriz](TRACEABILITY_TEMPLATE.csv) relaciona el backlog con esa versión. |
+| Funciones del MVP | Identidad y perfiles, publicaciones, disponibilidad, búsqueda y detalle, cotización, reserva inmediata, historial, cancelación, notificaciones, reseñas, administración, indicadores, reportes y trazabilidad técnica están integrados. El detalle de rutas y permisos figura en [API implementada](API-IMPLEMENTADA.md). |
+| Contrato de API | El [OpenAPI vigente](openapi.yaml) y el [inventario de rutas](API-IMPLEMENTADA.md) documentan el backend implementado. El contrato de Entrega 1 se conserva como antecedente histórico. |
+| Proveedor externo de pagos | Stripe en modo de prueba está integrado; se documentaron Checkout idempotente, evento firmado, confirmación, cancelación y reembolso. La [evidencia del 14 de noviembre](evidencias/stripe-sandbox-2026-11-14.json) sustituye el antiguo pendiente de integración externa. |
+| Despliegue | La demostración está publicada en [moralesforero.lol](http://moralesforero.lol/) con datos ficticios. El [manual EC2](DESPLIEGUE-EC2.md) y la [guía Stripe](STRIPE-PRUEBAS.md) describen la configuración; la [guía local](LOCAL_SETUP.md) ofrece un entorno de respaldo. |
+| Frontend | La navegación, sesión y retorno de Stripe cuentan con [verificación](FRONTEND-VERIFICACION.md); el diseño adaptable, los paneles y las animaciones accesibles se documentan en [mejoras y capturas](FRONTEND-MEJORAS.md). |
+| Diagramas | Se integraron el [XML de clases](DIAGRAMA-CLASES.md), el modelo físico, C4, componentes, despliegue, BPMN, secuencia Stripe, paquetes, actividad, estados y pipeline. El [inventario](entrega-1/diagramas/README.md) enlaza imágenes y fuentes. |
+| Pruebas y calidad | Para `d073598` finalizaron correctamente [CI de main](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/43980372836), [CI de develop](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/43980376263) y [SonarCloud](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/43980372963). Esos resultados corresponden a esa versión; cada cambio posterior debe conservar su propia evidencia. |
+| Reproducibilidad y rendimiento | La [validación local](EVIDENCIA-ENTREGA-FINAL.md) documenta el clon limpio y el catálogo de 10.000 alojamientos. El objetivo aprobado para MARKET-69 y las mediciones local y EC2 están registrados, con sus condiciones y límites. |
+| Cierre documental | Existe el [acta de cierre y guion de sustentación](ACTA-CIERRE.md), además del [registro Scrum](evidencias/registro-eventos-scrum.md). El acta está preparada para recoger firmas; no las da por realizadas. |
+
+Los antiguos pendientes de integrar la restricción de publicación a anfitriones, conectar Stripe, publicar la demostración y crear una versión identificable ya no describen el estado actual. El corte original se conserva al final para mantener el contexto de las observaciones y las pruebas de entonces.
+
+## Límites y verificaciones humanas
+
+- El catálogo, las cuentas de muestra y los pagos son de demostración. El entorno publicado utiliza HTTP y no debe manejar datos reales.
+- La recuperación de contraseña es simulada: registra la solicitud, pero no envía correo ni cambia la contraseña. Las reservas del MVP son inmediatas; no se afirma una modalidad adicional de aprobación manual.
+- La revisión independiente de otro integrante, las capturas auténticas de uso de IA, la retroalimentación de participantes y la aceptación docente requieren evidencia propia. Un estado de Jira, una revisión automatizada o una ejecución de CI no las sustituyen.
+- El acta identifica el vencimiento de la cuenta de demostración AWS el 23/11/2026 y relaciona con MARKET-73 su disponibilidad hasta la sustentación del 26/11/2026. La ejecución local y las capturas son el respaldo documentado; este informe no garantiza la disponibilidad futura del proveedor.
+- La protección de ramas y las decisiones de negocio aún abiertas deben contrastarse con la configuración efectiva y [DECISIONS.md](DECISIONS.md); no se declaran aprobadas por inferencia.
+
+## Registro histórico
+
+<details>
+<summary>Consultar el corte del 12 de noviembre de 2026 y su actualización del 14 de noviembre</summary>
+
 **Corte:** 12 de noviembre de 2026, hora de Bogotá.
 **Actualización del 14 de noviembre de 2026:** se publicó la demostración en [moralesforero.lol](http://moralesforero.lol/) con el catálogo ficticio y se comprobó Stripe sandbox mediante pago, evento firmado, confirmación, cancelación y reembolso. La [evidencia](evidencias/stripe-sandbox-2026-11-14.json) y [configuración de Stripe](STRIPE-PRUEBAS.md) actualizan los pendientes de pagos y despliegue que se describen en el corte histórico siguiente. La revisión humana y las actividades de entrega del equipo siguen requiriendo evidencia propia.
 **Fuente de requisitos:** guía «Proyecto de Curso: Marketplace Alojamientos» facilitada por el equipo; las referencias a páginas corresponden a ese PDF. Este informe reúne lo comprobado y lo pendiente. No constituye aceptación del profesor ni de los integrantes del equipo.
@@ -46,3 +78,6 @@ El [inventario de API implementada](API-IMPLEMENTADA.md) identifica rutas y perm
 La revisión técnica identificó riesgos al editar simultáneamente un anuncio y moderarlo, al recibir datos inválidos y al mostrar respuestas antiguas de búsqueda, autenticación o cotización. Se prepararon correcciones y pruebas para estos casos. Esas observaciones técnicas no reemplazan una retrospectiva real del equipo.
 
 Como evolución técnica, una vez acreditados los requisitos obligatorios, se recomienda completar la integración externa de prueba, formalizar el contrato vigente, ejecutar una revisión humana y validar el despliegue en el ambiente acordado. El equipo debe registrar sus propias lecciones y decisiones de evolución; no se atribuyen aquí retrospectivas ni aprobaciones no realizadas.
+
+
+</details>

@@ -73,7 +73,7 @@ npm run dev
 
 Abre [http://localhost:4173](http://localhost:4173). La búsqueda y las sugerencias consultan el backend; puedes explorar sin iniciar sesión. Las reservas requieren cuenta de huésped. Por defecto la página usa `http://localhost:8080`; si cambias la dirección del backend, ajusta la etiqueta `api-base-url` de `frontend/index.html` y la configuración CORS correspondiente.
 
-Puedes crear una cuenta de anfitrión y entrar a «Administrar alojamientos» para crear y editar anuncios y disponibilidad. Si un anfitrión desactiva su cuenta o un administrador la restringe, sus publicaciones dejan de mostrarse y no aceptan nuevas reservas. Las reservas futuras confirmadas conservan su estado y se señalan para revisión administrativa. El pago y la recuperación de contraseña son simulaciones: no hay cobros ni envío de correos reales.
+Puedes crear una cuenta de anfitrión y entrar a «Administrar alojamientos» para crear y editar anuncios y disponibilidad. Si un anfitrión desactiva su cuenta o un administrador la restringe, sus publicaciones dejan de mostrarse y no aceptan nuevas reservas. Las reservas futuras confirmadas conservan su estado y se señalan para revisión administrativa. Por defecto, el pago local usa `SIMULATED_TEST` y la recuperación de contraseña es simulada. Para ejecutar pagos con el proveedor externo se requiere `STRIPE_TEST`, credenciales privadas del sandbox y recepción de eventos firmados; consulta [Stripe](STRIPE-PRUEBAS.md) y el [plan local de respaldo](DESPLIEGUE-EC2.md#plan-alterno-para-la-entrega-del-26112026--market-73). No hay cobros de producción ni envío de correos reales.
 
 ## 4. Verificar las pruebas
 
