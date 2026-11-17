@@ -99,21 +99,30 @@ stateDiagram-v2
     [*] --> PREPARING : reserva PENDING_PAYMENT creada
     PREPARING --> OPEN : sesión cs_test creada en Stripe
     PREPARING --> EXPIRED : vence sin sesión
-    OPEN --> PAID : checkout.session.completed<br/>(paid, dentro del plazo)
-    OPEN --> EXPIRED : checkout.session.expired<br/>o tarea de mantenimiento
+    OPEN --> PAID : checkout.session.completed o<br/>checkout.session.async_payment_succeeded<br/>[paid, dentro del plazo y cuentas/publicación activas]
+    OPEN --> EXPIRED : checkout.session.expired o<br/>checkout.session.async_payment_failed<br/>o tarea de mantenimiento
+    OPEN --> EXPIRED : pago recibido fuera de plazo<br/>o cuentas/publicación no activas
     PAID --> REFUND_PENDING : huésped cancela con reembolso
     PAID --> CANCELLED : huésped cancela sin reembolso
-    EXPIRED --> REFUND_PENDING : pago recibido fuera de plazo
+    EXPIRED --> REFUND_PENDING : pago recibido tras expirar<br/>o rechazo de confirmación por plazo/estado
     REFUND_PENDING --> REFUNDED : Stripe confirma el reembolso
     REFUND_PENDING --> REFUND_FAILED : reembolso rechazado
-    REFUND_PENDING --> REFUND_REVIEW : respuesta incierta
+    REFUND_PENDING --> REFUND_REVIEW : respuesta incierta o fin del plazo<br/>seguro de reintento automático (23 h)
     REFUNDED --> [*]
     CANCELLED --> [*]
     REFUND_FAILED --> [*] : revisión manual del administrador
     REFUND_REVIEW --> [*] : revisión manual del administrador
+    note right of OPEN
+        checkout.session.completed con unpaid:
+        sigue OPEN y espera el resultado del pago.
+        Esperar un pago no crea otro estado persistido.
+        Los eventos duplicados no cambian el estado.
+        Si la sesión aún no está vinculada, se reintenta
+        el evento sin cambiar PREPARING.
+    end note
 ```
 
-Fuente: métodos `opened`, `paid`, `expired`, `requireRefund`, `refunded`, `refundFailed`, `refundNeedsReview` y `cancelledWithoutRefund` de `StripeCheckoutAttempt`. Los estados `REFUND_FAILED` y `REFUND_REVIEW` marcan la reserva para revisión manual del administrador.
+Fuente: [20-estados-pago-stripe.mmd](diagramas/fuentes/20-estados-pago-stripe.mmd), métodos de `StripeCheckoutAttempt`, clasificación en `StripeCheckoutEventDecision`, aplicación transaccional en `StripeEventTransactions` y reintentos en `StripeCheckoutMaintenance`. `checkout.session.completed` con `unpaid` conserva `OPEN` mientras espera el resultado; los eventos asíncronos de éxito y fallo confirman o vencen el intento, respectivamente. Si el pago llega fuera de plazo o las cuentas/publicación ya no están activas, la misma transacción pasa por `EXPIRED` a `REFUND_PENDING`, libera las fechas y cancela la reserva. Los estados `REFUND_FAILED` y `REFUND_REVIEW` marcan la reserva para revisión manual del administrador. La espera de pago y el reintento de un evento sin sesión vinculada no añaden estados al enum.
 
 ## 20.4 Pipeline CI/CD
 
@@ -124,13 +133,15 @@ Fuente: [diagramas/fuentes/20-pipeline-ci-cd.dot](diagramas/fuentes/20-pipeline-
 | Etapa | Herramienta | Qué hace | Automática |
 |---|---|---|---|
 | Control de versiones | Git y GitHub | Ramas `feature/*` y `docs/*`, PR hacia `develop` y de `develop` a `main` | Sí |
-| Actualización de dependencias | Dependabot | Hizo PR semanales para GitHub Actions, Maven y npm hasta el 16/11/2026; ese día se desactivó con `open-pull-requests-limit: 0`. El diagrama muestra la configuración usada en los sprints 1 a 5 | Desactivada |
+| Actualización de dependencias | Dependabot | Hizo PR semanales para GitHub Actions, Maven y npm hasta el 16/11/2026; ese día se desactivó con `open-pull-requests-limit: 0`. El diagrama distingue esta configuración histórica del flujo vigente | Desactivada |
 | Build y pruebas del backend | GitHub Actions (Backend CI) | `mvn -B -ntp -f backend/pom.xml verify` con JUnit y JaCoCo | Sí |
 | Build y pruebas del frontend | GitHub Actions (Frontend CI) | `npm ci`, `npm run lint`, `npm test` con c8 y `npm run build` | Sí |
 | Validación documental | GitHub Actions (Documentation CI) | `scripts/validate_delivery_docs.py`: OpenAPI, BPMN, trazabilidad y enlaces | Sí |
 | Calidad | SonarCloud | Análisis estático y Quality Gate en PR y en `main` | Sí |
-| Revisión | GitHub | Revisión del PR por el otro integrante | Manual |
+| Protección e integración | GitHub | `main` y `develop` protegidas: PR actualizado, conversaciones resueltas y cuatro checks obligatorios (Backend CI, Frontend CI, Documentation CI y SonarCloud Quality Gate); aplica a administradores, sin bypass, force push ni eliminación | Obligatoria |
+| Revisión entre integrantes | GitHub | Juan Sebastián Morales Forero dispensó expresamente la revisión de Julián el 17/11/2026; se requieren 0 aprobaciones. No se acredita una aprobación independiente ni aceptación docente | Dispensada por el propietario |
+| Release versionado | GitHub Releases | `v1.0` publicada el 16/11/2026; el PR #39 posterior integra la actualización documental en `main` y `develop` (`a8b6b260`) | Publicada |
 | Entrega a la demostración | EC2 | Copiar JAR y frontend a una carpeta de versión, cambiar el enlace `current`, reiniciar y verificar | Manual |
 | Reversión | EC2 | Volver a apuntar `current` a la versión anterior | Manual |
 
-El proyecto tiene integración continua completa y entrega manual: no hay despliegue continuo. Pendientes registrados: activar la protección de ramas (existe [configure-github-branch-protection.sh](../../scripts/configure-github-branch-protection.sh)) y publicar releases versionados (MARKET-80).
+El proyecto tiene integración continua y entrega manual: no hay despliegue continuo. Con corte al 17/11/2026, la protección de ambas ramas quedó guardada y comprobada en la interfaz y mediante la consulta de ramas (`protected: true`); el release [v1.0](https://github.com/Rocky72153/marketplace-alojamientos/releases/tag/v1.0) ya existe. Las afirmaciones anteriores de protección y release pendientes quedan superadas por ese estado. La dispensa de revisión es una decisión explícita del propietario y no equivale a revisión independiente, firmas ni aceptación del docente. El plan alterno de demostración de MARKET-73 está documentado en [DESPLIEGUE-EC2.md](../DESPLIEGUE-EC2.md), sin garantizar disponibilidad futura de AWS ni acreditar un ensayo futuro.

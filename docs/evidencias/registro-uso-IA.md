@@ -13,6 +13,16 @@
 
 ## Índice de evidencia
 
+### Registro actual — 17/11/2026
+
+| ID | Intercambio y captura | Herramienta | Artefactos y resultado |
+|---|---|---|---|
+| EV-IA-09 | [Registro completo](uso-ia-2026-11-17.md); [captura original, 00:48 Bogotá](EV-IA-09-20261117-0048.png); [manifiesto SHA-256](EV-IA-09-manifiesto.json) | ChatGPT | [Prompt elaborado](prompt-revision-diagramas-2026-11-17.md), revisión de diagramas, corrección del pipeline y los flujos de pago. La versión ampliada es una redacción de esta sesión; la captura conserva el mensaje original. No acredita revisión humana independiente. |
+
+### Plantilla histórica de octubre
+
+Las siguientes filas se conservan como plantilla histórica. EV-IA-09 documenta una interacción nueva; no acredita capturas originales de las interacciones anteriores que no se recopilaron.
+
 | ID | Fecha/hora local del intercambio | Herramienta | Prompt completo visible | Respuesta completa visible | Archivo(s) de captura original | Artefacto afectado | Revisión humana / decisión |
 |---|---|---|---|---|---|---|---|
 | EV-IA-01 | Por completar desde el intercambio original | ChatGPT | Pendiente de captura | Pendiente de captura | Pendiente | Requisitos de negocio / análisis | Pendiente de validar por el equipo |

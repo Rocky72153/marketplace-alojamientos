@@ -4,6 +4,8 @@ Esta carpeta/guía enumera evidencias que deben recopilarse desde las herramient
 
 ## Uso de IA (requisito expreso de la guía)
 
+Registro actual del 17/11/2026: [interacción y respuesta reales](uso-ia-2026-11-17.md), [prompt elaborado](prompt-revision-diagramas-2026-11-17.md) y [captura original](EV-IA-09-20261117-0048.png), con manifiesto de integridad. Incluye la revisión y corrección de diagramas realizada en esta sesión. El prompt ampliado se presenta como redacción actual, separado del mensaje original.
+
 Plantilla para registrar cada intercambio y enlazar capturas originales: [`registro-uso-IA.md`](registro-uso-IA.md).
 
 La guía del curso exige un documento con capturas del uso de IA donde sean visibles la fecha y hora, los prompts completos de entrada y salida. El equipo debe capturar la interfaz real correspondiente a cada intercambio que utilice como soporte y guardar las capturas originales con su fecha. En el documento índice, relacionar cada captura con la sección/artefacto afectado y explicar qué se aceptó, modificó o descartó.
@@ -11,6 +13,8 @@ La guía del curso exige un documento con capturas del uso de IA donde sean visi
 **No incluir** credenciales, tokens, datos personales innecesarios o información privada de otros integrantes. No reconstruir una captura retrospectiva como si fuera original.
 
 ## Evidencias para GitHub
+
+**Actualización del 17/11/2026:** PR #39 integrado; `main` y `develop` sincronizadas y protegidas con cuatro comprobaciones obligatorias. [CI](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/44023214942) y [SonarCloud](https://github.com/Rocky72153/marketplace-alojamientos/actions/runs/44023214938) aprobados para esa versión. La revisión de Julián fue dispensada expresamente por el propietario; no se presenta como una aprobación humana realizada. Los apartados y la tabla fechados en octubre que siguen son un registro histórico.
 
 - Enlace al repositorio y ramas `main`, `develop` y rama de trabajo.
 - PR y checks auditados del repositorio: [revisión PR #1–#9](revision-pull-requests-2026-10.md). No consta aprobación independiente de otro integrante; esa revisión académica sigue pendiente.

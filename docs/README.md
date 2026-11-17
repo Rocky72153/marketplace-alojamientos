@@ -137,7 +137,7 @@ Las imágenes de todos los diagramas están en [entrega-1/diagramas](entrega-1/d
 |---|---|---|---|
 | 6.1 | Checklist de entrega | [6.1](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/819409) | [13-checklist-entrega.md](entrega-1/13-checklist-entrega.md) |
 | 6.2 | Estado de la Entrega 1 | [6.2](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/753665) | [entrega-1/README.md](entrega-1/README.md) |
-| 6.3 | Evidencia del uso de IA | [6.3](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/9306113) | [uso-ia-2026-10.md](evidencias/uso-ia-2026-10.md) y [registro-uso-IA.md](evidencias/registro-uso-IA.md) |
+| 6.3 | Evidencia del uso de IA | [6.3](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/9306113) | [Registro actual y captura original](evidencias/uso-ia-2026-11-17.md), [prompt elaborado](evidencias/prompt-revision-diagramas-2026-11-17.md) y [registro histórico](evidencias/registro-uso-IA.md) |
 | 6.4 | Release y demostración final | [6.4](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/9273364) | [Release v1.0](https://github.com/Rocky72153/marketplace-alojamientos/releases/tag/v1.0) y [DESPLIEGUE-EC2.md](DESPLIEGUE-EC2.md) |
 | 6.5 | Informe final y acta de cierre | [6.5](https://unbosque-team-zeutvqmy.atlassian.net/wiki/spaces/MARKET/pages/9011225) | [INFORME-FINAL-ENTREGA-2.md](INFORME-FINAL-ENTREGA-2.md) y [ACTA-CIERRE.md](ACTA-CIERRE.md) |
 
