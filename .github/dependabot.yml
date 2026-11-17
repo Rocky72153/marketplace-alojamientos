@@ -1,14 +1,18 @@
+# Actualizaciones de versión desactivadas el 16/11/2026: open-pull-requests-limit en 0.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
   - package-ecosystem: "maven"
     directory: "/backend"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0

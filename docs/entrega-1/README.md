@@ -24,7 +24,7 @@ La entrega final (Entrega 2) es el 26/11/2026. Las demás fechas del cronograma,
 5. [Épicas e historias de usuario](05-backlog-historias.md)
 6. [Casos de uso](06-casos-de-uso.md)
 7. [Modelo de dominio](07-modelo-dominio.md)
-8. [Modelo de datos (físico implementado y lógico de diseño)](08-modelo-datos.md)
+8. [Modelo de datos (físico implementado, lógico de diseño y normalización hasta 3FN)](08-modelo-datos.md)
 9. [Arquitectura orientada a servicios](09-arquitectura-servicios.md)
 10. [Contrato REST OpenAPI](10-openapi.yaml)
 11. [Prototipo y estrategia de validación](11-prototipo-validacion.md)

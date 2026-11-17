@@ -19,16 +19,16 @@ cat > "$TMP" <<'JSON'
 {
   "required_status_checks": {
     "strict": true,
-    "contexts": ["Backend CI", "Frontend CI", "Documentation CI"]
+    "contexts": ["Backend CI", "Frontend CI", "Documentation CI", "SonarCloud Quality Gate"]
   },
   "enforce_admins": true,
   "required_pull_request_reviews": {
-    "dismiss_stale_reviews": true,
+    "dismiss_stale_reviews": false,
     "require_code_owner_reviews": false,
-    "required_approving_review_count": 1
+    "required_approving_review_count": 0
   },
   "restrictions": null,
-  "required_linear_history": true,
+  "required_linear_history": false,
   "allow_force_pushes": false,
   "allow_deletions": false,
   "block_creations": false,

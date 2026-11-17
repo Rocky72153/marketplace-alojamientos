@@ -124,7 +124,7 @@ Fuente: [diagramas/fuentes/20-pipeline-ci-cd.dot](diagramas/fuentes/20-pipeline-
 | Etapa | Herramienta | Qué hace | Automática |
 |---|---|---|---|
 | Control de versiones | Git y GitHub | Ramas `feature/*` y `docs/*`, PR hacia `develop` y de `develop` a `main` | Sí |
-| Actualización de dependencias | Dependabot | PR semanales para GitHub Actions, Maven y npm | Sí |
+| Actualización de dependencias | Dependabot | Hizo PR semanales para GitHub Actions, Maven y npm hasta el 16/11/2026; ese día se desactivó con `open-pull-requests-limit: 0`. El diagrama muestra la configuración usada en los sprints 1 a 5 | Desactivada |
 | Build y pruebas del backend | GitHub Actions (Backend CI) | `mvn -B -ntp -f backend/pom.xml verify` con JUnit y JaCoCo | Sí |
 | Build y pruebas del frontend | GitHub Actions (Frontend CI) | `npm ci`, `npm run lint`, `npm test` con c8 y `npm run build` | Sí |
 | Validación documental | GitHub Actions (Documentation CI) | `scripts/validate_delivery_docs.py`: OpenAPI, BPMN, trazabilidad y enlaces | Sí |
