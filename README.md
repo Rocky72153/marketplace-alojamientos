@@ -35,6 +35,7 @@ Estas tecnologías están implementadas en el repositorio; su alcance y validaci
 - backend/: API REST Java/Spring Boot y pruebas.
 - frontend/: interfaz web inicial, validaciones y pruebas con Node.js.
 - .github/workflows/: integración continua y workflow SonarCloud.
+- [Documentación por fases](docs/README.md): índice de los documentos ordenado igual que Confluence (fases 1 a 6).
 - docs/entrega-1/: documentación de análisis y diseño.
 - docs/GITHUB_SETUP.md: configuración administrativa de GitHub y SonarCloud.
 - docs/TRACEABILITY_TEMPLATE.csv: matriz inicial de trazabilidad.
